@@ -94,8 +94,26 @@ RUN dnf install -y \
     /tmp/akmods/rpms/kmods/*ryzen-smu*.rpm && \
     rm -rf /tmp/akmods
 
-# Set branding/logo if needed later
-# (customizations/logos would be added in /usr/share/icons or /etc/issue if desired)
+# Add SoltrOS logo icons in multiple sizes
+COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/soltros.png
+COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/soltros.png
+COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/soltros.png
+
+# Add a desktop entry for SoltrOS branding
+RUN echo "[Desktop Entry]
+Name=SoltrOS
+Comment=Custom Fedora-based GNOME OS by Soltros
+Exec=gnome-control-center info
+Icon=soltros
+Type=Application
+Categories=Settings;" > /usr/share/applications/soltros-about.desktop
+
+# Show custom branding on terminal login screen
+RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
+
+# Update icon cache so GNOME recognizes custom icons
+RUN gtk-update-icon-cache -f /usr/share/icons/hicolor
+
 
 # GNOME customization: disable all extensions except Caffeine
 RUN gsettings set org.gnome.shell disable-user-extensions true && \

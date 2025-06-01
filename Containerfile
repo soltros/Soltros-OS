@@ -1,9 +1,7 @@
-FROM ghcr.io/ublue-os/silverblue-main
-
 # Containerfile for SoltrOS: A Fedora-based, GNOME, gaming-optimized image
 # Based on Universal Blue methodology
 
-FROM ghcr.io/ublue-os/bazzite:fedora-42
+FROM ghcr.io/ublue-os/silverblue-main
 
 LABEL org.opencontainers.image.title="SoltrOS"
 LABEL org.opencontainers.image.description="Vanilla GNOME, gaming-ready Fedora image with MacBook support"

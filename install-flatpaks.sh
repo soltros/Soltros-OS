@@ -1,4 +1,5 @@
 flatpak install -y flathub \
+  com.valvesoftware.Steam \
   com.github.tchx84.Flatseal \
   com.bitwarden.desktop \
   com.github.Matoking.protontricks \
@@ -7,4 +8,5 @@ flatpak install -y flathub \
   im.riot.Riot \
   com.github.iwalton3.jellyfin-media-player \
   io.github.dweymouth.supersonic \
-  com.github.wwmm.easyeffects \
+  com.github.wwmm.easyeffects
+

@@ -98,6 +98,7 @@ RUN dnf install -y \
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/soltros.png
 COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/soltros.png
 COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/soltros.png
+COPY soltros-logo.png /usr/share/pixmaps/soltros.png
 
 # Add a desktop entry for SoltrOS branding
 RUN echo "[Desktop Entry]

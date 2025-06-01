@@ -48,10 +48,10 @@ RUN rpm-ostree install \
 # Enable tailscaled to run on boot
 RUN ln -s /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
 
-# Create scripts directory
-RUN mkdir -p /usr/local/scripts
-COPY install-flatpaks.sh /usr/local/scripts/install-flatpaks.sh
-RUN chmod +x /usr/local/scripts/install-flatpaks.sh
+# Install Flatpaks
+COPY install-flatpaks.sh /tmp/install-flatpaks.sh
+RUN bash /tmp/install-flatpaks.sh && rm /tmp/install-flatpaks.sh
+
 
 # Remove Firefox (comes with base)
 RUN rpm-ostree override remove firefox

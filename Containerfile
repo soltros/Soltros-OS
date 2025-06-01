@@ -22,13 +22,18 @@ ADD https://terra.fyralabs.com/terra.repo /etc/yum.repos.d/terra.repo
 # Add the Tailscale repository
 COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 
+# Enable multilib repo and install required 32-bit libs for Steam
+RUN sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/fedora.repo && \
+    sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/fedora-updates.repo && \
+    echo -e "include=\nmultilib_policy=all" >> /etc/dnf/dnf.conf
 
 # Install default DNF apps from RPMFusion and elsewhere
 RUN rpm-ostree install \
-    steam \
     gimp \
     vlc \
-    heroic-launcher \
+    heroic-games-launcher \
+    mbpfan \
+    lm_sensors \
     tailscale \
     filezilla \
     telegram-desktop \
@@ -44,13 +49,9 @@ RUN rpm-ostree install \
 RUN ln -s /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
 
 # Create scripts directory
-RUN mkdir -p /opt/scripts
-
-# Copy post-install Flatpak script
-COPY install-flatpaks.sh /opt/scripts/install-flatpaks.sh
-
-# Make script executable
-RUN chmod +x /opt/scripts/install-flatpaks.sh
+RUN mkdir -p /usr/local/scripts
+COPY install-flatpaks.sh /usr/local/scripts/install-flatpaks.sh
+RUN chmod +x /usr/local/scripts/install-flatpaks.sh
 
 # Remove Firefox (comes with base)
 RUN rpm-ostree override remove firefox

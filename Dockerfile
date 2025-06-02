@@ -1,6 +1,7 @@
-# Containerfile for SoltrOS: A Fedora-based, GNOME, gaming-optimized image
-# Based on Universal Blue methodology
+# Stage 0: Import akmods from official image
+FROM ghcr.io/ublue-os/akmods:bazzite as akmods
 
+# Stage 1: SoltrOS base
 FROM ghcr.io/ublue-os/silverblue-main
 
 LABEL org.opencontainers.image.title="SoltrOS"
@@ -27,7 +28,7 @@ RUN sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/fedora.repo && \
     sed -i 's/^#baseurl/baseurl/' /etc/yum.repos.d/fedora-updates.repo && \
     echo -e "include=\nmultilib_policy=all" >> /etc/dnf/dnf.conf
 
-# Install default DNF apps from RPMFusion and elsewhere
+# Install default DNF apps
 RUN rpm-ostree install \
     gimp \
     vlc \
@@ -48,22 +49,16 @@ RUN rpm-ostree install \
 # Enable tailscaled to run on boot
 RUN ln -s /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
 
-# Install Flatpaks
-COPY install-flatpaks.sh /tmp/install-flatpaks.sh
-RUN bash /tmp/install-flatpaks.sh && rm /tmp/install-flatpaks.sh
-
-
-# Remove Firefox (comes with base)
+# Remove Firefox
 RUN rpm-ostree override remove firefox
 
-# Install Waterfox via direct RPM from openSUSE OBS (Fedora 41 package)
+# Install Waterfox
 ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
+RUN rpm-ostree install --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
-RUN rpm-ostree install --nogpgcheck /tmp/waterfox.rpm && \
-    rm /tmp/waterfox.rpm
+# ✅ Copy over kmods from akmods stage (defined at top)
+COPY --from=akmods /rpms /tmp/akmods
 
-# Install akmods group from Bazzite common and extra (excluding v4l2loopback and obs)
-COPY --from=ghcr.io/ublue-os/akmods:bazzite /rpms /tmp/akmods
 RUN dnf install -y \
     /tmp/akmods/kmods/*kvmfr*.rpm \
     /tmp/akmods/kmods/*xone*.rpm \
@@ -79,21 +74,20 @@ RUN dnf install -y \
     /tmp/akmods/kmods/*ryzen-smu*.rpm && \
     rm -rf /tmp/akmods
 
-
-# Add SoltrOS logo icons in multiple sizes
+# Add SoltrOS icons
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/soltros.png
 COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/soltros.png
 COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/soltros.png
 COPY soltros-logo.png /usr/share/pixmaps/soltros.png
 
-# Fetch flatpak install script
-RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/flatpaks.sh -o /etc/skel/install-flatpaks.sh && \
-    chmod +x /etc/skel/install-flatpaks.sh
+# Fetch flatpak install script into /etc/skel
+RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/flatpaks.sh \
+  -o /etc/skel/install-flatpaks.sh && chmod +x /etc/skel/install-flatpaks.sh
 
-# Show custom branding on terminal login screen
+# Add terminal branding
 RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
 
-# Update icon cache so GNOME recognizes custom icons
+# Update icon cache
 RUN gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # Clean up
@@ -101,3 +95,4 @@ RUN dnf clean all
 
 LABEL org.opencontainers.image.title="SoltrOS" \
       org.opencontainers.image.description="Gaming-tuned, minimal Fedora-based GNOME image with Waterfox and RPMFusion apps"
+

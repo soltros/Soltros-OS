@@ -1,5 +1,5 @@
 # Stage 0: Import akmods from official image
-FROM ghcr.io/ublue-os/akmods:release as akmods
+FROM ghcr.io/ublue-os/akmods@sha256:14974120a0e746b202a86c4948ff3a0f13bc15f517f597006512f22aaeb66982 as akmods
 
 # Stage 1: SoltrOS base
 FROM ghcr.io/ublue-os/silverblue-main

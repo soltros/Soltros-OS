@@ -1,7 +1,4 @@
-# Stage 0: Import akmods from official image
-FROM ghcr.io/ublue-os/akmods@sha256:14974120a0e746b202a86c4948ff3a0f13bc15f517f597006512f22aaeb66982 as akmods
-
-# Stage 1: SoltrOS base
+# SoltrOS base
 FROM ghcr.io/ublue-os/silverblue-main
 
 LABEL org.opencontainers.image.title="SoltrOS"
@@ -56,13 +53,24 @@ RUN rpm-ostree override remove firefox firefox-langpacks
 ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
 RUN dnf install -y --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
-# ✅ Copy over kmods from akmods stage (defined at top)
-COPY --from=akmods /rpms /tmp/akmods
+# Add the COPR repo for UBlue Akmods
+ADD https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/repo/fedora-42/ublue-os-akmods-fedora-42.repo /etc/yum.repos.d/ublue-os-akmods.repo
 
-RUN find /tmp/akmods/kmods/ -name "*.rpm" | \
-    grep -E "kvmfr|xone|openrazer|wl|framework-laptop|gcadapter_oc|zenergy|gpd-fan|ayaneo-platform|ayn-platform|bmi260|ryzen-smu" | \
-    xargs dnf install -y && \
-    rm -rf /tmp/akmods
+# Install selected kmods from the repo
+RUN dnf install -y \
+    kmod-kvmfr \
+    xone-kmod \
+    openrazer-kmod \
+    kmod-wl \
+    framework-laptop-kmod \
+    gcadapter_oc-kmod \
+    zenergy-kmod \
+    gpd-fan-kmod \
+    ayaneo-platform-kmod \
+    ayn-platform-kmod \
+    bmi260-kmod \
+    ryzen-smu-kmod && \
+    dnf clean all
 
 # Add SoltrOS icons
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/soltros.png

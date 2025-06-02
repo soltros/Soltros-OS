@@ -77,8 +77,8 @@ ADD https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/repo/fedora-42/ublue
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/fedora-logo.png
 COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/fedora-logo.png
 COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/fedora-logo.png
-COPY soltros-logo.png /usr/share/pixmaps/fedora-gdm-logo.png
-COPY soltros-logo.png /usr/share/pixmaps/fedora_whitelogo_med.png
+COPY fedora-gdm-logo.png /usr/share/pixmaps/fedora-gdm-logo.png
+COPY fedora_whitelogo_med.png /usr/share/pixmaps/fedora_whitelogo_med.png
 
 # Add SoltrOS identity files
 RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release -o /usr/lib/os-release

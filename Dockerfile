@@ -50,7 +50,7 @@ RUN rpm-ostree install \
 RUN ln -s /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
 
 # Remove Firefox
-RUN rpm-ostree override remove firefox
+RUN rpm-ostree override remove firefox firefox-langpacks
 
 # Install Waterfox
 ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm

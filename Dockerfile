@@ -54,7 +54,7 @@ RUN rpm-ostree override remove firefox firefox-langpacks
 
 # Install Waterfox
 ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
-RUN rpm-ostree install --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
+RUN dnf install -y --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
 # ✅ Copy over kmods from akmods stage (defined at top)
 COPY --from=akmods /rpms /tmp/akmods

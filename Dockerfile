@@ -63,21 +63,22 @@ RUN rpm-ostree install --nogpgcheck /tmp/waterfox.rpm && \
     rm /tmp/waterfox.rpm
 
 # Install akmods group from Bazzite common and extra (excluding v4l2loopback and obs)
-COPY --from=ghcr.io/ublue-os/akmods:bazzite/ /tmp/akmods
+COPY --from=ghcr.io/ublue-os/akmods:bazzite /rpms /tmp/akmods
 RUN dnf install -y \
-    /tmp/akmods/rpms/kmods/*kvmfr*.rpm \
-    /tmp/akmods/rpms/kmods/*xone*.rpm \
-    /tmp/akmods/rpms/kmods/*openrazer*.rpm \
-    /tmp/akmods/rpms/kmods/*wl*.rpm \
-    /tmp/akmods/rpms/kmods/*framework-laptop*.rpm \
-    /tmp/akmods/rpms/kmods/*gcadapter_oc*.rpm \
-    /tmp/akmods/rpms/kmods/*zenergy*.rpm \
-    /tmp/akmods/rpms/kmods/*gpd-fan*.rpm \
-    /tmp/akmods/rpms/kmods/*ayaneo-platform*.rpm \
-    /tmp/akmods/rpms/kmods/*ayn-platform*.rpm \
-    /tmp/akmods/rpms/kmods/*bmi260*.rpm \
-    /tmp/akmods/rpms/kmods/*ryzen-smu*.rpm && \
+    /tmp/akmods/kmods/*kvmfr*.rpm \
+    /tmp/akmods/kmods/*xone*.rpm \
+    /tmp/akmods/kmods/*openrazer*.rpm \
+    /tmp/akmods/kmods/*wl*.rpm \
+    /tmp/akmods/kmods/*framework-laptop*.rpm \
+    /tmp/akmods/kmods/*gcadapter_oc*.rpm \
+    /tmp/akmods/kmods/*zenergy*.rpm \
+    /tmp/akmods/kmods/*gpd-fan*.rpm \
+    /tmp/akmods/kmods/*ayaneo-platform*.rpm \
+    /tmp/akmods/kmods/*ayn-platform*.rpm \
+    /tmp/akmods/kmods/*bmi260*.rpm \
+    /tmp/akmods/kmods/*ryzen-smu*.rpm && \
     rm -rf /tmp/akmods
+
 
 # Add SoltrOS logo icons in multiple sizes
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/soltros.png

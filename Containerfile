@@ -56,28 +56,14 @@ RUN bash /tmp/install-flatpaks.sh && rm /tmp/install-flatpaks.sh
 # Remove Firefox (comes with base)
 RUN rpm-ostree override remove firefox
 
-# Install Waterfox manually
-RUN curl -L "https://cdn1.waterfox.net/waterfox/releases/6.5.9/Linux_x86_64/waterfox-6.5.9.tar.bz2" -o /tmp/waterfox.tar.bz2 && \
-    mkdir -p /opt/waterfox && \
-    tar -xjf /tmp/waterfox.tar.bz2 -C /opt/waterfox --strip-components=1 && \
-    rm /tmp/waterfox.tar.bz2 && \
-    ln -s /opt/waterfox/waterfox /usr/local/bin/waterfox
+# Install Waterfox via direct RPM from openSUSE OBS (Fedora 41 package)
+ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
 
-# Add Waterfox launcher
-RUN mkdir -p /usr/share/applications && \
-    echo "[Desktop Entry]
-Name=Waterfox G6
-Exec=/opt/waterfox/waterfox %u
-Icon=waterfox
-Type=Application
-Categories=Network;WebBrowser;
-MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;
-StartupNotify=true" > /usr/share/applications/waterfox.desktop && \
-    curl -L "https://cdn1.waterfox.net/img/icons/waterfox-icon.png" \
-      -o /usr/share/icons/hicolor/128x128/apps/waterfox.png
+RUN rpm-ostree install --nogpgcheck /tmp/waterfox.rpm && \
+    rm /tmp/waterfox.rpm
 
 # Install akmods group from Bazzite common and extra (excluding v4l2loopback and obs)
-COPY --from=ghcr.io/ublue-os/akmods:bazzite / /tmp/akmods
+COPY --from=ghcr.io/ublue-os/akmods:bazzite/ /tmp/akmods
 RUN dnf install -y \
     /tmp/akmods/rpms/kmods/*kvmfr*.rpm \
     /tmp/akmods/rpms/kmods/*xone*.rpm \
@@ -99,28 +85,15 @@ COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/soltros.png
 COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/soltros.png
 COPY soltros-logo.png /usr/share/pixmaps/soltros.png
 
-# Add a desktop entry for SoltrOS branding
-RUN echo "[Desktop Entry]
-Name=SoltrOS
-Comment=Custom Fedora-based GNOME OS by Soltros
-Exec=gnome-control-center info
-Icon=soltros
-Type=Application
-Categories=Settings;" > /usr/share/applications/soltros-about.desktop
+# Fetch flatpak install script
+RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/flatpaks.sh -o /etc/skel/install-flatpaks.sh && \
+    chmod +x /etc/skel/install-flatpaks.sh
 
 # Show custom branding on terminal login screen
 RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
 
 # Update icon cache so GNOME recognizes custom icons
 RUN gtk-update-icon-cache -f /usr/share/icons/hicolor
-
-
-# GNOME customization: disable all extensions except Caffeine
-RUN gsettings set org.gnome.shell disable-user-extensions true && \
-    flatpak install -y flathub com.github.dhiebert.caffeine
-
-# Set default GNOME session to vanilla (if applicable)
-# (Assumes GNOME already installed via base)
 
 # Clean up
 RUN dnf clean all

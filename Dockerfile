@@ -57,20 +57,19 @@ RUN dnf install -y --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 ADD https://copr.fedorainfracloud.org/coprs/ublue-os/akmods/repo/fedora-42/ublue-os-akmods-fedora-42.repo /etc/yum.repos.d/ublue-os-akmods.repo
 
 # Install selected kmods from the repo
-RUN dnf install -y \
-    kmod-kvmfr \
-    xone-kmod \
-    openrazer-kmod \
-    kmod-wl \
-    framework-laptop-kmod \
-    gcadapter_oc-kmod \
-    zenergy-kmod \
-    gpd-fan-kmod \
-    ayaneo-platform-kmod \
-    ayn-platform-kmod \
-    bmi260-kmod \
-    ryzen-smu-kmod && \
-    dnf clean all
+#RUN dnf install -y \
+#    kmod-kvmfr \
+#    openrazer-kmod \
+##    kmod-wl \
+#    framework-laptop-kmod \
+#    gcadapter_oc-kmod \
+#    zenergy-kmod \
+#    gpd-fan-kmod \
+#    ayaneo-platform-kmod \
+#    ayn-platform-kmod \
+##    bmi260-kmod \
+#    ryzen-smu-kmod && \
+#    dnf clean all
 
 # Add SoltrOS icons
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/soltros.png

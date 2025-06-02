@@ -59,19 +59,9 @@ RUN dnf install -y --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 # ✅ Copy over kmods from akmods stage (defined at top)
 COPY --from=akmods /rpms /tmp/akmods
 
-RUN dnf install -y \
-    /tmp/akmods/kmods/*kvmfr*.rpm \
-    /tmp/akmods/kmods/*xone*.rpm \
-    /tmp/akmods/kmods/*openrazer*.rpm \
-    /tmp/akmods/kmods/*wl*.rpm \
-    /tmp/akmods/kmods/*framework-laptop*.rpm \
-    /tmp/akmods/kmods/*gcadapter_oc*.rpm \
-    /tmp/akmods/kmods/*zenergy*.rpm \
-    /tmp/akmods/kmods/*gpd-fan*.rpm \
-    /tmp/akmods/kmods/*ayaneo-platform*.rpm \
-    /tmp/akmods/kmods/*ayn-platform*.rpm \
-    /tmp/akmods/kmods/*bmi260*.rpm \
-    /tmp/akmods/kmods/*ryzen-smu*.rpm && \
+RUN find /tmp/akmods/kmods/ -name "*.rpm" | \
+    grep -E "kvmfr|xone|openrazer|wl|framework-laptop|gcadapter_oc|zenergy|gpd-fan|ayaneo-platform|ayn-platform|bmi260|ryzen-smu" | \
+    xargs dnf install -y && \
     rm -rf /tmp/akmods
 
 # Add SoltrOS icons

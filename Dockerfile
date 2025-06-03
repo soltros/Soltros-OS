@@ -36,7 +36,39 @@ RUN dbus-daemon --system --fork && \
         com.github.iwalton3.jellyfin-media-player \
         io.github.shiftey.Desktop \
         io.github.dweymouth.supersonic \
-        com.github.wwmm.easyeffects && \
+        com.github.wwmm.easyeffects \
+        com.mattjakeman.ExtensionManager \
+        com.github.Matoking.protontricks \
+        io.github.fastrizwaan.WineZGUI \
+        com.ranfdev.DistroShelf \
+        it.mijorus.gearlever \
+        io.github.flattool.Warehouse \
+        io.github.flattool.Ignition \
+        io.missioncenter.MissionCenter \
+        com.vysp3r.ProtonPlus \
+        org.gnome.Calculator \
+        org.gnome.Calendar \
+        org.gnome.Characters \
+        org.gnome.Contacts \
+        org.gnome.Papers \
+        org.gnome.Logs \
+        org.gnome.Loupe \
+        org.gnome.NautilusPreviewer \
+        org.gnome.TextEditor \
+        org.gnome.Weather \
+        org.gnome.baobab \
+        org.gnome.clocks \
+        org.gnome.font-viewer \
+        io.github.nokse22.Exhibit \
+        de.leopoldluley.Clapgrep \
+        org.freedesktop.Platform.VulkanLayer.MangoHud//23.08 \
+        org.freedesktop.Platform.VulkanLayer.vkBasalt//23.08 \
+        org.freedesktop.Platform.VulkanLayer.OBSVkCapture//23.08 \
+        com.obsproject.Studio.Plugin.OBSVkCapture \
+        com.obsproject.Studio.Plugin.Gstreamer \
+        com.obsproject.Studio.Plugin.GStreamerVaapi \
+        org.gtk.Gtk3theme.adw-gtk3//3.22 \
+        org.gtk.Gtk3theme.adw-gtk3-dark//3.22 && \
     flatpak override --system com.valvesoftware.Steam \
         --filesystem=/run/media \
         --filesystem=/media \

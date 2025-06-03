@@ -9,137 +9,17 @@ LABEL org.opencontainers.image.version="42"
 # Add in Flathub
 RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-# Setup essential repos only (minimal approach)
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    mkdir -p /var/roothome && \
-    dnf5 -y install dnf5-plugins && \
-    # Install RPM Fusion (essential)
-    dnf5 -y install \
-        https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-        https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
-    # Add Tailscale repo
-    dnf5 -y config-manager addrepo --overwrite --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo && \
-    # Only enable essential COPR repos
-    for copr in \
-        ublue-os/staging \
-        ublue-os/packages; \
-    do \
-        echo "Enabling copr: $copr"; \
-        if dnf5 -y copr enable $copr; then \
-            dnf5 -y config-manager setopt copr:copr.fedorainfracloud.org:${copr////:}.priority=98 || true; \
-        else \
-            echo "Warning: Failed to enable COPR repo $copr, continuing..."; \
-        fi; \
-    done && unset -v copr && \
-    # Set basic priorities
-    dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
-    dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
-    (dnf5 -y config-manager setopt "*staging*".exclude="scx-scheds kf6-* mesa* mutter* rpm-ostree* systemd* gnome-shell gnome-settings-daemon gnome-control-center gnome-software libadwaita tuned*" || true) && \
-    dnf5 clean all
+# Add RPM Fusion free/nonfree
+RUN rpm-ostree install \
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
-# Install kernel (simplified - remove akmods references since they're not defined)
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
-    dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
-    dnf5 -y install \
-        scx-scheds && \
-    dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
-    dnf5 -y swap --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite bootc bootc && \
-    dnf5 clean all
+# Add the Terra repository
+ADD https://terra.fyralabs.com/terra.repo /etc/yum.repos.d/terra.repo
 
-# Setup firmware
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y swap atheros-firmware atheros-firmware-20250311-1$(rpm -E %{dist}) && \
-    if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
-        dnf5 -y copr enable lukenukem/asus-linux && \
-        dnf5 -y install \
-            asusctl \
-            asusctl-rog-gui && \
-        dnf5 copr disable -y lukenukem/asus-linux \
-    ; elif [[ "${IMAGE_FLAVOR}" == "surface" ]]; then \
-        dnf5 -y config-manager addrepo --from-repofile=https://pkg.surfacelinux.com/fedora/linux-surface.repo && \
-        dnf5 -y swap \
-            --allowerasing \
-            libwacom-data libwacom-surface-data && \
-        dnf5 versionlock add \
-            libwacom-surface-data && \
-        dnf5 -y install \
-            iptsd \
-            libcamera \
-            libcamera-tools \
-            libcamera-gstreamer \
-            libcamera-ipa \
-            pipewire-plugin-libcamera && \
-        dnf5 -y config-manager setopt "linux-surface".enabled=0 \
-    ; fi && \
-    dnf5 clean all
+# Add the Tailscale repository
+COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 
-# Install patched packages
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    declare -A toswap=( \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="wireplumber" \
-        ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite-multilib"]="pipewire bluez xorg-x11-server-Xwayland" \
-        ["terra-extras"]="switcheroo-control" \
-        ["terra-mesa"]="mesa-filesystem" \
-        ["copr:copr.fedorainfracloud.org:ublue-os:staging"]="fwupd" \
-    ) && \
-    for repo in "${!toswap[@]}"; do \
-        for package in ${toswap[$repo]}; do dnf5 -y swap --repo=$repo $package $package; done; \
-    done && unset -v toswap repo package && \
-    dnf5 versionlock add \
-        pipewire \
-        pipewire-alsa \
-        pipewire-gstreamer \
-        pipewire-jack-audio-connection-kit \
-        pipewire-jack-audio-connection-kit-libs \
-        pipewire-libs \
-        pipewire-plugin-libcamera \
-        pipewire-pulseaudio \
-        pipewire-utils \
-        wireplumber \
-        wireplumber-libs \
-        bluez \
-        bluez-cups \
-        bluez-libs \
-        bluez-obexd \
-        xorg-x11-server-Xwayland \
-        switcheroo-control \
-        mesa-dri-drivers \
-        mesa-filesystem \
-        mesa-libEGL \
-        mesa-libGL \
-        mesa-libgbm \
-        mesa-va-drivers \
-        mesa-vulkan-drivers \
-        fwupd \
-        fwupd-plugin-flashrom \
-        fwupd-plugin-modem-manager \
-        fwupd-plugin-uefi-capsule-data && \
-    dnf5 -y install --enable-repo="*rpmfusion*" --disable-repo="*fedora-multimedia*" \
-        libaacs \
-        libbdplus \
-        libbluray \
-        libbluray-utils && \
-    dnf5 clean all
-
-# Remove unneeded packages
-RUN --mount=type=cache,dst=/var/cache \
-    --mount=type=cache,dst=/var/log \
-    --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y remove \
-        ublue-os-update-services \
-        firefox \
-        firefox-langpacks \
-        htop && \
-    dnf5 clean all
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
@@ -331,11 +211,11 @@ ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fed
 RUN dnf install -y --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
 # Add SoltrOS icons (Note: these files need to exist in your build context)
-# COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/fedora-logo.png
-# COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/fedora-logo.png
-# COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/fedora-logo.png
-# COPY fedora-gdm-logo.png /usr/share/pixmaps/fedora-gdm-logo.png
-# COPY fedora_whitelogo_med.png /usr/share/pixmaps/fedora_whitelogo_med.png
+COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/fedora-logo.png
+COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/fedora-logo.png
+COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/fedora-logo.png
+COPY fedora-gdm-logo.png /usr/share/pixmaps/fedora-gdm-logo.png
+COPY fedora_whitelogo_med.png /usr/share/pixmaps/fedora_whitelogo_med.png
 
 # Add SoltrOS identity files
 RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release -o /usr/lib/os-release

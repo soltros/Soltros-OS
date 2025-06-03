@@ -25,7 +25,7 @@ COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    dnf5 -y install \
+    dnf5 -y install --skip-unavailable \
         twitter-twemoji-fonts \
         google-noto-sans-cjk-fonts \
         lato-fonts \

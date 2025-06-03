@@ -25,27 +25,29 @@ RUN systemd-machine-id-setup && \
     dbus-uuidgen > /etc/machine-id && \
     install -d /run/dbus
 
-# Install Flatpaks with proper Steam permissions
+# Install core Flatpaks first
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         com.valvesoftware.Steam \
+        net.waterfox.waterfox \
         com.github.tchx84.Flatseal \
-        com.bitwarden.desktop \
-        org.filezillaproject.Filezilla \
-        im.riot.Riot \
-        com.github.iwalton3.jellyfin-media-player \
-        io.github.shiftey.Desktop \
-        io.github.dweymouth.supersonic \
-        com.github.wwmm.easyeffects \
-        com.mattjakeman.ExtensionManager \
+        com.bitwarden.desktop && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install gaming tools
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive flathub \
         com.github.Matoking.protontricks \
         io.github.fastrizwaan.WineZGUI \
-        com.ranfdev.DistroShelf \
-        it.mijorus.gearlever \
-        io.github.flattool.Warehouse \
-        io.github.flattool.Ignition \
-        io.missioncenter.MissionCenter \
         com.vysp3r.ProtonPlus \
+        io.missioncenter.MissionCenter && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install GNOME apps
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive flathub \
         org.gnome.Calculator \
         org.gnome.Calendar \
         org.gnome.Characters \
@@ -53,28 +55,24 @@ RUN dbus-daemon --system --fork && \
         org.gnome.Papers \
         org.gnome.Logs \
         org.gnome.Loupe \
-        org.gnome.NautilusPreviewer \
-        org.gnome.TextEditor \
-        org.gnome.Weather \
-        org.gnome.baobab \
-        org.gnome.clocks \
-        org.gnome.font-viewer \
-        io.github.nokse22.Exhibit \
-        de.leopoldluley.Clapgrep \
-        org.freedesktop.Platform.VulkanLayer.MangoHud//23.08 \
-        org.freedesktop.Platform.VulkanLayer.vkBasalt//23.08 \
-        org.freedesktop.Platform.VulkanLayer.OBSVkCapture//23.08 \
-        com.obsproject.Studio.Plugin.OBSVkCapture \
-        com.obsproject.Studio.Plugin.Gstreamer \
-        com.obsproject.Studio.Plugin.GStreamerVaapi \
-        org.gtk.Gtk3theme.adw-gtk3//3.22 \
-        org.gtk.Gtk3theme.adw-gtk3-dark//3.22 && \
+        org.gnome.TextEditor && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install remaining apps and apply Steam permissions
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive flathub \
+        com.mattjakeman.ExtensionManager \
+        it.mijorus.gearlever \
+        io.github.flattool.Warehouse \
+        com.ranfdev.DistroShelf && \
     flatpak override --system com.valvesoftware.Steam \
         --filesystem=/run/media \
         --filesystem=/media \
         --filesystem=/mnt \
         --filesystem=home \
         --device=dri && \
+    flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
 # Remove Firefox first
@@ -101,10 +99,6 @@ RUN rpm-ostree install \
     goverlay \
     udisks2 \
     udiskie
-
-# Install Waterfox
-ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
-RUN rpm-ostree install /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
 # Enable services
 RUN systemctl enable tailscaled.service udisks2.service

@@ -99,7 +99,7 @@ RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/ma
 RUN echo -e "[multilib]\nname=Fedora \$releasever - Multilib\nbaseurl=https://download.fedoraproject.org/pub/fedora/linux/releases/\$releasever/Everything/\$basearch/os/\n        enabled=1\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-\$releasever-\$basearch" > /etc/yum.repos.d/fedora-multilib.repo
 
 # Install base tools and RPMFusion
-RUN dnf install install git rpm-build dnf-utils glibc.i686 libstdc++.i686 \
+RUN dnf install git rpm-build dnf-utils glibc.i686 libstdc++.i686 \
     libva.i686 libva-utils.i686 libvdpau.i686 \
     mesa-libEGL.i686 mesa-libGL.i686 mesa-dri-drivers.i686
 

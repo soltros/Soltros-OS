@@ -38,7 +38,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install media and entertainment apps
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         com.github.iwalton3.jellyfin-media-player \
         io.github.shiftey.Desktop \
@@ -48,7 +49,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install gaming and system tools
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         com.mattjakeman.ExtensionManager \
         com.github.Matoking.protontricks \
@@ -59,7 +61,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install utility and management tools
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         com.ranfdev.DistroShelf \
         it.mijorus.gearlever \
@@ -71,7 +74,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install GNOME core apps (part 1)
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         org.gnome.Calculator \
         org.gnome.Calendar \
@@ -83,7 +87,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install GNOME core apps (part 2)
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         org.gnome.Loupe \
         org.gnome.NautilusPreviewer \
@@ -96,7 +101,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install Vulkan layers and OBS plugins
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         org.freedesktop.Platform.VulkanLayer.MangoHud//23.08 \
         org.freedesktop.Platform.VulkanLayer.vkBasalt//23.08 \
@@ -108,7 +114,8 @@ RUN dbus-daemon --system --fork && \
     pkill dbus-daemon
 
 # Install themes and apply Steam permissions
-RUN dbus-daemon --system --fork && \
+RUN rm -f /run/dbus/pid && \
+    dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         org.gtk.Gtk3theme.adw-gtk3//3.22 \
         org.gtk.Gtk3theme.adw-gtk3-dark//3.22 && \
@@ -160,3 +167,22 @@ COPY fedora_whitelogo_med.png /usr/share/pixmaps/fedora_whitelogo_med.png
 
 # Add SoltrOS identity files
 RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release -o /usr/lib/os-release
+
+# Set MOTD
+RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/motd -o /etc/motd
+
+# Set icon + theme defaults via dconf
+RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/00-soltros-settings -o /etc/dconf/db/local.d/00-soltros-settings && \
+    dconf update
+    
+# Add terminal branding
+RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
+
+# Update icon cache
+RUN gtk-update-icon-cache -f /usr/share/icons/hicolor
+
+# Clean up
+RUN dnf clean all
+
+LABEL org.opencontainers.image.title="SoltrOS" \
+      org.opencontainers.image.description="Gaming-tuned, minimal Fedora-based GNOME image with Waterfox and RPMFusion apps"

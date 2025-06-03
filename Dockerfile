@@ -25,44 +25,44 @@ RUN systemd-machine-id-setup && \
     dbus-uuidgen > /etc/machine-id && \
     install -d /run/dbus
 
-# Install core Flatpaks first
+# Install core applications
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         com.valvesoftware.Steam \
-        net.waterfox.waterfox \
         com.github.tchx84.Flatseal \
         com.bitwarden.desktop \
         org.filezillaproject.Filezilla \
-        im.riot.Riot && \
+        im.riot.Riot \
+        org.mozilla.firefox && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install gaming and Wine tools
+# Install media and entertainment apps
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
-        com.github.Matoking.protontricks \
-        io.github.fastrizwaan.WineZGUI \
-        com.vysp3r.ProtonPlus \
-        io.missioncenter.MissionCenter \
+        com.github.iwalton3.jellyfin-media-player \
+        io.github.shiftey.Desktop \
+        io.github.dweymouth.supersonic \
         com.github.wwmm.easyeffects && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install media and utility apps
+# Install gaming and system tools
 RUN dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive fluthub \
-        com.github.iwalton3.jellyfin-media-player \
-        io.github.shiftey.Desktop \
-        io.github.dweymouth.supersonic \
+    flatpak install -y --system --noninteractive flathub \
         com.mattjakeman.ExtensionManager \
-        com.ranfdev.DistroShelf \
-        it.mijorus.gearlever && \
+        com.github.Matoking.protontricks \
+        io.github.fastrizwaan.WineZGUI \
+        com.vysp3r.ProtonPlus \
+        io.missioncenter.MissionCenter && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install Flatpak management tools
+# Install utility and management tools
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
+        com.ranfdev.DistroShelf \
+        it.mijorus.gearlever \
         io.github.flattool.Warehouse \
         io.github.flattool.Ignition \
         io.github.nokse22.Exhibit \
@@ -82,7 +82,7 @@ RUN dbus-daemon --system --fork && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install GNOME core apps (part 2) and themes
+# Install GNOME core apps (part 2)
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         org.gnome.Loupe \
@@ -120,6 +120,7 @@ RUN dbus-daemon --system --fork && \
         --device=dri && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
+
 # Remove Firefox first
 RUN rpm-ostree override remove firefox firefox-langpacks
 

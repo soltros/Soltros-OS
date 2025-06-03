@@ -31,21 +31,46 @@ RUN dbus-daemon --system --fork && \
         com.valvesoftware.Steam \
         net.waterfox.waterfox \
         com.github.tchx84.Flatseal \
-        com.bitwarden.desktop && \
+        com.bitwarden.desktop \
+        org.filezillaproject.Filezilla \
+        im.riot.Riot && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install gaming tools
+# Install gaming and Wine tools
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         com.github.Matoking.protontricks \
         io.github.fastrizwaan.WineZGUI \
         com.vysp3r.ProtonPlus \
-        io.missioncenter.MissionCenter && \
+        io.missioncenter.MissionCenter \
+        com.github.wwmm.easyeffects && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install GNOME apps
+# Install media and utility apps
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive fluthub \
+        com.github.iwalton3.jellyfin-media-player \
+        io.github.shiftey.Desktop \
+        io.github.dweymouth.supersonic \
+        com.mattjakeman.ExtensionManager \
+        com.ranfdev.DistroShelf \
+        it.mijorus.gearlever && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install Flatpak management tools
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive flathub \
+        io.github.flattool.Warehouse \
+        io.github.flattool.Ignition \
+        io.github.nokse22.Exhibit \
+        de.leopoldluley.Clapgrep && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install GNOME core apps (part 1)
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
         org.gnome.Calculator \
@@ -53,19 +78,40 @@ RUN dbus-daemon --system --fork && \
         org.gnome.Characters \
         org.gnome.Contacts \
         org.gnome.Papers \
-        org.gnome.Logs \
-        org.gnome.Loupe \
-        org.gnome.TextEditor && \
+        org.gnome.Logs && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
 
-# Install remaining apps and apply Steam permissions
+# Install GNOME core apps (part 2) and themes
 RUN dbus-daemon --system --fork && \
     flatpak install -y --system --noninteractive flathub \
-        com.mattjakeman.ExtensionManager \
-        it.mijorus.gearlever \
-        io.github.flattool.Warehouse \
-        com.ranfdev.DistroShelf && \
+        org.gnome.Loupe \
+        org.gnome.NautilusPreviewer \
+        org.gnome.TextEditor \
+        org.gnome.Weather \
+        org.gnome.baobab \
+        org.gnome.clocks \
+        org.gnome.font-viewer && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install Vulkan layers and OBS plugins
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive flathub \
+        org.freedesktop.Platform.VulkanLayer.MangoHud//23.08 \
+        org.freedesktop.Platform.VulkanLayer.vkBasalt//23.08 \
+        org.freedesktop.Platform.VulkanLayer.OBSVkCapture//23.08 \
+        com.obsproject.Studio.Plugin.OBSVkCapture \
+        com.obsproject.Studio.Plugin.Gstreamer \
+        com.obsproject.Studio.Plugin.GStreamerVaapi && \
+    flatpak uninstall --unused -y && \
+    pkill dbus-daemon
+
+# Install themes and apply Steam permissions
+RUN dbus-daemon --system --fork && \
+    flatpak install -y --system --noninteractive flathub \
+        org.gtk.Gtk3theme.adw-gtk3//3.22 \
+        org.gtk.Gtk3theme.adw-gtk3-dark//3.22 && \
     flatpak override --system com.valvesoftware.Steam \
         --filesystem=/run/media \
         --filesystem=/media \
@@ -74,7 +120,6 @@ RUN dbus-daemon --system --fork && \
         --device=dri && \
     flatpak uninstall --unused -y && \
     pkill dbus-daemon
-
 # Remove Firefox first
 RUN rpm-ostree override remove firefox firefox-langpacks
 

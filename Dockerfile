@@ -94,55 +94,39 @@ RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main
 RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/flatpaks.sh \
   -o /etc/skel/install-flatpaks.sh && chmod +x /etc/skel/install-flatpaks.sh
   
-### Steam Spec
-# Enable multilib and install 32-bit compatibility libraries
-RUN echo -e "[multilib]\nname=Fedora \$releasever - Multilib\nbaseurl=https://download.fedoraproject.org/pub/fedora/linux/releases/\$releasever/Everything/\$basearch/os/\n        enabled=1\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-\$releasever-\$basearch" > /etc/yum.repos.d/fedora-multilib.repo
-
-# Prepare root home for GPG
-RUN mkdir -p /root/.gnupg && chmod 700 /root/.gnupg
-
-# Install base tools and compatibility libs (without nonexistent i686 packages)
-RUN dnf install -y git rpm-build dnf-utils \
-    glibc.i686 libstdc++.i686 \
-    libva.i686 libvdpau.i686 \
-    mesa-libEGL.i686 mesa-libGL.i686 mesa-dri-drivers.i686
-
-# Optional: Add NVIDIA support (enable akmods again when ready)
-# RUN rpm-ostree install xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs.i686 akmod-nvidia
-
-# Clone RPMFusion Steam repo and build native RPM
-WORKDIR /root
-RUN git clone --depth=1 https://github.com/rpmfusion/steam.git steam-rpm \
- && mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS} \
- && cp steam-rpm/*.spec rpmbuild/SPECS/ \
- && cp steam-rpm/* rpmbuild/SOURCES/ || true \
- && cd rpmbuild/SPECS && dnf builddep -y steam.spec \
- && rpmbuild -ba steam.spec
-
-# Install the built Steam RPM
-RUN dnf install /root/rpmbuild/RPMS/x86_64/steam-*.rpm
-
-# Clean up build files
-RUN rm -rf /root/steam-rpm /root/rpmbuild
-
-# Set environment variable for better desktop behavior
-ENV STEAM_FORCE_DESKTOP=1
-
-# Add Steam Controller udev rules
-RUN curl -Lo /etc/udev/rules.d/99-steam-controller.rules \
-  https://raw.githubusercontent.com/ValveSoftware/steam-devices/master/60-steam-input.rules
-
-# Add current user to 'input' group (adjust if you're creating the user elsewhere)
-# RUN usermod -aG input <your-username>  # handled post-install or via skel/user setup
-
-# Expose required Steam Remote Play ports for Firewalld users (doc only)
-# Suggest user runs:
-#   firewall-cmd --zone=public --add-service=steam-streaming --permanent
-#   firewall-cmd --zone=public --add-service=steam-streaming
-
-# Optional: Create persistent Steam folder (if layering)
-# RUN mkdir -p /var/home/steam && ln -s /var/home/steam /home/soltros/Steam
-
+# Install Steam + all required 32-bit libs
+RUN dnf install -y \
+    steam \
+    alsa-lib.i686 alsa-plugins-pulseaudio.i686 \
+    pipewire-alsa.i686 \
+    NetworkManager-libnm.i686 \
+    SDL2.i686 \
+    firewalld-filesystem \
+    fontconfig.i686 \
+    gtk2.i686 \
+    libICE.i686 \
+    libXScrnSaver.i686 \
+    libXext.i686 \
+    libXinerama.i686 \
+    libXtst.i686 \
+    libatomic.i686 \
+    libcurl.i686 \
+    libnsl.i686 \
+    libpng.i686 \
+    libva.i686 \
+    libvdpau.i686 \
+    mesa-dri-drivers mesa-dri-drivers.i686 \
+    mesa-libEGL.i686 \
+    mesa-libGL.i686 \
+    mesa-vulkan-drivers mesa-vulkan-drivers.i686 \
+    nss.i686 \
+    pulseaudio-libs.i686 \
+    steam-devices \
+    systemd-libs.i686 \
+    vulkan-loader vulkan-loader.i686 \
+    zenity \
+    tar
+    
 # Add terminal branding
 RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
 

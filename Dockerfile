@@ -99,7 +99,7 @@ RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/ma
 RUN echo -e "[multilib]\nname=Fedora \$releasever - Multilib\nbaseurl=https://download.fedoraproject.org/pub/fedora/linux/releases/\$releasever/Everything/\$basearch/os/\n        enabled=1\ngpgcheck=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-\$releasever-\$basearch" > /etc/yum.repos.d/fedora-multilib.repo
 
 # Install base tools and RPMFusion
-RUN rpm-ostree install git rpm-build dnf-utils glibc.i686 libstdc++.i686 \
+RUN dnf install install git rpm-build dnf-utils glibc.i686 libstdc++.i686 \
     libva.i686 libva-utils.i686 libvdpau.i686 \
     mesa-libEGL.i686 mesa-libGL.i686 mesa-dri-drivers.i686
 
@@ -116,7 +116,7 @@ RUN git clone --depth=1 https://github.com/rpmfusion/steam.git steam-rpm \
  && rpmbuild -ba steam.spec
 
 # Install the built Steam RPM
-RUN sudo dnf install /root/rpmbuild/RPMS/x86_64/steam-*.rpm
+RUN dnf install /root/rpmbuild/RPMS/x86_64/steam-*.rpm
 
 # Clean up build files
 RUN rm -rf /root/steam-rpm /root/rpmbuild

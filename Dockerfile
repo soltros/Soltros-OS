@@ -116,7 +116,7 @@ RUN git clone --depth=1 https://github.com/rpmfusion/steam.git steam-rpm \
  && rpmbuild -ba steam.spec
 
 # Install the built Steam RPM
-RUN rpm-ostree install /root/rpmbuild/RPMS/x86_64/steam-*.rpm
+RUN sudo dnf install /root/rpmbuild/RPMS/x86_64/steam-*.rpm
 
 # Clean up build files
 RUN rm -rf /root/steam-rpm /root/rpmbuild

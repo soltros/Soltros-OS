@@ -12,7 +12,6 @@ RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     mkdir -p /var/roothome && \
     dnf5 -y install dnf5-plugins && \
@@ -50,33 +49,27 @@ RUN --mount=type=cache,dst=/var/cache \
     dnf5 -y config-manager setopt "*terra*".priority=3 "*terra*".exclude="nerd-fonts topgrade" && \
     dnf5 -y config-manager setopt "terra-mesa".enabled=true && \
     dnf5 -y config-manager setopt "terra-nvidia".enabled=false && \
-    eval "$(/ctx/dnf5-setopt setopt '*negativo17*' priority=4 exclude='mesa-* *xone*')" && \
+    dnf5 -y config-manager setopt "*negativo17*".priority=4 "*negativo17*".exclude="mesa-* *xone*" && \
     dnf5 -y config-manager setopt "*rpmfusion*".priority=5 "*rpmfusion*".exclude="mesa-*" && \
     dnf5 -y config-manager setopt "*fedora*".exclude="mesa-* kernel-core-* kernel-modules-* kernel-uki-virt-*" && \
     dnf5 -y config-manager setopt "*staging*".exclude="scx-scheds kf6-* mesa* mutter* rpm-ostree* systemd* gnome-shell gnome-settings-daemon gnome-control-center gnome-software libadwaita tuned*" && \
-    /ctx/cleanup
+    dnf5 clean all
 
-# Install kernel
+# Install kernel (simplified - remove akmods references since they're not defined)
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=akmods,src=/kernel-rpms,dst=/tmp/kernel-rpms \
-    --mount=type=bind,from=akmods,src=/rpms,dst=/tmp/akmods-rpms \
-    --mount=type=bind,from=akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/install-kernel-akmods && \
     dnf5 -y config-manager setopt "*rpmfusion*".enabled=0 && \
     dnf5 -y copr enable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y install \
         scx-scheds && \
     dnf5 -y copr disable bieszczaders/kernel-cachyos-addons && \
     dnf5 -y swap --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite bootc bootc && \
-    /ctx/cleanup
+    dnf5 clean all
 
 # Setup firmware
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y swap atheros-firmware atheros-firmware-20250311-1$(rpm -E %{dist}) && \
     if [[ "${IMAGE_FLAVOR}" =~ "asus" ]]; then \
@@ -101,15 +94,11 @@ RUN --mount=type=cache,dst=/var/cache \
             pipewire-plugin-libcamera && \
         dnf5 -y config-manager setopt "linux-surface".enabled=0 \
     ; fi && \
-    /ctx/install-firmware && \
-    /ctx/cleanup
+    dnf5 clean all
 
-# Install patched fwupd
-# Install Valve's patched Mesa, Pipewire, Bluez, and Xwayland
-# Install patched switcheroo control with proper discrete GPU support
+# Install patched packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     declare -A toswap=( \
         ["copr:copr.fedorainfracloud.org:bazzite-org:bazzite"]="wireplumber" \
@@ -155,24 +144,22 @@ RUN --mount=type=cache,dst=/var/cache \
         libbdplus \
         libbluray \
         libbluray-utils && \
-    /ctx/cleanup
+    dnf5 clean all
 
 # Remove unneeded packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y remove \
         ublue-os-update-services \
         firefox \
         firefox-langpacks \
         htop && \
-    /ctx/cleanup
+    dnf5 clean all
 
 # Install new packages
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y install \
         twitter-twemoji-fonts \
@@ -275,13 +262,11 @@ RUN --mount=type=cache,dst=/var/cache \
     tar --no-same-owner --no-same-permissions --no-overwrite-dir -xvzf /tmp/scopebuddy.tar.gz -C /tmp/scopebuddy && \
     rm -f /tmp/scopebuddy.tar.gz && \
     cp -r /tmp/scopebuddy/ScopeBuddy-*/bin/* /usr/bin/ && \
-    /ctx/cleanup
+    dnf5 clean all
 
 # Install Steam & Lutris, plus supporting packages
-# Downgrade ibus to fix an issue with the Steam keyboard
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 -y swap \
     --repo copr:copr.fedorainfracloud.org:bazzite-org:bazzite \
@@ -325,17 +310,16 @@ RUN --mount=type=cache,dst=/var/cache \
     chmod +x /usr/bin/latencyflex && \
     curl -Lo /usr/bin/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks && \
     chmod +x /usr/bin/winetricks && \
-    /ctx/cleanup
+    dnf5 clean all
 
-# ublue-os-media-automount-udev, mount non-removable device partitions automatically under /media/media-automount/
+# ublue-os-media-automount-udev
 RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
-    --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     dnf5 install -y --enable-repo=copr:copr.fedorainfracloud.org:ublue-os:packages \
         ublue-os-media-automount-udev && \
     { systemctl enable ublue-os-media-automount.service || true; } && \
-    /ctx/cleanup
+    dnf5 clean all
 
 # Install default DNF apps
 RUN rpm-ostree install \
@@ -362,21 +346,6 @@ RUN ln -s /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-u
 ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
 RUN dnf install -y --nogpgcheck /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
-# Install selected kmods from the repo
-#RUN dnf install -y \
-#    kmod-kvmfr \
-#    openrazer-kmod \
-##    kmod-wl \
-#    framework-laptop-kmod \
-#    gcadapter_oc-kmod \
-#    zenergy-kmod \
-#    gpd-fan-kmod \
-#    ayaneo-platform-kmod \
-#    ayn-platform-kmod \
-##    bmi260-kmod \
-#    ryzen-smu-kmod && \
-#    dnf clean all
-
 # Add SoltrOS icons
 COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/fedora-logo.png
 COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/fedora-logo.png
@@ -398,7 +367,6 @@ RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main
 RUN curl -L https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/flatpaks.sh \
   -o /etc/skel/install-flatpaks.sh && chmod +x /etc/skel/install-flatpaks.sh
     
-  
 # Add terminal branding
 RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
 
@@ -410,4 +378,3 @@ RUN dnf clean all
 
 LABEL org.opencontainers.image.title="SoltrOS" \
       org.opencontainers.image.description="Gaming-tuned, minimal Fedora-based GNOME image with Waterfox and RPMFusion apps"
-

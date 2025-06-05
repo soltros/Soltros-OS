@@ -3,7 +3,7 @@ ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
-FROM scratch AS ctx
+FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY cosign.pub /ctx/cosign.pub
 
@@ -18,14 +18,13 @@ RUN chmod +x \
   /ctx/just-files.sh \
   /ctx/desktop-defaults.sh
 
-
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
-LABEL org.opencontainers.image.title="SoltrOS"
-LABEL org.opencontainers.image.description="Vanilla GNOME, gaming-ready Bluefin image with MacBook support"
-LABEL org.opencontainers.image.vendor="Derrik"
-LABEL org.opencontainers.image.version="42"
+LABEL org.opencontainers.image.title="SoltrOS" \
+      org.opencontainers.image.description="Vanilla GNOME, gaming-ready Bluefin image with MacBook support" \
+      org.opencontainers.image.vendor="Derrik" \
+      org.opencontainers.image.version="42"
 
 # Copy static system configuration and branding
 COPY system_files/etc /etc
@@ -51,7 +50,3 @@ ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
-
-LABEL org.opencontainers.image.title="SoltrOS" \
-      org.opencontainers.image.description="Gaming-tuned, minimal Fedora-based GNOME image with Waterfox and RPMFusion apps"
-

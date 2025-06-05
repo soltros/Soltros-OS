@@ -1,188 +1,57 @@
-# SoltrOS base
-FROM ghcr.io/ublue-os/silverblue-main
+# Set base image and tag
+ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin
+ARG TAG_VERSION=latest
+
+# Stage 1: context for scripts (not included in final image)
+FROM scratch AS ctx
+COPY build_files/ /ctx/
+
+# Stage 2: final image
+FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
+
 LABEL org.opencontainers.image.title="SoltrOS"
-LABEL org.opencontainers.image.description="Vanilla GNOME, gaming-ready Fedora image with MacBook support"
+LABEL org.opencontainers.image.description="Vanilla GNOME, gaming-ready Bluefin image with MacBook support"
 LABEL org.opencontainers.image.vendor="Derrik"
 LABEL org.opencontainers.image.version="42"
 
-# Add in Flathub
-RUN flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# Add RPM Fusion free/nonfree and repositories first
-RUN rpm-ostree install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-
-# Add the Terra repository
-ADD https://terra.fyralabs.com/terra.repo /etc/yum.repos.d/terra.repo
-
-# Add the Tailscale repository
+# Copy static system configuration and branding
+COPY system_files/etc /etc
+COPY system_files/usr/share /usr/share
 COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 
-### Flatpak stuff
-# Ensure dbus run directory exists and setup machine ID
-RUN systemd-machine-id-setup && \
-    dbus-uuidgen > /etc/machine-id && \
-    install -d /run/dbus
+# Add external repos (RPM Fusion, Terra)
+RUN rpm-ostree install \
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+    curl -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo
 
-# Install core applications
-RUN dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        com.valvesoftware.Steam \
-        com.github.tchx84.Flatseal \
-        com.bitwarden.desktop \
-        org.filezillaproject.Filezilla \
-        im.riot.Riot \
-        net.waterfox.waterfox && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install media and entertainment apps
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        com.github.iwalton3.jellyfin-media-player \
-        io.github.shiftey.Desktop \
-        io.github.dweymouth.supersonic \
-        com.github.wwmm.easyeffects && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install gaming and system tools
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        com.mattjakeman.ExtensionManager \
-        com.github.Matoking.protontricks \
-        io.github.fastrizwaan.WineZGUI \
-        com.vysp3r.ProtonPlus \
-        io.missioncenter.MissionCenter && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install utility and management tools
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        com.ranfdev.DistroShelf \
-        it.mijorus.gearlever \
-        io.github.flattool.Warehouse \
-        io.github.flattool.Ignition \
-        io.github.nokse22.Exhibit \
-        de.leopoldluley.Clapgrep && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install GNOME core apps (part 1)
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        org.gnome.Calculator \
-        org.gnome.Calendar \
-        org.gnome.Characters \
-        org.gnome.Contacts \
-        org.gnome.Papers \
-        org.gnome.Logs && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install GNOME core apps (part 2)
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        org.gnome.Loupe \
-        org.gnome.NautilusPreviewer \
-        org.gnome.TextEditor \
-        org.gnome.Weather \
-        org.gnome.baobab \
-        org.gnome.clocks \
-        org.gnome.font-viewer && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install Vulkan layers and OBS plugins
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        org.freedesktop.Platform.VulkanLayer.MangoHud//23.08 \
-        org.freedesktop.Platform.VulkanLayer.vkBasalt//23.08 \
-        org.freedesktop.Platform.VulkanLayer.OBSVkCapture//23.08 \
-        com.obsproject.Studio.Plugin.OBSVkCapture \
-        com.obsproject.Studio.Plugin.Gstreamer \
-        com.obsproject.Studio.Plugin.GStreamerVaapi && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Install themes and apply Steam permissions
-RUN rm -f /run/dbus/pid && \
-    dbus-daemon --system --fork && \
-    flatpak install -y --system --noninteractive flathub \
-        org.gtk.Gtk3theme.adw-gtk3//3.22 \
-        org.gtk.Gtk3theme.adw-gtk3-dark//3.22 && \
-    flatpak override --system com.valvesoftware.Steam \
-        --filesystem=/run/media \
-        --filesystem=/media \
-        --filesystem=/mnt \
-        --filesystem=home \
-        --device=dri && \
-    flatpak uninstall --unused -y && \
-    pkill dbus-daemon
-
-# Remove Firefox first
-RUN rpm-ostree override remove firefox firefox-langpacks
-
-# Install default apps and automount support
+# Install core packages
 RUN rpm-ostree install \
     gimp \
-    vlc \
-    heroic-games-launcher \
     mbpfan \
-    fish \
     lm_sensors \
     tailscale \
-    filezilla \
-    telegram-desktop \
-    discord \
-    nextcloud-client \
-    qbittorrent \
-    thunderbird \
     gamemode \
     papirus-icon-theme \
     mangohud \
     goverlay \
     udisks2 \
-    udiskie
+    udiskie && \
+    dnf clean all
 
-# Enable services
-RUN systemctl enable tailscaled.service udisks2.service
+# Set identity and system branding
+RUN curl -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release && \
+    curl -Lo /etc/motd https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/motd && \
+    curl -Lo /etc/dconf/db/local.d/00-soltros-settings https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/00-soltros-settings && \
+    dconf update && \
+    echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue && \
+    gtk-update-icon-cache -f /usr/share/icons/hicolor
 
-# Add SoltrOS icons
-COPY soltros-logo.png /usr/share/icons/hicolor/128x128/apps/fedora-logo.png
-COPY soltros-logo.png /usr/share/icons/hicolor/256x256/apps/fedora-logo.png
-COPY soltros-logo.png /usr/share/icons/hicolor/512x512/apps/fedora-logo.png
-COPY soltros-logo.png /usr/share/pixmaps/fedora-gdm-logo.png
-COPY soltros-logo.png /usr/share/pixmaps/fedora_whitelogo_med.png
-COPY fedora-gdm-logo.png /usr/share/pixmaps/fedora-gdm-logo.png
-COPY fedora_whitelogo_med.png /usr/share/pixmaps/fedora_whitelogo_med.png
-
-# Add SoltrOS identity files
-RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release -o /usr/lib/os-release
-
-# Set MOTD
-RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/motd -o /etc/motd
-
-# Set icon + theme defaults via dconf
-RUN curl -L https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/00-soltros-settings -o /etc/dconf/db/local.d/00-soltros-settings && \
-    dconf update
-    
-# Add terminal branding
-RUN echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue
-
-# Update icon cache
-RUN gtk-update-icon-cache -f /usr/share/icons/hicolor
-
-# Clean up
-RUN dnf clean all
+# Mount and run build script from ctx stage
+RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
+    --mount=type=tmpfs,dst=/tmp \
+    bash /ctx/build.sh
 
 LABEL org.opencontainers.image.title="SoltrOS" \
       org.opencontainers.image.description="Gaming-tuned, minimal Fedora-based GNOME image with Waterfox and RPMFusion apps"
+

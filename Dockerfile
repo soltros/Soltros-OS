@@ -5,6 +5,19 @@ ARG TAG_VERSION=latest
 # Stage 1: context for scripts (not included in final image)
 FROM scratch AS ctx
 COPY build_files/ /ctx/
+COPY cosign.pub /ctx/cosign.pub
+
+# Change perms
+RUN chmod +x \
+  /ctx/build.sh \
+  /ctx/server-packages.sh \
+  /ctx/signing.sh \
+  /ctx/overrides.sh \
+  /ctx/cleanup.sh \
+  /ctx/desktop-packages.sh \
+  /ctx/just-files.sh \
+  /ctx/desktop-defaults.sh
+
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros

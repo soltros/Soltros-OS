@@ -42,7 +42,7 @@ cat <<<"$(jq ".transports.docker |=. + {
 cp /tmp/policy.json "$POLICY"
 
 log "Copying cosign public key"
-cp /ctx/cosign.pub "$PUBKEY"
+cp /ctx/soltros.pub "$PUBKEY"
 
 log "Creating registry policy YAML"
 tee "/etc/containers/registries.d/${NAMESPACE}.yaml" <<EOF

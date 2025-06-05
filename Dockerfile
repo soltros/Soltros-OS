@@ -5,7 +5,6 @@ ARG TAG_VERSION=latest
 # Stage 1: context for scripts (not included in final image)
 FROM scratch AS ctx
 COPY build_files/ /ctx/
-COPY cosign.pub /ctx/cosign.pub
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
@@ -35,9 +34,10 @@ RUN curl -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltr
     gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # Mount and run build script from ctx stage
+ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
-    bash /ctx/build.sh
+    BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
 
 LABEL org.opencontainers.image.title="SoltrOS" \
       org.opencontainers.image.description="Gaming-tuned, minimal Fedora-based GNOME image with Waterfox and RPMFusion apps"

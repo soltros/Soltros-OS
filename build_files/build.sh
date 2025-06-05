@@ -26,7 +26,7 @@ log "Install server packages"
 echo_group /ctx/server-packages.sh
 
 log "Enable container signing"
-BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/bluefin}"
+BASE_IMAGE="${BASE_IMAGE:ghcr.io/ublue-os/bluefin}"
 echo_group /ctx/signing.sh
 
 case "$BASE_IMAGE" in

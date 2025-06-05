@@ -33,9 +33,13 @@ COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 
 # Add external repos (RPM Fusion, Terra)
 RUN rpm-ostree install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
-    curl -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm && \
+    for i in {1..3}; do \
+        rpm-ostree install \
+            https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
+        break || sleep 10; \
+    done && \
+    curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo
 
 # Set identity and system branding
 RUN curl -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release && \

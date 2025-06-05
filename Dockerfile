@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin
+ARG BASE_IMAGE=ghcr.io/ublue-os/aurora
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -23,7 +23,7 @@ RUN chmod +x \
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
 LABEL org.opencontainers.image.title="SoltrOS" \
-      org.opencontainers.image.description="Vanilla GNOME, gaming-ready Bluefin image with MacBook support" \
+      org.opencontainers.image.description="Ggaming-ready Bluefin image with MacBook support" \
       org.opencontainers.image.vendor="Derrik" \
       org.opencontainers.image.version="42"
 
@@ -64,7 +64,7 @@ RUN for i in {1..3}; do \
         break || sleep 10; \
     done && \
     dconf update && \
-    echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora Silverblue\e[0m\n' > /etc/issue && \
+    echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Universal Blue\e[0m\n' > /etc/issue && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # Mount and run build script from ctx stage

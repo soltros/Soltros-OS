@@ -17,6 +17,7 @@ RUN chmod +x \
   /ctx/desktop-packages.sh \
   /ctx/just-files.sh \
   /ctx/desktop-defaults.sh
+  /ctx/setup-just.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros

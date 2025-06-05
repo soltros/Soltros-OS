@@ -40,5 +40,8 @@ esac
 
 echo_group /ctx/overrides.sh
 
+log "Setup just"
+echo_group /ctx/setup_just.sh
+
 log "Post build cleanup"
 echo_group /ctx/cleanup.sh

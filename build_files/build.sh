@@ -22,11 +22,13 @@ log() {
 
 log "Starting SoltrOS build process"
 
+# Corrected syntax: Added missing hyphen for default fallback
+BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/bluefin}"
+
 log "Install server packages"
 echo_group /ctx/server-packages.sh
 
 log "Enable container signing"
-BASE_IMAGE="${BASE_IMAGE:ghcr.io/ublue-os/bluefin}"
 echo_group /ctx/signing.sh
 
 case "$BASE_IMAGE" in
@@ -40,8 +42,12 @@ esac
 
 echo_group /ctx/overrides.sh
 
-log "Setup just"
-echo_group /ctx/setup_just.sh
+# Check if setup_just.sh exists before calling it (for safety)
+if [ -f "/ctx/setup_just.sh" ]; then
+    log "Setup just"
+    echo_group /ctx/setup_just.sh
+fi
 
 log "Post build cleanup"
 echo_group /ctx/cleanup.sh
+

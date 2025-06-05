@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/aurora
+ARG BASE_IMAGE=ghcr.io/ublue-os/kinoite-main
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -23,7 +23,7 @@ RUN chmod +x \
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
 LABEL org.opencontainers.image.title="SoltrOS" \
-      org.opencontainers.image.description="Ggaming-ready Bluefin image with MacBook support" \
+      org.opencontainers.image.description="Gaming-ready Bluefin image with MacBook support" \
       org.opencontainers.image.vendor="Derrik" \
       org.opencontainers.image.version="42"
 

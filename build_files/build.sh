@@ -23,7 +23,7 @@ log() {
 log "Starting SoltrOS build process"
 
 # Corrected syntax: Added missing hyphen for default fallback
-BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/aurora}"
+BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/kinoite-main}"
 
 log "Install server packages"
 echo_group /ctx/server-packages.sh

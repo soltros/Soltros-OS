@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin
+ARG BASE_IMAGE=ghcr.io/fedora/silverblue
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)

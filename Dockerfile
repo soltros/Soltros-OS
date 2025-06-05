@@ -35,12 +35,6 @@ COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Create soltros-just wrapper and set up aliases
-RUN printf '#!/bin/bash\nexec just --justfile /usr/share/soltros/just/justfile "$@"\n' > /usr/local/bin/soltros-just && \
-    chmod +x /usr/local/bin/soltros-just && \
-    echo 'alias just="soltros-just"' > /etc/profile.d/soltros-just.sh && \
-    echo 'alias just="soltros-just"' > /etc/fish/conf.d/soltros-just.fish
-
 # Add external repos (RPM Fusion, Terra) with better error handling
 RUN rpm-ostree install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm && \

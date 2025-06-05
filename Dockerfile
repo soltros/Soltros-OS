@@ -35,7 +35,7 @@ COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 # Create soltros-just wrapper and set up aliases
-RUN echo -e '#!/bin/bash\nexec just --justfile /usr/share/soltros/just/justfile "$@"' > /usr/local/bin/soltros-just && \
+RUN printf '#!/bin/bash\nexec just --justfile /usr/share/soltros/just/justfile "$@"\n' > /usr/local/bin/soltros-just && \
     chmod +x /usr/local/bin/soltros-just && \
     echo 'alias just="soltros-just"' > /etc/profile.d/soltros-just.sh && \
     echo 'alias just="soltros-just"' > /etc/fish/conf.d/soltros-just.fish

@@ -5,7 +5,7 @@ ARG TAG_VERSION=latest
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
-COPY cosign.pub /ctx/cosign.pub
+COPY soltros.pub /ctx/soltros.pub
 
 # Change perms
 RUN chmod +x \

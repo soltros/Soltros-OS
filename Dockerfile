@@ -5,6 +5,7 @@ ARG TAG_VERSION=latest
 # Stage 1: context for scripts (not included in final image)
 FROM scratch AS ctx
 COPY build_files/ /ctx/
+COPY cosign.pub /ctx/cosign.pub
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
@@ -24,20 +25,6 @@ RUN rpm-ostree install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
     curl -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo
-
-# Install core packages
-RUN rpm-ostree install \
-    gimp \
-    mbpfan \
-    lm_sensors \
-    tailscale \
-    gamemode \
-    papirus-icon-theme \
-    mangohud \
-    goverlay \
-    udisks2 \
-    udiskie && \
-    dnf clean all
 
 # Set identity and system branding
 RUN curl -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release && \

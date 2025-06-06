@@ -156,3 +156,94 @@ soltros-enable-amdgpu-oc:
     else
         echo "Overclocking already enabled."
     fi
+
+# ───────────────────────────────────────────────
+# NIX GROUP
+# ───────────────────────────────────────────────
+
+# Update Nix channels and packages
+[group('Nix')]
+nix-update:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Updating Nix channels..."
+    nix-channel --update
+    echo "Upgrading installed packages..."
+    nix-env --upgrade '*'
+
+# Search for Nix packages
+[group('Nix')]
+nix-search PACKAGE:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Searching for: {{ PACKAGE }}"
+    nix search nixpkgs {{ PACKAGE }}
+
+# Install a Nix package
+[group('Nix')]
+nix-install PACKAGE:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Installing: {{ PACKAGE }}"
+    nix-env -iA nixpkgs.{{ PACKAGE }}
+
+# List installed Nix packages
+[group('Nix')]
+nix-list:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Installed Nix packages:"
+    nix-env -q
+
+# Remove a Nix package
+[group('Nix')]
+nix-remove PACKAGE:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Removing: {{ PACKAGE }}"
+    nix-env --uninstall {{ PACKAGE }}
+
+# Clean up old Nix generations
+[group('Nix')]
+nix-cleanup:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Cleaning up old generations..."
+    nix-collect-garbage -d
+    echo "Optimizing Nix store..."
+    nix-store --optimise
+
+# Enter a Nix shell with specified packages
+[group('Nix')]
+nix-shell *PACKAGES:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Starting Nix shell with packages: {{ PACKAGES }}"
+    nix-shell -p {{ PACKAGES }}
+
+# Show Nix package information
+[group('Nix')]
+nix-info PACKAGE:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Package information for: {{ PACKAGE }}"
+    nix-env -qa --description {{ PACKAGE }}
+
+# Setup Nix for current user
+[group('Nix')]
+nix-setup-user:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    
+    echo "Setting up Nix for current user..."
+    nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+    nix-channel --update
+    echo "Nix user setup complete. You can now install packages with: just nix-install <package>"

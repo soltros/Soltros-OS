@@ -12,57 +12,48 @@ log() {
 
 log "Installing Nix package manager"
 
-# Check if nixbld group exists and get its GID
+# Check if Nix is already installed
+if [ -d "/nix" ] && [ -f "/nix/var/nix/profiles/default/bin/nix" ]; then
+    log "Nix is already installed, skipping installation"
+    exit 0
+fi
+
+# Check if nixbld group exists and get its info
 if getent group nixbld >/dev/null 2>&1; then
     NIXBLD_GID=$(getent group nixbld | cut -d: -f3)
     log "Found existing nixbld group with GID $NIXBLD_GID"
-    export NIX_BUILD_GROUP_ID=$NIXBLD_GID
-else
-    # Create nix group if it doesn't exist
-    groupadd -r nixbld
-    NIXBLD_GID=$(getent group nixbld | cut -d: -f3)
-fi
 
-# Check if nixbld users already exist and find the starting UID
-EXISTING_USERS=()
-for i in $(seq 1 32); do
-    if id "nixbld$i" >/dev/null 2>&1; then
-        USER_UID=$(id -u "nixbld$i")
-        EXISTING_USERS+=("nixbld$i:$USER_UID")
-        if [ ${#EXISTING_USERS[@]} -eq 1 ]; then
-            FIRST_UID=$USER_UID
-            log "Found existing nixbld users starting with UID $FIRST_UID"
-        fi
+    # Check if nixbld users exist and get first UID
+    if id "nixbld1" >/dev/null 2>&1; then
+        FIRST_UID=$(id -u "nixbld1")
+        log "Found existing nixbld users starting with UID $FIRST_UID"
+        USERS_EXIST=true
+    else
+        USERS_EXIST=false
     fi
-done
-
-# If we found existing users, export the first UID for the installer
-if [ ${#EXISTING_USERS[@]} -gt 0 ]; then
-    export NIX_FIRST_BUILD_UID=$FIRST_UID
-    log "Using existing nixbld users (${#EXISTING_USERS[@]} found)"
 else
-    # Create nix build users if they don't exist
-    log "Creating nixbld users"
-    for i in $(seq 1 10); do
-        useradd -r -g nixbld -G nixbld -d /var/empty -s /sbin/nologin \
-                -c "Nix build user $i" nixbld$i
-    done
+    log "No existing nixbld group found"
+    USERS_EXIST=false
 fi
 
 # Create necessary directories
 mkdir -p /nix
 mkdir -p /etc/nix
 
-# Download and install Nix
-NIX_VERSION="2.24.10"  # Latest stable as of writing
+# Download and install Nix using the official installer with proper environment variables
+NIX_VERSION="2.24.10"
+log "Downloading Nix $NIX_VERSION"
 curl -L https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz | tar -xJ
 
-# Install Nix with the existing group ID and user UID
+# Install Nix with appropriate environment variables
 cd nix-${NIX_VERSION}-x86_64-linux
-if [ -n "${NIX_FIRST_BUILD_UID:-}" ]; then
-    NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$NIX_FIRST_BUILD_UID ./install --daemon --yes
+
+if [ "$USERS_EXIST" = true ]; then
+    log "Installing Nix with existing users (GID: $NIXBLD_GID, First UID: $FIRST_UID)"
+    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes
 else
-    NIX_BUILD_GROUP_ID=$NIXBLD_GID ./install --daemon --yes
+    log "Installing Nix with default settings"
+    ./install --daemon --yes
 fi
 
 # Clean up installer
@@ -99,46 +90,19 @@ if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 end
 EOF
 
-# Create systemd service for nix-daemon
-cat > /etc/systemd/system/nix-daemon.service << 'EOF'
-[Unit]
-Description=Nix Daemon
-Documentation=man:nix-daemon man:nix.conf
-RequiresMountsFor=/nix/store
-RequiresMountsFor=/nix/var
-ConditionPathExists=/nix/store
+# The Nix installer should have created systemd services, but let's ensure they're enabled
+if [ -f "/etc/systemd/system/nix-daemon.service" ]; then
+    systemctl enable nix-daemon.service
+fi
 
-[Service]
-ExecStart=/nix/var/nix/profiles/default/bin/nix-daemon --daemon
-KillMode=process
-LimitNOFILE=1048576
-TasksMax=infinity
-Type=notify
+if [ -f "/etc/systemd/system/nix-daemon.socket" ]; then
+    systemctl enable nix-daemon.socket
+fi
 
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Create systemd socket for nix-daemon
-cat > /etc/systemd/system/nix-daemon.socket << 'EOF'
-[Unit]
-Description=Nix Daemon Socket
-Documentation=man:nix-daemon man:nix.conf
-
-[Socket]
-ListenStream=/nix/var/nix/daemon-socket/socket
-
-[Install]
-WantedBy=sockets.target
-EOF
-
-# Enable nix-daemon
-systemctl enable nix-daemon.socket
-
-# Set proper permissions
+# Set proper permissions if needed
 if [ -d "/nix" ]; then
-    chown -R root:nixbld /nix
-    chmod 1775 /nix/store
+    chown -R root:nixbld /nix 2>/dev/null || true
+    chmod 1775 /nix/store 2>/dev/null || true
 fi
 
 log "Setting up Nix channels"
@@ -146,7 +110,7 @@ log "Setting up Nix channels"
 # Setup default channel for all users (only if nix-channel exists)
 if [ -f "/nix/var/nix/profiles/default/bin/nix-channel" ]; then
     /nix/var/nix/profiles/default/bin/nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
-    /nix/var/nix/profiles/default/bin/nix-channel --update
+    /nix/var/nix/profiles/default/bin/nix-channel --update || log "Warning: Channel update failed, users can run this later"
 else
     log "Warning: nix-channel not found, channels will need to be set up by users"
 fi

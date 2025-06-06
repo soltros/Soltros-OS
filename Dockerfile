@@ -7,6 +7,12 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 
+# Disable SELinux for Nix compatibility
+RUN if [ -f /etc/selinux/config ]; then \
+        sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config && \
+        setenforce 0 || true; \
+    fi
+
 # Change perms
 RUN chmod +x \
   /ctx/build.sh \

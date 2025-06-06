@@ -19,10 +19,10 @@ A gaming-optimized immutable Linux distribution based on [Universal Blue's Auror
 - **Hardware-specific configurations** optimized for MacBook Pro models
 - **Humidity-resistant thermal settings** for better longevity
 
-### 📦 Quadruple Package Management
+### 📦 Triple Package Management
 - **RPM-OSTree** (System packages) - Immutable base system
 - **Flatpak** (Applications) - Sandboxed desktop applications
-- **Nix** (Development tools) - Declarative package management with 80,000+ packages
+- **Nix** (Development tools) - User-installable declarative package management with 80,000+ packages
 - **Homebrew** (Additional tools) - macOS-style package manager for Linux
 
 ### 🛠️ Developer Experience
@@ -60,7 +60,7 @@ Over 40 pre-configured applications including:
 - **System Tools**: Flatseal, Mission Center, Warehouse
 
 ### Development Tools (Available via Nix & Homebrew)
-Access to 80,000+ packages via Nix for development environments and thousands more via Homebrew - all without system pollution.
+Access to 80,000+ packages via user-installable Nix and thousands more via Homebrew - all without affecting the base system.
 
 ## 🚀 Quick Start
 
@@ -91,8 +91,9 @@ Use the provided ISO configuration to install directly.
    just soltros-setup-git
    ```
 
-4. **Setup Nix for your user**:
+4. **Install Nix** (optional, for development):
    ```bash
+   just nix-install
    just nix-setup-user
    ```
 

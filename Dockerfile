@@ -49,6 +49,9 @@ COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfre
 COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
 COPY repo_files/home_hawkeye116477_waterfox.repo /etc/yum.repos.d/home_hawkeye116477_waterfox.repo
 
+# Add selinux=0 to GRUB kernel command line for bootc
+RUN echo 'GRUB_CMDLINE_LINUX="selinux=0"' >> /etc/default/grub
+
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
         curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \

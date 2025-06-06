@@ -72,7 +72,7 @@ RUN for i in {1..3}; do \
     gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # Install Waterfox RPM
-ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
+COPY resources/waterfox.rpm /tmp/
 RUN rpm-ostree install /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
 # Mount and run build script from ctx stage

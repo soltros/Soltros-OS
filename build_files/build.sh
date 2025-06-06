@@ -27,9 +27,6 @@ log "Starting SoltrOS build process"
 BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/aurora-dx}"
 log "Building for base image: $BASE_IMAGE"
 
-log "Install server packages"
-echo_group /ctx/server-packages.sh
-
 log "Enable container signing"
 echo_group /ctx/signing.sh
 

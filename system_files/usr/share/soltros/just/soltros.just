@@ -16,7 +16,7 @@ soltros-install: soltros-install-flatpaks
 soltros-install-flatpaks:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
     echo "Installing Flatpaks..."
     xargs -a <(curl --retry 3 -sL https://raw.githubusercontent.com/soltros/Soltros-OS/main/repo_files/flatpaks) flatpak --system -y install
     echo "Flatpaks installation complete."
@@ -30,27 +30,27 @@ soltros-install-flatpaks:
 soltros-setup-git:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
     echo "Setting up Git config..."
     read -p "Enter your Git username: " git_username
     read -p "Enter your Git email: " git_email
-    
+
     git config --global color.ui true
     git config --global user.name "$git_username"
     git config --global user.email "$git_email"
-    
+
     if [ ! -f "${HOME}/.ssh/id_ed25519.pub" ]; then
         echo "SSH key not found. Generating..."
         ssh-keygen -t ed25519 -C "$git_email"
     fi
-    
+
     echo "Your SSH public key:"
     cat ${HOME}/.ssh/id_ed25519.pub
-    
+
     git config --global gpg.format ssh
     git config --global user.signingkey "key::$(cat ${HOME}/.ssh/id_ed25519.pub)"
     git config --global commit.gpgSign true
-    
+
     echo "Setting up Git aliases..."
     git config --global alias.add-nowhitespace '!git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -'
     git config --global alias.graph 'log --decorate --oneline --graph'
@@ -59,7 +59,7 @@ soltros-setup-git:
     git config --global alias.pullr 'pull --rebase'
     git config --global alias.pushall '!git remote | xargs -L1 git push --all'
     git config --global alias.pushfwl 'push --force-with-lease'
-    
+
     git config --global feature.manyFiles true
     git config --global init.defaultBranch main
     git config --global core.excludesFile '~/.gitignore'
@@ -69,29 +69,29 @@ soltros-setup-git:
 soltros-setup-cli:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
     mkdir -p "${HOME}/.bashrc.d" \
              "${HOME}/.zshrc.d" \
              "${HOME}/.config/fish/completions" \
              "${HOME}/.config/fish/conf.d" \
              "${HOME}/.config/fish/functions"
-    
+
     echo "Setting up shell aliases..."
     echo '[ -f "/usr/share/soltros/bling/aliases.sh" ]; bass source /usr/share/soltros/bling/aliases.sh' | tee "${HOME}/.config/fish/conf.d/soltros-aliases.fish" >/dev/null
     echo '[ -f "/usr/share/soltros/bling/aliases.sh" ] && . "/usr/share/soltros/bling/aliases.sh"' | tee "${HOME}/.bashrc.d/soltros-aliases.bashrc" "${HOME}/.zshrc.d/soltros-aliases.zshrc" >/dev/null
-    
+
     echo "Setting up shell defaults..."
     echo '[ -f "/usr/share/soltros/bling/defaults.fish" ]; source /usr/share/soltros/bling/defaults.fish' | tee "${HOME}/.config/fish/conf.d/soltros-defaults.fish" >/dev/null
     echo '[ -f "/usr/share/soltros/bling/defaults.sh" ] && . "/usr/share/soltros/bling/defaults.sh"' | tee "${HOME}/.bashrc.d/soltros-defaults.bashrc" "${HOME}/.zshrc.d/soltros-defaults.zshrc" >/dev/null
-    
+
     echo "Downloading Fish plugins..."
     wget -q https://github.com/edc/bass/raw/7296c6e70cf577a08a2a7d0e919e428509640e0f/functions/__bass.py -O "${HOME}/.config/fish/functions/__bass.py"
     wget -q https://github.com/edc/bass/raw/7296c6e70cf577a08a2a7d0e919e428509640e0f/functions/bass.fish -O "${HOME}/.config/fish/functions/bass.fish"
     wget -q https://github.com/garabik/grc/raw/4e1e9d7fdc9965c129f27d89c493d07f4b8307bb/grc.fish -O "${HOME}/.config/fish/conf.d/grc.fish"
-    
+
     echo "Setting up Fish tools..."
     echo '[ -f "${HOME}/.cargo/env.fish" ] && source "${HOME}/.cargo/env.fish"' | tee "${HOME}/.config/fish/conf.d/cargo-env.fish" >/dev/null
-    
+
     ATUIN_INIT_FLAGS=${ATUIN_INIT_FLAGS:-"--disable-up-arrow"}
     for tool in starship atuin zoxide thefuck direnv; do
         command -v "$tool" >/dev/null && {
@@ -111,12 +111,12 @@ soltros-setup-cli:
             esac
         }
     done
-    
+
     echo "Configuring rc file sourcing..."
     for shell in bash zsh; do
         rc_file="${HOME}/.${shell}rc"
         rc_dir=".${shell}rc.d"
-        
+
         snippet="# User-specific aliases and functions
     if [ -d ~/${rc_dir} ]; then
       for rc in ~/${rc_dir}/*; do
@@ -126,7 +126,7 @@ soltros-setup-cli:
       done
     fi
     unset rc"
-        
+
         if [ -f "$rc_file" ]; then
             if ! grep -q "${rc_dir}/\*" "$rc_file"; then
                 echo -e "\n${snippet}" >>"$rc_file"
@@ -135,7 +135,7 @@ soltros-setup-cli:
             echo "$snippet" >"$rc_file"
         fi
     done
-    
+
     echo "Terminal setup complete."
 
 # ───────────────────────────────────────────────
@@ -147,9 +147,9 @@ soltros-setup-cli:
 soltros-enable-amdgpu-oc:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
     echo "Enabling AMD GPU overclocking..."
-    
+
     if ! rpm-ostree kargs | grep -q "amdgpu.ppfeaturemask="; then
         sudo rpm-ostree kargs --append "amdgpu.ppfeaturemask=0xFFF7FFFF"
         echo "Kernel argument set."
@@ -161,12 +161,44 @@ soltros-enable-amdgpu-oc:
 # NIX GROUP
 # ───────────────────────────────────────────────
 
+# Setup Nix for current user
+[group('Nix')]
+nix-setup-user:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+
+    # Add nix binaries to PATH directly
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
+    # Check if nix-channel is available
+    if ! command -v nix-channel >/dev/null 2>&1; then
+        echo "Error: nix-channel not found. Is nix-daemon running?"
+        echo "Try: sudo systemctl start nix-daemon.socket"
+        exit 1
+    fi
+
+    echo "Setting up Nix for current user..."
+    nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+    nix-channel --update
+    echo "Nix user setup complete. You can now install packages with: just nix-install <package>"
+
 # Update Nix channels and packages
 [group('Nix')]
 nix-update:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Updating Nix channels..."
     nix-channel --update
     echo "Upgrading installed packages..."
@@ -177,7 +209,13 @@ nix-update:
 nix-search PACKAGE:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Searching for: {{ PACKAGE }}"
     nix search nixpkgs {{ PACKAGE }}
 
@@ -186,7 +224,13 @@ nix-search PACKAGE:
 nix-install PACKAGE:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Installing: {{ PACKAGE }}"
     nix-env -iA nixpkgs.{{ PACKAGE }}
 
@@ -195,7 +239,13 @@ nix-install PACKAGE:
 nix-list:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Installed Nix packages:"
     nix-env -q
 
@@ -204,7 +254,13 @@ nix-list:
 nix-remove PACKAGE:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Removing: {{ PACKAGE }}"
     nix-env --uninstall {{ PACKAGE }}
 
@@ -213,7 +269,13 @@ nix-remove PACKAGE:
 nix-cleanup:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Cleaning up old generations..."
     nix-collect-garbage -d
     echo "Optimizing Nix store..."
@@ -224,7 +286,13 @@ nix-cleanup:
 nix-shell *PACKAGES:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Starting Nix shell with packages: {{ PACKAGES }}"
     nix-shell -p {{ PACKAGES }}
 
@@ -233,17 +301,12 @@ nix-shell *PACKAGES:
 nix-info PACKAGE:
     #!/usr/bin/env bash
     set -euo pipefail
-    
+
+    # Source Nix environment
+    if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+        source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+    fi
+    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
     echo "Package information for: {{ PACKAGE }}"
     nix-env -qa --description {{ PACKAGE }}
-
-# Setup Nix for current user
-[group('Nix')]
-nix-setup-user:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    
-    echo "Setting up Nix for current user..."
-    nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
-    nix-channel --update
-    echo "Nix user setup complete. You can now install packages with: just nix-install <package>"

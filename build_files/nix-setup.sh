@@ -66,10 +66,10 @@ cd nix-${NIX_VERSION}-x86_64-linux
 
 if [ "$USERS_EXIST" = true ]; then
     log "Installing Nix with existing users (GID: $NIXBLD_GID, First UID: $FIRST_UID)"
-    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add --no-modify-profile
+    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add --no-modify-profile --no-daemon-start
 else
     log "Installing Nix with default settings"
-    ./install --daemon --yes --no-channel-add --no-modify-profile
+    ./install --daemon --yes --no-channel-add --no-modify-profile --no-daemon-start
 fi
 
 # Clean up installer

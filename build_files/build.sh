@@ -36,9 +36,6 @@ echo_group /ctx/desktop-packages.sh
 log "Setup Nix package manager"
 echo_group /ctx/nix-setup.sh
 
-log "Setup Nix daemon services"
-echo_group /ctx/nix-daemon-setup.sh
-
 log "Setup just files"
 echo_group /ctx/just-files.sh
 

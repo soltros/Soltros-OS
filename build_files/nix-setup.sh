@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 # SoltrOS: Nix Package Manager Setup Script
-# Installs Nix package manager for additional package management
+# Installs Nix package manager using Determinate Systems installer
 
 set ${SET_X:+-x} -euo pipefail
 
@@ -10,12 +10,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing Nix package manager"
-
-# Debug: Check what users and groups exist
-log "Debugging existing nixbld setup..."
-getent group | grep nixbld || log "No nixbld groups found"
-getent passwd | grep nixbld | head -5 || log "No nixbld users found"
+log "Installing Nix package manager using Determinate Systems installer"
 
 # Check if Nix is already installed
 if [ -d "/nix" ] && [ -f "/nix/var/nix/profiles/default/bin/nix" ]; then
@@ -23,80 +18,22 @@ if [ -d "/nix" ] && [ -f "/nix/var/nix/profiles/default/bin/nix" ]; then
     exit 0
 fi
 
-# Check if nixbld group exists and get its info
-if getent group nixbld >/dev/null 2>&1; then
-    NIXBLD_GID=$(getent group nixbld | cut -d: -f3)
-    log "Found existing nixbld group with GID $NIXBLD_GID"
+# Install Nix using Determinate Systems installer (perfect for containers)
+log "Installing Nix with container-optimized settings"
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \
+    --no-confirm \
+    --init none \
+    --extra-conf "sandbox = false" \
+    --extra-conf "experimental-features = nix-command flakes" \
+    --extra-conf "auto-optimise-store = true" \
+    --extra-conf "trusted-users = root @wheel"
 
-    # Check if nixbld users exist and get first UID
-    if id "nixbld1" >/dev/null 2>&1; then
-        FIRST_UID=$(id -u "nixbld1")
-        log "Found existing nixbld users starting with UID $FIRST_UID"
-        USERS_EXIST=true
-    else
-        log "nixbld group exists but no nixbld1 user found"
-        USERS_EXIST=false
-    fi
-else
-    log "No existing nixbld group found"
-    USERS_EXIST=false
-fi
+log "Nix installation completed successfully"
 
-# Create necessary directories
-mkdir -p /nix
-mkdir -p /etc/nix
-mkdir -p /root 2>/dev/null || true  # Ensure root directory exists, ignore if it already exists
+# Setup Nix profile scripts for SoltrOS integration
+log "Setting up SoltrOS Nix integration"
 
-# Create necessary files for Nix profiles
-touch /root/.nix-profile 2>/dev/null || true
-touch /root/.nix-profile.lock 2>/dev/null || true
-touch /root/.nix-defexpr 2>/dev/null || true
-mkdir -p /root/.nix-defexpr/channels 2>/dev/null || true
-
-# Ensure /nix/var/nix/profiles exists for profile links
-mkdir -p /nix/var/nix/profiles
-
-# Download and install Nix using the official installer with proper environment variables
-NIX_VERSION="2.24.10"
-log "Downloading Nix $NIX_VERSION"
-curl -L https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz | tar -xJ
-
-# Install Nix with appropriate environment variables
-cd nix-${NIX_VERSION}-x86_64-linux
-
-if [ "$USERS_EXIST" = true ]; then
-    log "Installing Nix with existing users (GID: $NIXBLD_GID, First UID: $FIRST_UID)"
-    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --yes --no-channel-add --no-modify-profile --no-daemon
-else
-    log "Installing Nix with default settings"
-    ./install --yes --no-channel-add --no-modify-profile --no-daemon
-fi
-
-# Clean up installer
-cd ..
-rm -rf nix-${NIX_VERSION}-x86_64-linux
-
-log "Configuring Nix for multi-user setup"
-
-# Create nix configuration (single-user setup)
-cat > /etc/nix/nix.conf << 'EOF'
-# SoltrOS Nix Configuration
-experimental-features = nix-command flakes
-auto-optimise-store = true
-trusted-users = root @wheel
-EOF
-
-# Setup Nix profile scripts
-mkdir -p /etc/profile.d
-
-cat > /etc/profile.d/nix.sh << 'EOF'
-# Nix package manager setup
-if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
-  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-fi
-EOF
-
-# Setup Nix for Fish shell
+# Setup Nix for Fish shell (since SoltrOS uses Fish)
 mkdir -p /etc/fish/conf.d
 cat > /etc/fish/conf.d/nix.fish << 'EOF'
 # Nix package manager setup for Fish
@@ -105,45 +42,31 @@ if test -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
 end
 EOF
 
-# Manually setup the default profile since we skipped it during installation
-log "Setting up default Nix profile manually"
-if [ -d "/nix/store" ] && ls /nix/store/*nix-2.24.10* >/dev/null 2>&1; then
-    # Find the actual nix store path
-    NIX_STORE_PATH=$(ls -d /nix/store/*nix-2.24.10* | head -1)
-    log "Found Nix installation at: $NIX_STORE_PATH"
-
-    # Create the profile directory structure
-    mkdir -p /nix/var/nix/profiles/per-user/root
-
-    # Create profile links
-    ln -sf "$NIX_STORE_PATH" /nix/var/nix/profiles/default
-    ln -sf /nix/var/nix/profiles/default /root/.nix-profile
-
-    # Create channels directory structure
-    mkdir -p /root/.nix-defexpr/channels
-    mkdir -p /nix/var/nix/profiles/per-user/root
-    ln -sf /nix/var/nix/profiles/per-user/root/channels /root/.nix-defexpr/channels
-
-    log "Default Nix profile setup complete"
-else
-    log "Warning: Nix store not found, profile setup skipped"
+# Ensure the Nix daemon will start on boot
+if [ -f "/etc/systemd/system/nix-daemon.service" ]; then
+    systemctl enable nix-daemon.service
+    log "Enabled nix-daemon.service"
 fi
 
-# Set proper permissions if needed
+if [ -f "/etc/systemd/system/nix-daemon.socket" ]; then
+    systemctl enable nix-daemon.socket
+    log "Enabled nix-daemon.socket"
+fi
+
+# Add PATH to profile for shell integration
+mkdir -p /etc/profile.d
+cat > /etc/profile.d/nix.sh << 'EOF'
+# Nix package manager setup
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+EOF
+
+# Set proper permissions
 if [ -d "/nix" ]; then
     chown -R root:nixbld /nix 2>/dev/null || true
     chmod 1775 /nix/store 2>/dev/null || true
 fi
 
-log "Setting up Nix channels"
-
-# Manually setup channels since we skipped it during installation
-if [ -f "/nix/var/nix/profiles/default/bin/nix-channel" ]; then
-    # Create the channels file manually
-    echo "https://nixos.org/channels/nixpkgs-unstable nixpkgs" > /root/.nix-channels
-    /nix/var/nix/profiles/default/bin/nix-channel --update || log "Warning: Channel update failed, users can run this later"
-else
-    log "Warning: nix-channel not found, channels will need to be set up by users"
-fi
-
-log "Nix package manager installation completed"
+log "SoltrOS Nix package manager setup completed successfully"
+log "Users can run 'just nix-setup-user' to configure Nix for their account"

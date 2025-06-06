@@ -1,0 +1,7 @@
+[home_hawkeye116477_waterfox]
+name=Waterfox (deb/pkg.tar.xz/rpm/AppImage) (Fedora_Rawhide)
+type=rpm-md
+baseurl=https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_Rawhide/
+gpgcheck=1
+gpgkey=https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_Rawhide/repodata/repomd.xml.key
+enabled=1

@@ -47,6 +47,7 @@ COPY repo_files/rpmfusion-nonfree-nvidia-driver.repo /etc/yum.repos.d/
 COPY repo_files/rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
 COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
 COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
+COPY repo_files/home_hawkeye116477_waterfox.repo /etc/yum.repos.d/home_hawkeye116477_waterfox.repo
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
@@ -70,10 +71,6 @@ RUN for i in {1..3}; do \
     dconf update && \
     echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Universal Blue\e[0m\n' > /etc/issue && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor
-
-# Install Waterfox RPM
-COPY resources/waterfox.rpm /tmp/
-RUN rpm-ostree install /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE

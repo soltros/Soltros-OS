@@ -39,6 +39,7 @@ LAYERED_PACKAGES=(
     goverlay
     udisks2
     udiskie
+    waterfox
 )
 
 dnf5 install --setopt=install_weak_deps=False -y "${LAYERED_PACKAGES[@]}"

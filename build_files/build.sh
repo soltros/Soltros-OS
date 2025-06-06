@@ -41,6 +41,9 @@ echo_group /ctx/desktop-defaults.sh
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
 
+log "Apply gaming optimizations"
+echo_group /ctx/gaming-optimizations.sh
+
 # Check if setup_just.sh exists before calling it (for safety)
 if [ -f "/ctx/setup_just.sh" ]; then
     log "Setup just"

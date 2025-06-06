@@ -23,15 +23,31 @@ else
     NIXBLD_GID=$(getent group nixbld | cut -d: -f3)
 fi
 
-# Create nix build users if they don't exist
-for i in $(seq 1 10); do
-    if ! id "nixbld$i" >/dev/null 2>&1; then
-        useradd -r -g nixbld -G nixbld -d /var/empty -s /sbin/nologin \
-                -c "Nix build user $i" nixbld$i
-    else
-        log "Build user nixbld$i already exists, skipping"
+# Check if nixbld users already exist and find the starting UID
+EXISTING_USERS=()
+for i in $(seq 1 32); do
+    if id "nixbld$i" >/dev/null 2>&1; then
+        USER_UID=$(id -u "nixbld$i")
+        EXISTING_USERS+=("nixbld$i:$USER_UID")
+        if [ ${#EXISTING_USERS[@]} -eq 1 ]; then
+            FIRST_UID=$USER_UID
+            log "Found existing nixbld users starting with UID $FIRST_UID"
+        fi
     fi
 done
+
+# If we found existing users, export the first UID for the installer
+if [ ${#EXISTING_USERS[@]} -gt 0 ]; then
+    export NIX_FIRST_BUILD_UID=$FIRST_UID
+    log "Using existing nixbld users (${#EXISTING_USERS[@]} found)"
+else
+    # Create nix build users if they don't exist
+    log "Creating nixbld users"
+    for i in $(seq 1 10); do
+        useradd -r -g nixbld -G nixbld -d /var/empty -s /sbin/nologin \
+                -c "Nix build user $i" nixbld$i
+    done
+fi
 
 # Create necessary directories
 mkdir -p /nix
@@ -41,9 +57,13 @@ mkdir -p /etc/nix
 NIX_VERSION="2.24.10"  # Latest stable as of writing
 curl -L https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz | tar -xJ
 
-# Install Nix with the existing group ID
+# Install Nix with the existing group ID and user UID
 cd nix-${NIX_VERSION}-x86_64-linux
-NIX_BUILD_GROUP_ID=$NIXBLD_GID ./install --daemon --yes
+if [ -n "${NIX_FIRST_BUILD_UID:-}" ]; then
+    NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$NIX_FIRST_BUILD_UID ./install --daemon --yes
+else
+    NIX_BUILD_GROUP_ID=$NIXBLD_GID ./install --daemon --yes
+fi
 
 # Clean up installer
 cd ..

@@ -8,10 +8,7 @@ COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 
 # Disable SELinux for Nix compatibility
-RUN if [ -f /etc/selinux/config ]; then \
-        sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config && \
-        setenforce 0 || true; \
-    fi
+RUN curl -o /etc/selinux/config https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/config
 
 # Change perms
 RUN chmod +x \

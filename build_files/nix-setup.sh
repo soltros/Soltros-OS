@@ -117,17 +117,29 @@ fi
 
 # Manually setup the default profile since we skipped it during installation
 log "Setting up default Nix profile manually"
-if [ -f "/nix/store/hdy82qidsybc3fg561pqfwagv44vschb-nix-2.24.10/bin/nix-env" ]; then
+if [ -d "/nix/store" ] && ls /nix/store/*nix-2.24.10* >/dev/null 2>&1; then
+    # Find the actual nix store path
+    NIX_STORE_PATH=$(ls -d /nix/store/*nix-2.24.10* | head -1)
+    log "Found Nix installation at: $NIX_STORE_PATH"
+
     # Create the profile directory structure
     mkdir -p /nix/var/nix/profiles/per-user/root
 
-    # Create a basic profile link without using nix-env which requires the lock
-    ln -sf /nix/store/hdy82qidsybc3fg561pqfwagv44vschb-nix-2.24.10 /nix/var/nix/profiles/default
+    # Create profile links
+    ln -sf "$NIX_STORE_PATH" /nix/var/nix/profiles/default
     ln -sf /nix/var/nix/profiles/default /root/.nix-profile
 
-    # Create a simple channels setup
+    # Create channels directory structure
     mkdir -p /root/.nix-defexpr/channels
+    mkdir -p /nix/var/nix/profiles/per-user/root
     ln -sf /nix/var/nix/profiles/per-user/root/channels /root/.nix-defexpr/channels
+
+    log "Default Nix profile setup complete"
+else
+    log "ERROR: Nix store not found or Nix installation failed"
+    ls -la /nix/ || true
+    ls -la /nix/store/ || true
+    exit 1
 fi
 
 # Set proper permissions if needed

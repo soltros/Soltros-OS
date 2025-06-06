@@ -39,6 +39,7 @@ fi
 # Create necessary directories
 mkdir -p /nix
 mkdir -p /etc/nix
+mkdir -p /root  # Ensure root directory exists for the installer
 
 # Download and install Nix using the official installer with proper environment variables
 NIX_VERSION="2.24.10"
@@ -50,10 +51,10 @@ cd nix-${NIX_VERSION}-x86_64-linux
 
 if [ "$USERS_EXIST" = true ]; then
     log "Installing Nix with existing users (GID: $NIXBLD_GID, First UID: $FIRST_UID)"
-    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes
+    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add
 else
     log "Installing Nix with default settings"
-    ./install --daemon --yes
+    ./install --daemon --yes --no-channel-add
 fi
 
 # Clean up installer
@@ -107,9 +108,10 @@ fi
 
 log "Setting up Nix channels"
 
-# Setup default channel for all users (only if nix-channel exists)
+# Manually setup channels since we skipped it during installation
 if [ -f "/nix/var/nix/profiles/default/bin/nix-channel" ]; then
-    /nix/var/nix/profiles/default/bin/nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+    # Create the channels file manually
+    echo "https://nixos.org/channels/nixpkgs-unstable nixpkgs" > /root/.nix-channels
     /nix/var/nix/profiles/default/bin/nix-channel --update || log "Warning: Channel update failed, users can run this later"
 else
     log "Warning: nix-channel not found, channels will need to be set up by users"

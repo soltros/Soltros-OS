@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/kinoite-main
+ARG BASE_IMAGE=ghcr.io/ublue-os/aurora-dx
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -34,9 +34,6 @@ COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
-
-# Remove Firefox from image
-RUN rpm-ostree override remove firefox firefox-lang-packs
 
 # Add external repos (RPM Fusion, Terra) with better error handling
 RUN rpm-ostree install \

@@ -161,7 +161,19 @@ soltros-enable-amdgpu-oc:
 # NIX GROUP
 # ───────────────────────────────────────────────
 
-# Setup Nix for current user
+# Install Nix package manager (user-level installation)
+[group('Nix')]
+nix-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    echo "Installing Nix package manager..."
+    curl --proto '=https' --tlsv1.2 -sSf -L https://nixos.org/nix/install | sh -s -- --daemon
+
+    echo "Nix installation completed!"
+    echo "Please restart your shell or run: . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+
+# Setup Nix for current user (run after nix-install)
 [group('Nix')]
 nix-setup-user:
     #!/usr/bin/env bash
@@ -170,22 +182,16 @@ nix-setup-user:
     # Source Nix environment
     if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
         source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
-    fi
-
-    # Add nix binaries to PATH directly
-    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
-
-    # Check if nix-channel is available
-    if ! command -v nix-channel >/dev/null 2>&1; then
-        echo "Error: nix-channel not found. Is nix-daemon running?"
-        echo "Try: sudo systemctl start nix-daemon.socket"
+    else
+        echo "Error: Nix not found. Please run 'just nix-install' first."
         exit 1
     fi
 
-    echo "Setting up Nix for current user..."
+    echo "Setting up Nix channels..."
     nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
     nix-channel --update
-    echo "Nix user setup complete. You can now install packages with: just nix-install <package>"
+
+    echo "Nix user setup complete. You can now install packages with: just nix-install-pkg <package>"
 
 # Update Nix channels and packages
 [group('Nix')]
@@ -221,7 +227,7 @@ nix-search PACKAGE:
 
 # Install a Nix package
 [group('Nix')]
-nix-install PACKAGE:
+nix-install-pkg PACKAGE:
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -229,7 +235,6 @@ nix-install PACKAGE:
     if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
         source '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
     fi
-    export PATH="/nix/var/nix/profiles/default/bin:$PATH"
 
     echo "Installing: {{ PACKAGE }}"
     nix-env -iA nixpkgs.{{ PACKAGE }}

@@ -18,7 +18,6 @@ RUN chmod +x \
   /ctx/just-files.sh \
   /ctx/desktop-defaults.sh \
   /ctx/setup-just.sh \
-  /ctx/nix-setup.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
@@ -31,20 +30,20 @@ LABEL org.opencontainers.image.title="SoltrOS" \
 # Copy static system configuration and branding
 COPY system_files/etc /etc
 COPY system_files/usr/share /usr/share
-COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
+COPY repo_files/tailscale.repo /etc/yum.repos.d/tailscale.repo
 
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 # Add RPM Fusion repos by copy to eliminate rate limiting
-COPY rpmfusion-free.repo /etc/yum.repos.d/rpmfusion-free.repo
-COPY rpmfusion-free-updates.repo /etc/yum.repos.d/rpmfusion-free-updates.repo
-COPY rpmfusion-free-updates-testing.repo /etc/yum.repos.d/rpmfusion-free-updates-testing.repo
-COPY rpmfusion-nonfree.repo /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
-COPY rpmfusion-nonfree-nvidia-driver.repo /etc/yum.repos.d/
-COPY rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
-COPY rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
-COPY rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
+COPY repo_files/rpmfusion-free.repo /etc/yum.repos.d/rpmfusion-free.repo
+COPY repo_files/rpmfusion-free-updates.repo /etc/yum.repos.d/rpmfusion-free-updates.repo
+COPY repo_files/rpmfusion-free-updates-testing.repo /etc/yum.repos.d/rpmfusion-free-updates-testing.repo
+COPY repo_files/rpmfusion-nonfree.repo /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
+COPY repo_files/rpmfusion-nonfree-nvidia-driver.repo /etc/yum.repos.d/
+COPY repo_files/rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
+COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \

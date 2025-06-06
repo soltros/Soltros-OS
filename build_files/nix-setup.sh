@@ -47,6 +47,15 @@ mkdir -p /nix
 mkdir -p /etc/nix
 mkdir -p /root 2>/dev/null || true  # Ensure root directory exists, ignore if it already exists
 
+# Create necessary files for Nix profiles
+touch /root/.nix-profile 2>/dev/null || true
+touch /root/.nix-profile.lock 2>/dev/null || true
+touch /root/.nix-defexpr 2>/dev/null || true
+mkdir -p /root/.nix-defexpr/channels 2>/dev/null || true
+
+# Ensure /nix/var/nix/profiles exists for profile links
+mkdir -p /nix/var/nix/profiles
+
 # Download and install Nix using the official installer with proper environment variables
 NIX_VERSION="2.24.10"
 log "Downloading Nix $NIX_VERSION"
@@ -57,10 +66,10 @@ cd nix-${NIX_VERSION}-x86_64-linux
 
 if [ "$USERS_EXIST" = true ]; then
     log "Installing Nix with existing users (GID: $NIXBLD_GID, First UID: $FIRST_UID)"
-    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add
+    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add --no-modify-profile
 else
     log "Installing Nix with default settings"
-    ./install --daemon --yes --no-channel-add
+    ./install --daemon --yes --no-channel-add --no-modify-profile
 fi
 
 # Clean up installer

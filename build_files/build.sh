@@ -32,9 +32,6 @@ echo_group /ctx/server-packages.sh
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
-log "Install desktop packages"
-echo_group /ctx/desktop-packages.sh
-
 log "Setup just files"
 echo_group /ctx/just-files.sh
 

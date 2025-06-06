@@ -18,7 +18,8 @@ RUN chmod +x \
   /ctx/just-files.sh \
   /ctx/desktop-defaults.sh \
   /ctx/setup-just.sh \
-  /ctx/nix-setup.sh
+  /ctx/nix-setup.sh \
+  /ctx/nix-daemon-setup.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros

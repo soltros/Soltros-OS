@@ -18,14 +18,12 @@ rm -rf /var/tmp/*
 rm -rf /var/cache/*
 rm -rf /var/log/*
 
-# Remove specific /usr/etc subdirectories that aren't needed
-# But preserve /usr/etc/containers which signing.sh creates
-if [ -d "/usr/etc" ]; then
-    # Remove unnecessary subdirectories but keep containers
-    find /usr/etc -mindepth 1 -maxdepth 1 -type d ! -name "containers" -exec rm -rf {} + 2>/dev/null || true
-    # Remove files in /usr/etc root but not subdirectories
-    find /usr/etc -maxdepth 1 -type f -delete 2>/dev/null || true
-fi
+# Clean DNF cache and repos that cause lint failures
+rm -rf /var/lib/dnf/repos/*
+
+# Remove /usr/etc entirely as bootc doesn't support it
+# The signing script already copies to /etc/containers/policy.json
+rm -rf /usr/etc
 
 # Remove build artifacts
 rm -f /.nvimlog

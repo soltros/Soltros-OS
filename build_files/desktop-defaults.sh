@@ -10,3 +10,6 @@ log() {
 
 log "Enable podman socket"
 systemctl enable podman.socket
+
+log "Enable thermal management services"
+systemctl enable thermald mbpfan

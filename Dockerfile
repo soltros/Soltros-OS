@@ -37,14 +37,15 @@ COPY tailscale.repo /etc/yum.repos.d/tailscale.repo
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Add external repos (RPM Fusion, Terra) with better error handling
-RUN rpm-ostree install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm && \
-    for i in {1..3}; do \
-        rpm-ostree install \
-            https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm && \
-        break || sleep 10; \
-    done
+# Add RPM Fusion repos by copy to eliminate rate limiting
+COPY rpmfusion-free.repo /etc/yum.repos.d/rpmfusion-free.repo
+COPY rpmfusion-free-updates.repo /etc/yum.repos.d/rpmfusion-free-updates.repo
+COPY rpmfusion-free-updates-testing.repo /etc/yum.repos.d/rpmfusion-free-updates-testing.repo
+COPY rpmfusion-nonfree.repo /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
+COPY rpmfusion-nonfree-nvidia-driver.repo /etc/yum.repos.d/
+COPY rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
+COPY rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
+COPY rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \

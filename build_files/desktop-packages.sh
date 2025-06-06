@@ -30,6 +30,7 @@ LAYERED_PACKAGES=(
     fish
     gimp
     mbpfan
+    thermald
     lm_sensors
     tailscale
     gamemode

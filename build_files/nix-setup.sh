@@ -66,10 +66,10 @@ cd nix-${NIX_VERSION}-x86_64-linux
 
 if [ "$USERS_EXIST" = true ]; then
     log "Installing Nix with existing users (GID: $NIXBLD_GID, First UID: $FIRST_UID)"
-    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add --no-modify-profile
+    env NIX_BUILD_GROUP_ID=$NIXBLD_GID NIX_FIRST_BUILD_UID=$FIRST_UID ./install --daemon --yes --no-channel-add --no-modify-profile --no-daemon-start
 else
     log "Installing Nix with default settings"
-    ./install --daemon --yes --no-channel-add --no-modify-profile
+    ./install --daemon --yes --no-channel-add --no-modify-profile --no-daemon-start
 fi
 
 # Clean up installer
@@ -113,6 +113,21 @@ fi
 
 if [ -f "/etc/systemd/system/nix-daemon.socket" ]; then
     systemctl enable nix-daemon.socket
+fi
+
+# Manually setup the default profile since we skipped it during installation
+log "Setting up default Nix profile manually"
+if [ -f "/nix/store/hdy82qidsybc3fg561pqfwagv44vschb-nix-2.24.10/bin/nix-env" ]; then
+    # Create the profile directory structure
+    mkdir -p /nix/var/nix/profiles/per-user/root
+
+    # Create a basic profile link without using nix-env which requires the lock
+    ln -sf /nix/store/hdy82qidsybc3fg561pqfwagv44vschb-nix-2.24.10 /nix/var/nix/profiles/default
+    ln -sf /nix/var/nix/profiles/default /root/.nix-profile
+
+    # Create a simple channels setup
+    mkdir -p /root/.nix-defexpr/channels
+    ln -sf /nix/var/nix/profiles/per-user/root/channels /root/.nix-defexpr/channels
 fi
 
 # Set proper permissions if needed

@@ -18,6 +18,9 @@ if [ -d "/nix" ] && [ -f "/nix/var/nix/profiles/default/bin/nix" ]; then
     exit 0
 fi
 
+# Ensure /root directory exists (required by Determinate installer)
+mkdir -p /root
+
 # Install Nix using Determinate Systems installer (perfect for containers)
 log "Installing Nix with container-optimized settings"
 curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux \

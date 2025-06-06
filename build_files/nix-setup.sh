@@ -12,6 +12,11 @@ log() {
 
 log "Installing Nix package manager"
 
+# Debug: Check what users and groups exist
+log "Debugging existing nixbld setup..."
+getent group | grep nixbld || log "No nixbld groups found"
+getent passwd | grep nixbld | head -5 || log "No nixbld users found"
+
 # Check if Nix is already installed
 if [ -d "/nix" ] && [ -f "/nix/var/nix/profiles/default/bin/nix" ]; then
     log "Nix is already installed, skipping installation"
@@ -29,6 +34,7 @@ if getent group nixbld >/dev/null 2>&1; then
         log "Found existing nixbld users starting with UID $FIRST_UID"
         USERS_EXIST=true
     else
+        log "nixbld group exists but no nixbld1 user found"
         USERS_EXIST=false
     fi
 else
@@ -39,7 +45,7 @@ fi
 # Create necessary directories
 mkdir -p /nix
 mkdir -p /etc/nix
-mkdir -p /root  # Ensure root directory exists for the installer
+mkdir -p /root 2>/dev/null || true  # Ensure root directory exists, ignore if it already exists
 
 # Download and install Nix using the official installer with proper environment variables
 NIX_VERSION="2.24.10"

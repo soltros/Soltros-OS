@@ -2,6 +2,11 @@
 
 set ${SET_X:+-x} -eou pipefail
 
+# Define log function first (before any usage)
+log() {
+  echo "== $* =="
+}
+
 trap '[[ $BASH_COMMAND != echo* ]] && [[ $BASH_COMMAND != log* ]] && echo "+ $BASH_COMMAND"' DEBUG
 
 function echo_group() {
@@ -16,10 +21,6 @@ function echo_group() {
     echo "::endgroup::"
 }
 
-log() {
-  echo "== $* =="
-}
-
 log "Starting SoltrOS build process"
 
 # Base image for reference (though not used in conditional logic anymore)
@@ -32,6 +33,9 @@ echo_group /ctx/server-packages.sh
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
+log "Install desktop packages"
+echo_group /ctx/desktop-packages.sh
+
 log "Setup just files"
 echo_group /ctx/just-files.sh
 
@@ -40,9 +44,6 @@ echo_group /ctx/desktop-defaults.sh
 
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
-
-log "Apply gaming optimizations"
-echo_group /ctx/gaming-optimizations.sh
 
 # Check if setup_just.sh exists before calling it (for safety)
 if [ -f "/ctx/setup_just.sh" ]; then

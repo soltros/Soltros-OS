@@ -23,11 +23,6 @@ if [ ! -f "/nix/var/nix/profiles/default/bin/nix-daemon" ]; then
     exit 1
 fi
 
-if [ ! -f "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
-    log "ERROR: nix-daemon.sh profile script not found - nix-setup.sh did not complete properly"
-    exit 1
-fi
-
 # Verify nix-daemon binary is executable
 if [ ! -x "/nix/var/nix/profiles/default/bin/nix-daemon" ]; then
     log "ERROR: nix-daemon binary not executable"
@@ -35,6 +30,36 @@ if [ ! -x "/nix/var/nix/profiles/default/bin/nix-daemon" ]; then
 fi
 
 log "Dependencies verified - Nix installation is complete"
+
+# Now set up multi-user daemon mode
+log "Creating nixbld group and users for multi-user daemon"
+
+# Create nixbld group if it doesn't exist
+if ! getent group nixbld >/dev/null 2>&1; then
+    groupadd -r nixbld
+    log "Created nixbld group"
+fi
+
+# Create nixbld users if they don't exist
+for i in $(seq 1 10); do
+    if ! id "nixbld$i" >/dev/null 2>&1; then
+        useradd -r -g nixbld -G nixbld -d /var/empty -s /sbin/nologin \
+                -c "Nix build user $i" nixbld$i
+    fi
+done
+
+log "Created nixbld users"
+
+# Update nix.conf to include build-users-group for daemon mode
+cat > /etc/nix/nix.conf << 'EOF'
+# SoltrOS Nix Configuration (Multi-user daemon mode)
+build-users-group = nixbld
+experimental-features = nix-command flakes
+auto-optimise-store = true
+trusted-users = root @wheel
+EOF
+
+log "Updated nix.conf for daemon mode"
 
 # Create systemd service for nix-daemon
 log "Creating nix-daemon.service"

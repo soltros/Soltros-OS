@@ -78,10 +78,9 @@ rm -rf nix-${NIX_VERSION}-x86_64-linux
 
 log "Configuring Nix for multi-user setup"
 
-# Create nix configuration
+# Create nix configuration (single-user setup)
 cat > /etc/nix/nix.conf << 'EOF'
 # SoltrOS Nix Configuration
-build-users-group = nixbld
 experimental-features = nix-command flakes
 auto-optimise-store = true
 trusted-users = root @wheel

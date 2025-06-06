@@ -71,6 +71,10 @@ RUN for i in {1..3}; do \
     echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Universal Blue\e[0m\n' > /etc/issue && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor
 
+# Install Waterfox RPM
+ADD https://download.opensuse.org/repositories/home:/hawkeye116477:/waterfox/Fedora_41/x86_64/waterfox-6.5.6-1.21.x86_64.rpm /tmp/waterfox.rpm
+RUN rpm-ostree install /tmp/waterfox.rpm && rm /tmp/waterfox.rpm
+
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \

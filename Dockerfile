@@ -10,7 +10,6 @@ COPY soltros.pub /ctx/soltros.pub
 # Change perms
 RUN chmod +x \
   /ctx/build.sh \
-  /ctx/server-packages.sh \
   /ctx/signing.sh \
   /ctx/overrides.sh \
   /ctx/cleanup.sh \

@@ -12,11 +12,25 @@ log() {
 
 log "Installing Nix package manager"
 
-# Create nix user and group
-groupadd -r nixbld
+# Check if nixbld group exists and get its GID
+if getent group nixbld >/dev/null 2>&1; then
+    NIXBLD_GID=$(getent group nixbld | cut -d: -f3)
+    log "Found existing nixbld group with GID $NIXBLD_GID"
+    export NIX_BUILD_GROUP_ID=$NIXBLD_GID
+else
+    # Create nix group if it doesn't exist
+    groupadd -r nixbld
+    NIXBLD_GID=$(getent group nixbld | cut -d: -f3)
+fi
+
+# Create nix build users if they don't exist
 for i in $(seq 1 10); do
-    useradd -r -g nixbld -G nixbld -d /var/empty -s /sbin/nologin \
-            -c "Nix build user $i" nixbld$i
+    if ! id "nixbld$i" >/dev/null 2>&1; then
+        useradd -r -g nixbld -G nixbld -d /var/empty -s /sbin/nologin \
+                -c "Nix build user $i" nixbld$i
+    else
+        log "Build user nixbld$i already exists, skipping"
+    fi
 done
 
 # Create necessary directories
@@ -27,9 +41,9 @@ mkdir -p /etc/nix
 NIX_VERSION="2.24.10"  # Latest stable as of writing
 curl -L https://releases.nixos.org/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.xz | tar -xJ
 
-# Install Nix
+# Install Nix with the existing group ID
 cd nix-${NIX_VERSION}-x86_64-linux
-./install --daemon --yes
+NIX_BUILD_GROUP_ID=$NIXBLD_GID ./install --daemon --yes
 
 # Clean up installer
 cd ..
@@ -102,13 +116,19 @@ EOF
 systemctl enable nix-daemon.socket
 
 # Set proper permissions
-chown -R root:nixbld /nix
-chmod 1775 /nix/store
+if [ -d "/nix" ]; then
+    chown -R root:nixbld /nix
+    chmod 1775 /nix/store
+fi
 
 log "Setting up Nix channels"
 
-# Setup default channel for all users
-/nix/var/nix/profiles/default/bin/nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
-/nix/var/nix/profiles/default/bin/nix-channel --update
+# Setup default channel for all users (only if nix-channel exists)
+if [ -f "/nix/var/nix/profiles/default/bin/nix-channel" ]; then
+    /nix/var/nix/profiles/default/bin/nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs
+    /nix/var/nix/profiles/default/bin/nix-channel --update
+else
+    log "Warning: nix-channel not found, channels will need to be set up by users"
+fi
 
 log "Nix package manager installation completed"

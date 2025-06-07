@@ -45,7 +45,7 @@ LAYERED_PACKAGES=(
     vlc
 )
 
-dnf5 install --setopt=install_weak_deps=False -y "${LAYERED_PACKAGES[@]}"
+dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
 
 log "Disable Copr repos as we do not need it anymore"
 

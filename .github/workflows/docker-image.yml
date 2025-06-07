@@ -1,7 +1,7 @@
 name: Build and Push SoltrOS Image
 on:
   push:
-    branches: ["gnome"]
+    branches: ["main"]
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * 0'  # Every Sunday at 6:00 AM UTC

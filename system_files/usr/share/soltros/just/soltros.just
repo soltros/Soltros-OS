@@ -167,14 +167,14 @@ soltros-setup-cli:
         rc_dir=".${shell}rc.d"
 
         snippet="# User-specific aliases and functions
-    if [ -d ~/${rc_dir} ]; then
-      for rc in ~/${rc_dir}/*; do
-        if [ -f \"\$rc\" ]; then
-          . \"\$rc\"
-        fi
-      done
+if [ -d ~/${rc_dir} ]; then
+  for rc in ~/${rc_dir}/*; do
+    if [ -f \"\$rc\" ]; then
+      . \"\$rc\"
     fi
-    unset rc"
+  done
+fi
+unset rc"
 
         if [ -f "$rc_file" ]; then
             if ! grep -q "${rc_dir}/\*" "$rc_file"; then

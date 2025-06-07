@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/cosmic-atomic-main
+ARG BASE_IMAGE=ghcr.io/ublue-os/cosmic-atomic-main:42
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -7,20 +7,6 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 
-# Disable SELinux for Nix compatibility
-RUN rpm-ostree override remove \
-    swtpm \
-    smartmontools \
-    swtpm-selinux \
-    smartmontools-selinux \
-    selinux-policy \
-    selinux-policy-targeted \
-    selinux-policy-devel \
-    policycoreutils \
-    policycoreutils-python-utils \
-    libselinux-utils \
-    || true
-    
 # Make my Justfile the default justfile
 COPY system_files/usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile
 

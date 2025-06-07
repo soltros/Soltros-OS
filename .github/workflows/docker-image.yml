@@ -44,7 +44,7 @@ jobs:
       
       - name: Sign container image
         run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ghcr.io/${{ github.repository_owner }}/soltros-os_gnome:latest
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}

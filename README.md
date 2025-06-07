@@ -1,6 +1,6 @@
 # SoltrOS
 
-A gaming-optimized immutable Linux distribution based on [Universal Blue's Aurora DX](https://github.com/ublue-os/aurora), featuring MacBook hardware support, comprehensive package management, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Universal Blue's Cosmic Atomic, featuring MacBook hardware support, comprehensive package management, and developer-friendly tools.
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
@@ -33,7 +33,7 @@ A gaming-optimized immutable Linux distribution based on [Universal Blue's Auror
 - **Container signing** with cosign for security
 
 ### 🎨 Desktop Environment
-- **KDE Plasma** with dark theme by default
+- **Cosmic** with dark theme by default
 - **Papirus icon theme** for a modern look
 - **Custom branding** and SoltrOS identity
 - **Optimized settings** for productivity and aesthetics

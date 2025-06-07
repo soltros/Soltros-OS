@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/aurora-dx
+ARG BASE_IMAGE=ghcr.io/ublue-os/cosmic-atomic-main
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -20,10 +20,7 @@ RUN rpm-ostree override remove \
     policycoreutils-python-utils \
     libselinux-utils \
     || true
-
-# Clean up any remaining SELinux files
-RUN rm -rf /etc/selinux /var/lib/selinux || true
-
+    
 # Make my Justfile the default justfile
 COPY system_files/usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile
 

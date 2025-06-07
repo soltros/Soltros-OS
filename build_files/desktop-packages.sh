@@ -34,7 +34,7 @@ LAYERED_PACKAGES=(
     lm_sensors
     udisks2
     udiskie
-    waterfox
+    #waterfox
     
     # Gaming & performance
     gamemode

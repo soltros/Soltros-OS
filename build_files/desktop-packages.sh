@@ -40,9 +40,6 @@ LAYERED_PACKAGES=(
     udisks2
     udiskie
     waterfox
-    telegram-desktop
-    discord
-    vlc
 )
 
 dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"

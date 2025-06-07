@@ -33,7 +33,7 @@ A gaming-optimized immutable Linux distribution based on [Universal Blue's Auror
 - **Container signing** with cosign for security
 
 ### 🎨 Desktop Environment
-- **GNOME** with dark theme by default
+- **KDE Plasma** with dark theme by default
 - **Papirus icon theme** for a modern look
 - **Custom branding** and SoltrOS identity
 - **Optimized settings** for productivity and aesthetics

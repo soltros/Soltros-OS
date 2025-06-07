@@ -1,5 +1,16 @@
 # Soltros OS Setup Justfile
 
+# Imports
+import "/usr/share/ublue-os/just/00-default.just"
+import "/usr/share/ublue-os/just/10-update.just"
+import "/usr/share/ublue-os/just/15-luks.just"
+import "/usr/share/ublue-os/just/20-clean.just"
+import "/usr/share/ublue-os/just/30-distrobox.just"
+import "/usr/share/ublue-os/just/31-toolbox.just"
+import "/usr/share/ublue-os/just/40-nvidia.just"
+import "/usr/share/ublue-os/just/50-akmods.just"
+import? "/usr/share/ublue-os/just/60-custom.just"
+
 default:
     @just --list
 

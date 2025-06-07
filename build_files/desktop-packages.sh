@@ -27,19 +27,58 @@ log "Install layered applications"
 
 # Layered Applications
 LAYERED_PACKAGES=(
+    # Core system
     fish
-    gimp
-    mbpfan
-    thermald
-    lm_sensors
     tailscale
-    gamemode
     papirus-icon-theme
-    mangohud
-    goverlay
+    lm_sensors
     udisks2
     udiskie
     waterfox
+    
+    # Gaming & performance
+    gamemode
+    gamemode-devel
+    mangohud
+    goverlay
+    corectrl
+    steam-devices
+    
+    # MacBook thermal management
+    mbpfan
+    thermald
+    
+    # Essential CLI tools
+    btop
+    ripgrep
+    fd-find
+    git-delta
+    
+    # System monitoring & hardware
+    nvtop
+    powertop
+    smartmontools
+    usbutils
+    pciutils
+    
+    # Development & container tools
+    buildah
+    skopeo
+    podman-compose
+    
+    # Network tools
+    iperf3
+    nmap
+    wireguard-tools
+    
+    # File system support
+    exfatprogs
+    ntfs-3g
+    btrfs-progs
+    
+    # Multimedia/audio
+    pipewire-utils
+    wireplumber
 )
 
 dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
@@ -49,4 +88,3 @@ log "Disable Copr repos as we do not need it anymore"
 for repo in "${COPR_REPOS[@]}"; do
     dnf5 -y copr disable "$repo"
 done
-

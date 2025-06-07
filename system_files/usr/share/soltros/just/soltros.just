@@ -177,22 +177,24 @@ soltros-setup-cli:
         rc_file="${HOME}/.${shell}rc"
         rc_dir=".${shell}rc.d"
 
-        snippet="# User-specific aliases and functions
+        # Check if the snippet already exists
+        if [ -f "$rc_file" ] && grep -q "${rc_dir}/\*" "$rc_file"; then
+            echo "RC sourcing already configured for $shell"
+        else
+            # Add the snippet
+            cat >> "$rc_file" << SNIPPET
+
+# User-specific aliases and functions
 if [ -d ~/${rc_dir} ]; then
   for rc in ~/${rc_dir}/*; do
-    if [ -f \"\$rc\" ]; then
-      . \"\$rc\"
+    if [ -f "\$rc" ]; then
+      . "\$rc"
     fi
   done
 fi
-unset rc"
-
-        if [ -f "$rc_file" ]; then
-            if ! grep -q "${rc_dir}/\*" "$rc_file"; then
-                echo -e "\n${snippet}" >>"$rc_file"
-            fi
-        else
-            echo "$snippet" >"$rc_file"
+unset rc
+SNIPPET
+            echo "Added RC sourcing for $shell"
         fi
     done
 

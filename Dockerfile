@@ -8,7 +8,10 @@ COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 
 # Disable SELinux for Nix compatibility
-RUN curl -o /etc/selinux/config https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/config
+RUN rpm-ostree override remove selinux-policy selinux-policy-targeted || true
+
+# Make my Justfile the default justfile
+COPY /usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile
 
 # Change perms
 RUN chmod +x \
@@ -48,9 +51,6 @@ COPY repo_files/rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-
 COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
 COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
 COPY repo_files/home_hawkeye116477_waterfox.repo /etc/yum.repos.d/home_hawkeye116477_waterfox.repo
-
-# Add selinux=0 to GRUB kernel command line for bootc
-RUN echo 'GRUB_CMDLINE_LINUX="selinux=0"' >> /etc/default/grub
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \

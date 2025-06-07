@@ -11,7 +11,7 @@ COPY soltros.pub /ctx/soltros.pub
 RUN rpm-ostree override remove selinux-policy selinux-policy-targeted || true
 
 # Make my Justfile the default justfile
-COPY /usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile
+COPY usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile
 
 # Change perms
 RUN chmod +x \

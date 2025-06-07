@@ -73,10 +73,6 @@ RUN for i in {1..3}; do \
     echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Universal Blue\e[0m\n' > /etc/issue && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor
 
-# Download Aonsoku RPM and install it
-ADD https://github.com/victoralvesf/aonsoku/releases/download/v0.9.1/Aonsoku-0.9.1-1.x86_64.rpm /tmp/aonsoku.rpm
-RUN rpm -i /tmp/aonsoku.rpm && rm /tmp/aonsoku.rpm
-
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \

@@ -33,20 +33,11 @@ echo_group /ctx/signing.sh
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh
 
-log "Setup just files"
-echo_group /ctx/just-files.sh
-
 log "Setup desktop defaults"
 echo_group /ctx/desktop-defaults.sh
 
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
-
-# Check if setup_just.sh exists before calling it (for safety)
-if [ -f "/ctx/setup_just.sh" ]; then
-    log "Setup just"
-    echo_group /ctx/setup_just.sh
-fi
 
 log "Post build cleanup"
 echo_group /ctx/cleanup.sh

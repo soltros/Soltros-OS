@@ -21,9 +21,6 @@ RUN rpm-ostree override remove \
     libselinux-utils \
     || true
 
-# Also disable via kernel params as backup
-RUN sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="selinux=0 enforcing=0 /' /etc/default/grub
-
 # Clean up any remaining SELinux files
 RUN rm -rf /etc/selinux /var/lib/selinux || true
 

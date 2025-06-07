@@ -1,6 +1,6 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/cosmic-atomic-main
-ARG TAG_VERSION=42
+ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin-dx
+ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx

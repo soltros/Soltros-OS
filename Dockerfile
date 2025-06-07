@@ -8,7 +8,24 @@ COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 
 # Disable SELinux for Nix compatibility
-RUN rpm-ostree override remove selinux-policy selinux-policy-targeted || true
+RUN rpm-ostree override remove \
+    swtpm \
+    smartmontools \
+    swtpm-selinux \
+    smartmontools-selinux \
+    selinux-policy \
+    selinux-policy-targeted \
+    selinux-policy-devel \
+    policycoreutils \
+    policycoreutils-python-utils \
+    libselinux-utils \
+    || true
+
+# Also disable via kernel params as backup
+RUN sed -i 's/GRUB_CMDLINE_LINUX="/GRUB_CMDLINE_LINUX="selinux=0 enforcing=0 /' /etc/default/grub
+
+# Clean up any remaining SELinux files
+RUN rm -rf /etc/selinux /var/lib/selinux || true
 
 # Make my Justfile the default justfile
 COPY system_files/usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile

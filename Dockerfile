@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin-dx
+ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -18,6 +18,7 @@ RUN chmod +x \
   /ctx/cleanup.sh \
   /ctx/gaming-optimizations.sh \
   /ctx/desktop-packages.sh \
+  /ctx/cosmic-desktop.sh \
   /ctx/desktop-defaults.sh
 
 # Stage 2: final image

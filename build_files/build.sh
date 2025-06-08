@@ -24,11 +24,14 @@ function echo_group() {
 log "Starting SoltrOS build process"
 
 # Base image for reference (though not used in conditional logic anymore)
-BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/bluefin-dx}"
+BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/base-main}"
 log "Building for base image: $BASE_IMAGE"
 
 log "Enable container signing"
 echo_group /ctx/signing.sh
+
+log "Install Cosmic Desktop Environment"
+echo_group /ctx/cosmic-desktop.sh
 
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh

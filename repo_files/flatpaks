@@ -36,7 +36,6 @@ org.blender.Blender
 org.audacityteam.Audacity
 org.inkscape.Inkscape
 org.kde.kdenlive
-org.gnome.DiskUtility
 org.gnome.Logs
 com.github.hugolabe.Wike
 org.gnome.Calculator

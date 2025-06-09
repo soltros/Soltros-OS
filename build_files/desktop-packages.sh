@@ -19,9 +19,6 @@ for repo in "${COPR_REPOS[@]}"; do
     dnf5 -y copr enable "$repo"
 done
 
-log "Enable repositories"
-# Bazzite disabled this for some reason so lets re-enable it again
-dnf5 config-manager setopt terra.enabled=1 terra-extras.enabled=1
 
 log "Install layered applications"
 
@@ -30,10 +27,15 @@ LAYERED_PACKAGES=(
     # Core system
     fish
     tailscale
+    ghostty
     papirus-icon-theme
     lm_sensors
     udisks2
     udiskie
+    pipewire
+    pipewire-pulse
+    wireplumber
+    pipewire-alsa
     #waterfox
     
     # Gaming & performance

@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin-dx
+ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -12,21 +12,23 @@ COPY system_files/usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfi
 
 # Change perms
 RUN chmod +x \
-  /ctx/build.sh \
-  /ctx/signing.sh \
-  /ctx/overrides.sh \
-  /ctx/cleanup.sh \
-  /ctx/gaming-optimizations.sh \
-  /ctx/desktop-packages.sh \
-  /ctx/desktop-defaults.sh
+    /ctx/build.sh \
+    /ctx/signing.sh \
+    /ctx/overrides.sh \
+    /ctx/cleanup.sh \
+    /ctx/gaming-optimizations.sh \
+    /ctx/desktop-packages.sh \
+    /ctx/cosmic-desktop.sh \
+    /ctx/gaming-optimzations.sh \
+    /ctx/desktop-defaults.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
 LABEL org.opencontainers.image.title="SoltrOS" \
-      org.opencontainers.image.description="Gaming-ready Bluefin image with MacBook support" \
-      org.opencontainers.image.vendor="Derrik" \
-      org.opencontainers.image.version="42"
+    org.opencontainers.image.description="Gaming-ready Universal Blue image with MacBook support" \
+    org.opencontainers.image.vendor="Derrik" \
+    org.opencontainers.image.version="42"
 
 # Copy static system configuration and branding
 COPY system_files/etc /etc
@@ -47,24 +49,26 @@ COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfre
 COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
 COPY repo_files/home_hawkeye116477_waterfox.repo /etc/yum.repos.d/home_hawkeye116477_waterfox.repo
 
+# Add RPM Fusion Repo GPG keys
+RUN rpm --import https://rpmfusion.org/keys?action=AttachFile&do=view&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
-        curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
-        break || sleep 10; \
+    curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
+    break || sleep 10; \
     done
 
 # Set identity and system branding with better error handling
 RUN for i in {1..3}; do \
-        curl --retry 3 --retry-delay 5 -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release && \
-        break || sleep 10; \
+    curl --retry 3 --retry-delay 5 -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release && \
+    break || sleep 10; \
     done && \
     for i in {1..3}; do \
-        curl --retry 3 --retry-delay 5 -Lo /etc/motd https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/motd && \
-        break || sleep 10; \
+    curl --retry 3 --retry-delay 5 -Lo /etc/motd https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/motd && \
+    break || sleep 10; \
     done && \
     for i in {1..3}; do \
-        curl --retry 3 --retry-delay 5 -Lo /etc/dconf/db/local.d/00-soltros-settings https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/00-soltros-settings && \
-        break || sleep 10; \
+    curl --retry 3 --retry-delay 5 -Lo /etc/dconf/db/local.d/00-soltros-settings https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/00-soltros-settings && \
+    break || sleep 10; \
     done && \
     dconf update && \
     echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Universal Blue\e[0m\n' > /etc/issue && \

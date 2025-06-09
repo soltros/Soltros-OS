@@ -112,18 +112,6 @@ just soltros-install-flatpaks    # Install all Flatpak applications
 just soltros-setup-cli           # Setup shell configurations
 just soltros-setup-git           # Configure Git with SSH signing
 ```
-
-### Nix Package Management
-```bash
-just nix-search <package>        # Search for packages
-just nix-install <package>       # Install a package
-just nix-list                    # List installed packages
-just nix-remove <package>        # Remove a package
-just nix-update                  # Update all packages
-just nix-cleanup                 # Clean old generations
-just nix-shell <packages...>     # Temporary development environment
-```
-
 ### System Configuration
 ```bash
 just soltros-enable-amdgpu-oc    # Enable AMD GPU overclocking

@@ -16,7 +16,7 @@ log "Enabling snapd socket"
 systemctl enable snapd.socket
 
 
-chmod +x /opt/soltros-snap/snapd-setup.sh
+chmod +x /usr/share/soltros/scripts/snapd-setup.sh
 
 log "Creating systemd service for snap maintenance"
 cat > /etc/systemd/system/soltros-snap.service << 'EOF'

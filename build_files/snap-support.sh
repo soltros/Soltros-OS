@@ -7,51 +7,119 @@ log() {
   echo "=== $* ==="
 }
 
-log "Setting up Snap package support"
+log "Setting up Snap package support for rpm-ostree (based on snapd-in-Silverblue)"
 
 log "Installing snapd package"
 dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y snapd
 
-log "Enabling snapd socket (required for snap to work)"
+log "Enabling snapd socket"
 systemctl enable snapd.socket
 
-log "Creating /snap symlink for classic confinement support"
-# This symlink is required for classic snaps (like VS Code, Node.js, etc.) to work properly
-ln -sf /var/lib/snapd/snap /snap
+log "Creating snap maintenance script for SoltrOS"
+# Create the script that will maintain snap setup on boot
+mkdir -p /opt/soltros-snap
+cat > /opt/soltros-snap/snapd-setup.sh << 'EOF'
+#!/bin/bash
+# SoltrOS Snap Setup Script - maintains snap compatibility on boot
+# Based on snapd-in-Silverblue solution
 
-log "Setting up bind mount for /var/home to /home compatibility"
-# Remove any existing /home symlink that would prevent the bind mount
-rm -rf /home
+bindnotok=0
+symlinknok=0
 
-# Create /home directory for mounting
-mkdir -p /home
+# Check if bind mount in /home is already applied
+checkbindmount(){
+    if [ -d '/home' ] && [ ! -L '/home' ]
+    then echo "bindmount of /home ok"
+    else bindnotok=1 && echo "bindmount of /home not ok"
+    fi
+}
 
-# Create systemd mount unit to bind mount /var/home to /home
-# This is the official solution from Snapcraft documentation
-mkdir -p /etc/systemd/system
+# Replace symlink in /home with bind mount
+bindmounthome(){
+    if [ -L '/home' ]
+    then echo "symlink /home will be replaced with bind mount from /var/home"
+    else echo "bind mount will be created from /var/home to /home"
+    fi
 
-cat > /etc/systemd/system/home.mount << 'EOF'
-[Unit]
-Description=Bind mount /var/home to /home for snap compatibility
-Before=snapd.service
+    rm -f /home | systemd-cat -t soltros-snap.service -p info
+    mkdir -p /home
+    mount --bind /var/home /home
+}
 
-[Mount]
-What=/var/home
-Where=/home
-Type=none
-Options=bind
+# Replace /var/home to /home in /etc/passwd
+passwdhome(){
+    if grep -Fq ':/var/home' /etc/passwd
+    then
+        cp /etc/passwd /etc/passwd.backup
+        echo "backup of /etc/passwd created"
+        sed -i 's|:/var/home|:/home|' /etc/passwd
+        echo "/etc/passwd edited: /var/home replaced with /home"
+    else
+        echo "/etc/passwd ok"
+    fi
+}
 
-[Install]
-WantedBy=local-fs.target
+# Check if symlink in /snap exists
+checksymlink(){
+    if [[ $(readlink "/snap") == "/var/lib/snapd/snap" ]]
+    then echo 'snap symlink ok'
+    else symlinknok=1 && echo 'snap symlink not ok'
+    fi
+}
+
+# Create symlink in /snap
+symlinksnap(){
+    echo "creating /var/lib/snapd/snap symlink in /snap"
+    ln -sf '/var/lib/snapd/snap' '/snap' | systemd-cat -t soltros-snap.service -p info
+    checksymlink
+}
+
+# Check current state
+checkbindmount
+checksymlink
+passwdhome
+
+# Only unlock / if changes are needed
+if (( $bindnotok + $symlinknok ))
+then
+    chattr -i /
+    if (( ${bindnotok} )); then bindmounthome; fi
+    if (( ${symlinknok} )); then symlinksnap; fi
+    chattr +i /
+fi
 EOF
 
-systemctl enable home.mount
+chmod +x /opt/soltros-snap/snapd-setup.sh
 
-log "Configuring /etc/passwd for /home paths"
-# Update /etc/passwd to use /home instead of /var/home for snap compatibility
-# This makes snap see user homes under /home (which is bind mounted to /var/home)
-sed -i 's|/var/home|/home|g' /etc/passwd
+log "Creating systemd service for snap maintenance"
+cat > /etc/systemd/system/soltros-snap.service << 'EOF'
+[Unit]
+Description=SoltrOS Snap Setup - Maintain snap compatibility
+Before=snapd.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/soltros-snap/snapd-setup.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable soltros-snap.service
+
+log "Setting up initial snap directories"
+mkdir -p /var/lib/snapd/snap
+
+log "Initial /etc/passwd setup for snap compatibility"
+# Update /etc/passwd during build to use /home paths
+if grep -q ':/var/home' /etc/passwd; then
+    cp /etc/passwd /etc/passwd.backup
+    sed -i 's|:/var/home|:/home|' /etc/passwd
+    echo "Updated /etc/passwd for snap compatibility during build"
+fi
 
 log "Snap support setup complete"
-log "Users can now install both strictly confined and classic snaps"
-log "Home directories are bind mounted from /var/home to /home"
+log "Snap will work with classic confinement after first boot"
+log "Based on proven snapd-in-Silverblue solution"

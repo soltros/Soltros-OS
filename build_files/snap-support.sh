@@ -19,26 +19,33 @@ log "Creating /snap symlink for classic confinement support"
 # This symlink is required for classic snaps (like VS Code, Node.js, etc.) to work properly
 ln -sf /var/lib/snapd/snap /snap
 
-log "Setting up snapd for /var/home compatibility"
-# Create a systemd service to configure snapd after it starts
-# This sets the homedirs system option to support /var/home
+log "Setting up bind mount for /var/home to /home compatibility"
+# Create systemd mount unit to bind mount /var/home to /home
+# This is the official solution from Snapcraft documentation
 mkdir -p /etc/systemd/system
-cat > /etc/systemd/system/snapd-configure-homedirs.service << 'EOF'
-[Unit]
-Description=Configure snapd homedirs for /var/home
-After=snapd.service
-Requires=snapd.service
 
-[Service]
-Type=oneshot
-ExecStart=/usr/bin/snap set system homedirs=/var/home
-RemainAfterExit=yes
+cat > /etc/systemd/system/home.mount << 'EOF'
+[Unit]
+Description=Bind mount /var/home to /home for snap compatibility
+Before=snapd.service
+
+[Mount]
+What=/var/home
+Where=/home
+Type=none
+Options=bind
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target
 EOF
 
-systemctl enable snapd-configure-homedirs.service
+systemctl enable home.mount
+
+log "Configuring /etc/passwd for /home paths"
+# Update /etc/passwd to use /home instead of /var/home for snap compatibility
+# This makes snap see user homes under /home (which is bind mounted to /var/home)
+sed -i 's|/var/home|/home|g' /etc/passwd
 
 log "Snap support setup complete"
-log "Users can now install both strictly confined and classic snaps with /var/home support"
+log "Users can now install both strictly confined and classic snaps"
+log "Home directories are bind mounted from /var/home to /home"

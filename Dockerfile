@@ -16,7 +16,6 @@ RUN chmod +x \
     /ctx/signing.sh \
     /ctx/overrides.sh \
     /ctx/cleanup.sh \
-    /ctx/gaming-optimizations.sh \
     /ctx/desktop-packages.sh \
     /ctx/cosmic-desktop.sh \
     /ctx/gaming.sh \

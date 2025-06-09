@@ -20,6 +20,12 @@ log "Creating /snap symlink for classic confinement support"
 ln -sf /var/lib/snapd/snap /snap
 
 log "Setting up bind mount for /var/home to /home compatibility"
+# Remove any existing /home symlink that would prevent the bind mount
+rm -rf /home
+
+# Create /home directory for mounting
+mkdir -p /home
+
 # Create systemd mount unit to bind mount /var/home to /home
 # This is the official solution from Snapcraft documentation
 mkdir -p /etc/systemd/system

@@ -42,6 +42,9 @@ echo_group /ctx/desktop-defaults.sh
 log "Enabling gaming enhancements"
 echo_group /ctx/gaming.sh
 
+log "Enabling snap package support"
+echo_group /ctx/snap-support.sh
+
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
 

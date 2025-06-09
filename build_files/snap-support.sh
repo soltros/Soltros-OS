@@ -17,7 +17,8 @@ systemctl enable snapd.socket
 
 log "Creating snap maintenance script for SoltrOS"
 # Create the script that will maintain snap setup on boot
-mkdir -p /opt/soltros-snap
+cd /opt/
+mkdir -p soltros-snap
 cat > /opt/soltros-snap/snapd-setup.sh << 'EOF'
 #!/bin/bash
 # SoltrOS Snap Setup Script - maintains snap compatibility on boot

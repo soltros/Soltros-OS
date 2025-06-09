@@ -35,6 +35,7 @@ LAYERED_PACKAGES=(
     pipewire
     pipewire-pulse
     wireplumber
+    starship
     pipewire-alsa
     #waterfox
     

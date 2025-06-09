@@ -27,7 +27,7 @@ LAYERED_PACKAGES=(
     # Core system
     fish
     tailscale
-    ghostty
+    ptyxis
     papirus-icon-theme
     lm_sensors
     udisks2

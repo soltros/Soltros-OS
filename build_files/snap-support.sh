@@ -19,10 +19,26 @@ log "Creating /snap symlink for classic confinement support"
 # This symlink is required for classic snaps (like VS Code, Node.js, etc.) to work properly
 ln -sf /var/lib/snapd/snap /snap
 
-log "Creating /home symlink for /var/home compatibility"
-# Fedora immutable distros use /var/home instead of /home
-# This symlink makes snaps work with the /var/home directory structure
-ln -sf /var/home /home
+log "Setting up snapd for /var/home compatibility"
+# Create a systemd service to configure snapd after it starts
+# This sets the homedirs system option to support /var/home
+mkdir -p /etc/systemd/system
+cat > /etc/systemd/system/snapd-configure-homedirs.service << 'EOF'
+[Unit]
+Description=Configure snapd homedirs for /var/home
+After=snapd.service
+Requires=snapd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/snap set system homedirs=/var/home
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable snapd-configure-homedirs.service
 
 log "Snap support setup complete"
-log "Users can now install both strictly confined and classic snaps"
+log "Users can now install both strictly confined and classic snaps with /var/home support"

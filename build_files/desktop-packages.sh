@@ -80,6 +80,18 @@ LAYERED_PACKAGES=(
     ntfs-3g
     btrfs-progs
     
+    # GVFS and network file system support
+    gvfs
+    gvfs-smb
+    gvfs-fuse
+    gvfs-mtp
+    gvfs-gphoto2
+    gvfs-archive
+    gvfs-afp
+    gvfs-nfs
+    samba-client
+    cifs-utils
+    
     # Multimedia/audio
     pipewire-utils
     wireplumber

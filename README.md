@@ -91,13 +91,7 @@ Use the provided ISO configuration to install directly.
    just soltros-setup-git
    ```
 
-4. **Install Nix** (optional, for development):
-   ```bash
-   just nix-install
-   just nix-setup-user
-   ```
-
-5. **Install Homebrew** (optional):
+4. **Install Homebrew** (optional):
    ```bash
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```

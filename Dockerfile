@@ -19,7 +19,8 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/cosmic-desktop.sh \
     /ctx/gaming.sh \
-      /ctx/desktop-defaults.sh
+    /ctx/snap-support.sh \
+   /ctx/desktop-defaults.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros

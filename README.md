@@ -69,8 +69,8 @@ Over 40 pre-configured applications including:
 - **Productivity**: LibreOffice, Bitwarden
 - **System Tools**: Flatseal, Mission Center, Warehouse
 
-### Development Tools (Available via Nix & Homebrew)
-Access to 80,000+ packages via user-installable Nix and thousands more via Homebrew - all without affecting the base system.
+### Development Tools (Available via Homebrew)
+Access to packages via Homebrew - all without affecting the base system.
 
 ## 🚀 Quick Start
 
@@ -191,7 +191,6 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - [VenOS](https://github.com/Venefilyn/veneos) for the inspiration and innovative approach to immutable gaming distributions
 - [Universal Blue](https://github.com/ublue-os) for the excellent foundation
 - [Fedora Project](https://fedoraproject.org/) for the underlying OS
-- [NixOS](https://nixos.org/) for the Nix package manager
 - [Homebrew](https://brew.sh/) for cross-platform package management
 
 ## 🆘 Support

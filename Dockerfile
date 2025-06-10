@@ -19,7 +19,6 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/cosmic-desktop.sh \
     /ctx/gaming.sh \
-    /ctx/snap-support.sh \
    /ctx/desktop-defaults.sh
 
 # Stage 2: final image

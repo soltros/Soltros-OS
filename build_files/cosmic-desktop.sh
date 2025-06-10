@@ -28,6 +28,10 @@ mkdir -p /usr/share/glib-2.0/schemas
 # Compile schemas
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
+# Remove Firefox to replace with Waterfox
+log "Removing Firefox in favor of Waterfox"
+dnf5 remove -y firefox firefox-* || true
+
 log "Enabling COSMIC-related services"
 # Enable services that COSMIC might need
 systemctl enable pipewire.service || true

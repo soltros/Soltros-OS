@@ -4,6 +4,15 @@ A gaming-optimized immutable Linux distribution based on Universal Blue's base i
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
+### Installation
+Right now, the easiest way to get SoltrOS working is to download [Fedora Silverblue](https://fedoraproject.org/atomic-desktops/silverblue/download) and install it. Then, run:
+```
+sudo bootc switch ghcr.io/soltros/soltros-os:latest
+
+sudo systemctl reboot
+```
+The "Latest" image will give you the experience that is suggested (Cosmic). However, if you'd like to check out other versions (that are still under development as well), you can. Just check the "packages" section.
+
 ## 🚀 Features
 
 ### 🎮 Gaming Ready

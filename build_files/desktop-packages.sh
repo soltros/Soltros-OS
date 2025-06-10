@@ -32,6 +32,7 @@ LAYERED_PACKAGES=(
     lm_sensors
     udisks2
     udiskie
+    gimp
     pipewire
     pipewire-pulse
     wireplumber

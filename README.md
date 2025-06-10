@@ -31,7 +31,6 @@ The "Latest" image will give you the experience that is suggested (Cosmic). Howe
 ### 📦 Triple Package Management
 - **RPM-OSTree** (System packages) - Immutable base system
 - **Flatpak** (Applications) - Sandboxed desktop applications
-- **Nix** (Development tools) - User-installable declarative package management with 80,000+ packages
 - **Homebrew** (Additional tools) - macOS-style package manager for Linux
 
 ### 🛠️ Developer Experience
@@ -173,24 +172,6 @@ just build
 just push
 ```
 
-## 📁 Project Structure
-
-```
-├── build_files/              # Build scripts and configurations
-│   ├── build.sh             # Main build orchestrator
-│   ├── desktop-packages.sh  # RPM package installation
-│   ├── nix-setup.sh         # Nix package manager setup
-│   ├── signing.sh           # Container signing configuration
-│   └── ...
-├── system_files/            # System configuration files
-│   ├── etc/                 # System-wide configurations
-│   └── usr/share/soltros/   # SoltrOS-specific files
-├── resources/               # Branding and identity files
-├── repo_files/             # Repository configuration
-├── Dockerfile              # Container build definition
-└── Justfile               # Build automation
-```
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -207,7 +188,6 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 
 - [VenOS](https://github.com/Venefilyn/veneos) for the inspiration and innovative approach to immutable gaming distributions
 - [Universal Blue](https://github.com/ublue-os) for the excellent foundation
-- [Aurora DX](https://github.com/ublue-os/aurora) for the base image
 - [Fedora Project](https://fedoraproject.org/) for the underlying OS
 - [NixOS](https://nixos.org/) for the Nix package manager
 - [Homebrew](https://brew.sh/) for cross-platform package management

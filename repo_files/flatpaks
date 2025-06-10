@@ -31,7 +31,6 @@ org.gustavoperedo.FontDownloader
 sh.loft.devpod
 com.heroicgameslauncher.hgl
 org.prismlauncher.PrismLauncher
-org.gimp.GIMP
 org.blender.Blender
 org.audacityteam.Audacity
 org.inkscape.Inkscape
@@ -46,5 +45,4 @@ org.gnome.Characters
 com.github.johnfactotum.Foliate
 org.gnome.baobab
 org.gnome.FileRoller
-com.github.tchx84.Gameeye
 org.gnome.Evince

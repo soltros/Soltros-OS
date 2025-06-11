@@ -40,6 +40,9 @@ if [ ! -f "$ARCHIVE" ]; then
     exit 1
 fi
 
+log "Preparing install directory"
+rm -rf "$INSTALL_DIR"
+
 log "Extracting Waterfox archive"
 tar -xf "$ARCHIVE" -C "$INSTALL_DIR" --strip-components=1
 
@@ -58,19 +61,6 @@ StartupWMClass=Waterfox
 EOF
 
 chmod +x "$DESKTOP_FILE"
-
-log "Setting up Waterfox system integration"
-
-# Create a wrapper script that can be called from PATH
-mkdir -p /usr/local/bin
-cat > /usr/local/bin/waterfox <<EOF
-#!/bin/bash
-exec /usr/share/soltros/waterfox/waterfox "\$@"
-EOF
-chmod +x /usr/local/bin/waterfox
-
-# Set up alternatives for x-www-browser
-update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/share/soltros/waterfox/waterfox 200
 
 log "Cleaning up temporary files"
 rm -f "$ARCHIVE"

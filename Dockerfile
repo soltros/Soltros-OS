@@ -34,7 +34,7 @@ COPY system_files/etc /etc
 COPY system_files/usr/share /usr/share
 COPY repo_files/tailscale.repo /etc/yum.repos.d/tailscale.repo
 COPY resources/soltros-gdm.png /usr/share/pixmaps/fedora-gdm-logo.png
-
+COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermark.png
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 

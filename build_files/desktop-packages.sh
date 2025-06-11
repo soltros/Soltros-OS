@@ -38,7 +38,7 @@ LAYERED_PACKAGES=(
     wireplumber
     starship
     pipewire-alsa
-    waterfox
+    #waterfox
     
     # Gaming & performance
     gamemode

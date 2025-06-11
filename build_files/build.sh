@@ -33,6 +33,9 @@ echo_group /ctx/signing.sh
 log "Install Cosmic Desktop Environment"
 echo_group /ctx/cosmic-desktop.sh
 
+log "Install Waterfox browser BIN"
+echo_group /ctx/waterfox-installer.sh
+
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh
 

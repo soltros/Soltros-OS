@@ -40,10 +40,6 @@ if [ ! -f "$ARCHIVE" ]; then
     exit 1
 fi
 
-log "Preparing install directory"
-rm -rf "$INSTALL_DIR"
-mkdir -p "$INSTALL_DIR"
-
 log "Extracting Waterfox archive"
 tar -xf "$ARCHIVE" -C "$INSTALL_DIR" --strip-components=1
 

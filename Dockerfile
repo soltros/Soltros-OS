@@ -39,15 +39,10 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Add RPM Fusion repos by copy to eliminate rate limiting
-COPY repo_files/rpmfusion-free.repo /etc/yum.repos.d/rpmfusion-free.repo
-COPY repo_files/rpmfusion-free-updates.repo /etc/yum.repos.d/rpmfusion-free-updates.repo
-COPY repo_files/rpmfusion-free-updates-testing.repo /etc/yum.repos.d/rpmfusion-free-updates-testing.repo
-COPY repo_files/rpmfusion-nonfree.repo /etc/yum.repos.d/rpmfusion-nonfree-nvidia-driver.repo
-COPY repo_files/rpmfusion-nonfree-nvidia-driver.repo /etc/yum.repos.d/
-COPY repo_files/rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
-COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
-COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
+# Add RPM Fusion repos
+RUN rpm-ostree install \
+    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 # Enable Tailscale
 RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
@@ -57,8 +52,6 @@ RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cbackup
 RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop
 RUN mv /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop /usr/share/applications/
 
-# Add RPM Fusion Repo GPG keys
-RUN rpm --import https://rpmfusion.org/keys?action=AttachFile&do=view&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
     curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \

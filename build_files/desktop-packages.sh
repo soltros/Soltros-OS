@@ -38,6 +38,9 @@ LAYERED_PACKAGES=(
     wireplumber
     starship
     pipewire-alsa
+    timeshift
+    playerctl
+    linux-firmware
     #waterfox
     
     # Gaming & performance

@@ -38,7 +38,7 @@ LAYERED_PACKAGES=(
     wireplumber
     starship
     pipewire-alsa
-    timeshift
+    deja-dup
     playerctl
     linux-firmware
     #waterfox

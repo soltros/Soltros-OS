@@ -49,6 +49,9 @@ COPY repo_files/rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-
 COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
 COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
 
+# Enable Tailscale
+RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
+
 # Set up Cosmic Settings Backup
 RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cbackup
 RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop

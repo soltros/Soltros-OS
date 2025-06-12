@@ -48,7 +48,11 @@ COPY repo_files/rpmfusion-nonfree-nvidia-driver.repo /etc/yum.repos.d/
 COPY repo_files/rpmfusion-nonfree-steam.repo /etc/yum.repos.d/rpmfusion-nonfree-steam.repo
 COPY repo_files/rpmfusion-nonfree-updates.repo /etc/yum.repos.d/rpmfusion-nonfree-updates.repo
 COPY repo_files/rpmfusion-nonfree-updates-testing.repo /etc/yum.repos.d/rpmfusion-nonfree-updates-testing.repo
-COPY repo_files/home_hawkeye116477_waterfox.repo /etc/yum.repos.d/home_hawkeye116477_waterfox.repo
+
+# Set up Cosmic Settings Backup
+RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cbackup
+RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop
+RUN mv /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop /usr/share/applications/
 
 # Add RPM Fusion Repo GPG keys
 RUN rpm --import https://rpmfusion.org/keys?action=AttachFile&do=view&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020

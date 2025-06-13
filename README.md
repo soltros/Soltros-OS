@@ -1,4 +1,4 @@
-# SoltrOS
+# SoltrOS - Desktop Edition
 
 ![SoltrOS Desktop with Cosmic](https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/Screenshot_2025-06-10_04-42-16.png)
 
@@ -173,6 +173,9 @@ just build
 just build
 just push
 ```
+
+## Server Image
+The SoltrOS Server Edition is very much a work in progress. To install, simply set up Silverblue, and bootc swap to it: https://github.com/soltros/soltros-os-server
 
 ## 🤝 Contributing
 

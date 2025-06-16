@@ -16,7 +16,7 @@ log "Target kernel version: $KERNEL_VERSION"
 
 # Ensure we have the exact kernel-devel for the target kernel
 log "Installing kernel development packages for $KERNEL_VERSION"
-dnf5 install -y kernel-devel-${KERNEL_VERSION} kernel-headers-${KERNEL_VERSION}
+dnf5 install -y kernel-devel-${KERNEL_VERSION} kernel-headers-${KERNEL_VERSION} 
 
 # Also install build dependencies
 log "Installing VirtualBox build dependencies"

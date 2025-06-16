@@ -1,0 +1,50 @@
+name: Build SoltrOS ISO
+on:
+  workflow_dispatch:
+  # You can also trigger on releases or tags
+  # release:
+  #   types: [published]
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate ISO filename
+        id: iso-name
+        run: |
+          echo "iso-name=soltros-$(date +%Y%m%d).iso" >> $GITHUB_OUTPUT
+
+      - name: Build ISO
+        uses: jasonn3/build-container-installer@main
+        id: build
+        with:
+          arch: x86_64
+          image_name: soltros-os
+          image_repo: ghcr.io/${{ github.repository_owner }}
+          image_tag: latest
+          version: 42
+          variant: Silverblue
+          iso_name: ${{ steps.iso-name.outputs.iso-name }}
+          enrollment_password: universalblue
+          secure_boot_key_url: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
+          enable_cache_dnf: "false"
+          enable_cache_skopeo: "false"
+      - name: Upload ISO as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.iso-name.outputs.iso-name }}
+          path: ${{ steps.build.outputs.iso_path }}
+          retention-days: 30
+
+      - name: Upload checksum as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.iso-name.outputs.iso-name }}-checksum
+          path: ${{ steps.build.outputs.iso_path }}.sha256
+          retention-days: 30

@@ -15,7 +15,6 @@ RUN chmod +x \
     /ctx/build.sh \
     /ctx/signing.sh \
     /ctx/overrides.sh \
-    /ctx/vbox-build.sh \
     /ctx/cleanup.sh \
     /ctx/desktop-packages.sh \
     /ctx/cosmic-desktop.sh \

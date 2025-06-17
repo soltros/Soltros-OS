@@ -27,6 +27,7 @@ LAYERED_PACKAGES=(
     # Core system
     fish
     tailscale
+    gnome-boxes
     ptyxis
     papirus-icon-theme
     lm_sensors

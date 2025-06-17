@@ -41,7 +41,6 @@ RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 # Add RPM Fusion repos and VirtualBo
 RUN rpm-ostree install \
-    https://download.virtualbox.org/virtualbox/7.1.10/VirtualBox-7.1-7.1.10_169112_fedora40-1.x86_64.rpm \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 

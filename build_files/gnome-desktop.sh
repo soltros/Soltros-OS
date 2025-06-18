@@ -16,9 +16,6 @@ log "Installing gnome desktop environment from official Fedora groups"
 log "Installing gnome desktop group"
 dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "gnome-desktop"
 
-log "Installing gnome desktop applications group"
-dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "gnome-desktop-apps"
-
 log "Setting up gnome system configuration"
 
 # Create GSettings overrides for gnome with SoltrOS theming

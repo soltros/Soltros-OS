@@ -28,6 +28,14 @@ glib-compile-schemas /usr/share/glib-2.0/schemas/
 log "Removing Firefox in favor of Waterfox"
 dnf5 remove -y firefox firefox-* || true
 
+# Remove Discover
+log "Remove Discover"
+dnf5 remove -y discover* || true
+
+# Re-install Gnome Software
+log "Install Gnome Software"
+dnf5 install -y gnome-software-devel gnome-software-rpm-ostree gnome-software
+
 log "Enabling gnome-related services"
 # Enable services that gnome might need
 systemctl enable pipewire.service || true

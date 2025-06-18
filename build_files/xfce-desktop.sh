@@ -25,6 +25,19 @@ ADDITIONAL_PACKAGES=(
     cage
     polkit-gnome
     xdg-desktop-portal-gtk
+    pop-gtk2-theme
+    pop-gtk3-theme
+    pop-gtk4-theme
+    xfceria-gtk-theme
+    mint-themes-gtk3
+    mint-themes-gtk4
+    sweet-gtk-theme
+    yaru-gtk2-theme
+    yaru-gtk3-theme
+    yaru-gtk4-theme
+    pipewire
+    wireplumber  
+
 )
 
 dnf5 install --setopt=install_weak_deps=False  --skip-unavailable --nogpgcheck -y "${ADDITIONAL_PACKAGES[@]}"

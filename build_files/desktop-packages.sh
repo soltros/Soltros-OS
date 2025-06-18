@@ -28,6 +28,7 @@ LAYERED_PACKAGES=(
     fish
     tailscale
     gnome-boxes
+    gamescope
     ptyxis
     papirus-icon-theme
     lm_sensors

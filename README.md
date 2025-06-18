@@ -1,6 +1,6 @@
 # SoltrOS - Desktop Edition
 
-A gaming-optimized immutable Linux distribution based on Universal Blue's base image, featuring MacBook hardware support, gaming enhancments, the latest Budgie Desktop, comprehensive package management, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Universal Blue's base image, featuring MacBook hardware support, gaming enhancments, the latest Cinnamon Desktop, comprehensive package management, and developer-friendly tools.
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 

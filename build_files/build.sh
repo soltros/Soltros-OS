@@ -30,8 +30,8 @@ log "Building for base image: $BASE_IMAGE"
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
-log "Install Cinnamon Desktop Environment"
-echo_group /ctx/cinnamon-desktop.sh
+log "Install Budgie Desktop Environment"
+echo_group /ctx/budgie-desktop.sh
 
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh

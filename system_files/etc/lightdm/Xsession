@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+[ -r /etc/profile ] && . /etc/profile
+[ -r "$HOME/.profile" ] && . "$HOME/.profile"
+[ -r "$HOME/.xprofile" ] && . "$HOME/.xprofile"
+exec "$@"

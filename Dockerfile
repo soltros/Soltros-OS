@@ -17,7 +17,8 @@ RUN chmod +x \
     /ctx/overrides.sh \
     /ctx/cleanup.sh \
     /ctx/desktop-packages.sh \
-    /ctx/cinnamon-desktop.sh \
+    /ctx/budgie-desktop.sh \
+    /etc/lightdm/Xsession \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
    /ctx/desktop-defaults.sh

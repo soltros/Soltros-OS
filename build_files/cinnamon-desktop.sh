@@ -16,10 +16,6 @@ log "Installing cinnamon desktop environment from official Fedora groups"
 log "Installing cinnamon desktop group"
 dnf5 group install --nogpgcheck -y "cinnamon-desktop"
 
-# Install cinnamon applications group  
-log "Installing cinnamon desktop apps group"
-dnf5 group install --nogpgcheck -y "cinnamon-desktop-apps"
-
 log "Setting up cinnamon system configuration"
 
 # Create GSettings overrides for cinnamon with SoltrOS theming

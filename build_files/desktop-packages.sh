@@ -14,11 +14,11 @@ log "Enable Copr repos"
 
 COPR_REPOS=(
     pgdev/ghostty
+    # Add any other COPR repos you need for greetd/gtkgreet if they're not in main repos
 )
 for repo in "${COPR_REPOS[@]}"; do
     dnf5 -y copr enable "$repo"
 done
-
 
 log "Install layered applications"
 
@@ -27,7 +27,6 @@ LAYERED_PACKAGES=(
     # Core system
     fish
     tailscale
-    gnome-boxes
     ptyxis
     papirus-icon-theme
     lm_sensors
@@ -42,7 +41,11 @@ LAYERED_PACKAGES=(
     deja-dup
     playerctl
     linux-firmware
-    #waterfox
+    
+    # Display manager and desktop groups (installed via group install elsewhere)
+    greetd
+    greetd-gtkgreet
+    cage
     
     # Gaming & performance
     gamemode

@@ -31,6 +31,13 @@ rm -f /.nvimlog
 # Clean any leftover rpm-ostree config files at root level
 rm -f /40-rpmostree-pkg-usermod*.conf 2>/dev/null || true
 
+# Fix /var/run - it must be a symlink to /run for bootc containers
+if [ -d /var/run ] && [ ! -L /var/run ]; then
+    log "Fixing /var/run symlink"
+    rm -rf /var/run
+    ln -sf /run /var/run
+fi
+
 # Restore and setup required directories with correct permissions
 mkdir -p /tmp && chmod 1777 /tmp
 mkdir -p /var/tmp && chmod 1777 /var/tmp

@@ -30,7 +30,7 @@ dnf5 remove -y firefox firefox-* || true
 
 # Remove Discover
 log "Remove Discover"
-dnf5 remove -y discover* || true
+dnf5 remove -y plasma-discover* || true
 
 # Re-install Gnome Software
 log "Install Gnome Software"

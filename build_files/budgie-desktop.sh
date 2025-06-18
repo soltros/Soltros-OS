@@ -19,6 +19,9 @@ dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desk
 log "Installing budgie desktop applications group"
 dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop-apps"
 
+log "Installing SDDM due to issues with LightDM"
+dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y sddm
+
 log "Setting up budgie system configuration"
 
 # Create GSettings overrides for budgie with SoltrOS theming
@@ -41,6 +44,9 @@ log "Creating LightDM directories for container compatibility"
 mkdir -p /var/lib/lightdm-data/lightdm
 chown -R lightdm:lightdm /var/lib/lightdm-data
 chmod +x /etc/lightdm/Xsession
+
+# Disable Lightdm and enable SDDM for now till a fix is found
+systemctl enable sddm -f
 
 log "budgie desktop environment setup complete"
 log "Users can select 'budgie' from the login screen after installation"

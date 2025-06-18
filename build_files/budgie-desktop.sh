@@ -30,7 +30,7 @@ ADDITIONAL_PACKAGES=(
     xdg-desktop-portal-gtk
 )
 
-dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${ADDITIONAL_PACKAGES[@]}"
+dnf5 install --setopt=install_weak_deps=False  --skip-unavailable --nogpgcheck -y "${ADDITIONAL_PACKAGES[@]}"
 
 log "Setting up greetd configuration"
 

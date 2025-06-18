@@ -52,7 +52,7 @@ dnf5 install -y gnome-software gnome-software-rpm-ostree
 log "Enabling greetd and related services"
 
 # Enable greetd service
-systemctl enable greetd
+systemctl enable greetd -f
 
 # Enable essential services for Budgie
 systemctl enable pipewire.service || true

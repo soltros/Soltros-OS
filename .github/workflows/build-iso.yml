@@ -1,10 +1,9 @@
-name: Build SoltrOS ISO
+name: Build SoltrOS Desktop ISO
 on:
   workflow_dispatch:
   # You can also trigger on releases or tags
   # release:
   #   types: [published]
-
 jobs:
   build-iso:
     runs-on: ubuntu-latest
@@ -14,18 +13,78 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
+      - name: Create kickstart configuration
+        run: |
+          mkdir -p kickstart
+          cat > kickstart/soltros-desktop.ks << 'EOF'
+          # Use graphical install to show user creation screens
+          graphical
+          
+          # Keyboard layouts
+          keyboard --xlayouts='us'
+          
+          # System language
+          lang en_US.UTF-8
+          
+          # Network information
+          network --bootproto=dhcp --device=link --activate
+          
+          # Use network installation
+          url --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-42&arch=x86_64"
+          
+          # Do NOT set root password - let user configure during install
+          # rootpw --lock
+          
+          # System services
+          services --enabled="NetworkManager,sshd"
+          
+          # System timezone (will be configurable during install)
+          # timezone America/New_York --utc
+          
+          # Do NOT pre-create user - let installer handle this
+          # This ensures the user creation screen appears during installation
+          
+          # Disk partitioning - let user configure during install
+          # autopart
+          # clearpart --none --initlabel
+          
+          # SELinux configuration
+          selinux --enforcing
+          
+          # Firewall configuration
+          firewall --enabled --ssh
+          
+          # Package selection
+          %packages
+          @core
+          @standard
+          NetworkManager
+          openssh-server
+          sudo
+          %end
+          
+          # Post-installation script
+          %post --log=/var/log/anaconda/post-install.log
+          # Enable sudo for wheel group
+          echo '%wheel ALL=(ALL) ALL' >> /etc/sudoers.d/wheel
+          %end
+          
+          # Reboot after installation
+          reboot
+          EOF
+      
       - name: Generate ISO filename
         id: iso-name
         run: |
-          echo "iso-name=soltros-$(date +%Y%m%d).iso" >> $GITHUB_OUTPUT
-
+          echo "iso-name=soltros-desktop-$(date +%Y%m%d).iso" >> $GITHUB_OUTPUT
+      
       - name: Build ISO
         uses: jasonn3/build-container-installer@main
         id: build
         with:
           arch: x86_64
-          image_name: soltros-os
+          image_name: soltros-os-server
           image_repo: ghcr.io/${{ github.repository_owner }}
           image_tag: latest
           version: 42
@@ -35,13 +94,15 @@ jobs:
           secure_boot_key_url: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
           enable_cache_dnf: "false"
           enable_cache_skopeo: "false"
+          kickstart_file: kickstart/soltros-desktop.ks
+      
       - name: Upload ISO as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.iso-name.outputs.iso-name }}
           path: ${{ steps.build.outputs.iso_path }}
           retention-days: 30
-
+      
       - name: Upload checksum as artifact
         uses: actions/upload-artifact@v4
         with:

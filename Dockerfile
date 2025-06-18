@@ -39,6 +39,9 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
+# Create Greetd user
+RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
+
 # Add RPM Fusion repos and VirtualBo
 RUN rpm-ostree install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \

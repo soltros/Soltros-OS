@@ -29,6 +29,8 @@ LAYERED_PACKAGES=(
     tailscale
     gnome-boxes
     gamescope
+    gamescope-session
+    gamescope-session-steam
     ptyxis
     papirus-icon-theme
     lm_sensors

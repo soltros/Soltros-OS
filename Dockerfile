@@ -18,7 +18,6 @@ RUN chmod +x \
     /ctx/cleanup.sh \
     /ctx/desktop-packages.sh \
     /ctx/budgie-desktop.sh \
-    /etc/lightdm/Xsession \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
    /ctx/desktop-defaults.sh

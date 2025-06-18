@@ -40,6 +40,7 @@ systemctl enable wireplumber.service || true
 log "Creating LightDM directories for container compatibility"
 mkdir -p /var/lib/lightdm-data/lightdm
 chown -R lightdm:lightdm /var/lib/lightdm-data
+chmod +x /etc/lightdm/Xsession
 
 log "budgie desktop environment setup complete"
 log "Users can select 'budgie' from the login screen after installation"

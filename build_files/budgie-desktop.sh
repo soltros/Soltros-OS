@@ -14,10 +14,10 @@ log "Installing budgie desktop environment from official Fedora groups"
 
 # Install the main budgie desktop group
 log "Installing budgie desktop group"
-dnf5 group install --nogpgcheck -y "budgie-desktop"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop"
 
 log "Installing budgie desktop applications group"
-dnf5 group install --nogpgcheck -y "budgie-desktop-apps"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop-apps"
 
 log "Setting up budgie system configuration"
 

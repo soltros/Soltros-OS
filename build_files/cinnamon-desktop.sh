@@ -8,16 +8,13 @@ log() {
   echo "=== $* ==="
 }
 
-log "Setting up Budgie Desktop Environment with greetd + gtkgreet"
+log "Setting up cinnamon Desktop Environment with greetd + gtkgreet"
 
-log "Installing Budgie desktop groups"
+log "Installing cinnamon desktop groups"
 
-# Install the main budgie desktop group
-log "Installing budgie desktop group"
-dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop"
-
-log "Installing budgie desktop applications group"
-dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop-apps"
+# Install the main cinnamon desktop group
+log "Installing cinnamon desktop group"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "cinnamon-desktop"
 
 log "Installing greetd and essential display components"
 
@@ -46,7 +43,7 @@ log "Removing conflicting display managers and packages"
 dnf5 remove -y firefox firefox-* || true
 
 # Install GNOME Software for package management
-log "Install GNOME Software for Budgie"
+log "Install GNOME Software for cinnamon"
 dnf5 install -y gnome-software gnome-software-rpm-ostree
 
 log "Enabling greetd and related services"
@@ -54,7 +51,7 @@ log "Enabling greetd and related services"
 # Enable greetd service
 systemctl enable greetd -f
 
-# Enable essential services for Budgie
+# Enable essential services for cinnamon
 systemctl enable pipewire.service || true
 systemctl enable pipewire-pulse.service || true
 systemctl enable wireplumber.service || true
@@ -74,6 +71,6 @@ mkdir -p /usr/share/soltros/scripts
 
 chmod +x /usr/share/soltros/scripts/greetd-troubleshoot.sh
 
-log "Budgie desktop environment with greetd setup complete"
+log "cinnamon desktop environment with greetd setup complete"
 log "After installation, users will see the gtkgreet login screen"
 log "Use /usr/share/soltros/scripts/greetd-troubleshoot.sh for debugging"

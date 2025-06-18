@@ -8,13 +8,13 @@ log() {
   echo "=== $* ==="
 }
 
-log "Setting up cinnamon Desktop Environment with greetd + gtkgreet"
+log "Setting up xfce Desktop Environment with greetd + gtkgreet"
 
-log "Installing cinnamon desktop groups"
+log "Installing xfce desktop groups"
 
-# Install the main cinnamon desktop group
-log "Installing cinnamon desktop group"
-dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "cinnamon-desktop"
+# Install the main xfce desktop group
+log "Installing xfce desktop group"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "xfce-desktop"
 
 log "Installing greetd and essential display components"
 
@@ -43,7 +43,7 @@ log "Removing conflicting display managers and packages"
 dnf5 remove -y firefox firefox-* || true
 
 # Install GNOME Software for package management
-log "Install GNOME Software for cinnamon"
+log "Install GNOME Software for xfce"
 dnf5 install -y gnome-software gnome-software-rpm-ostree
 
 log "Enabling greetd and related services"
@@ -51,7 +51,7 @@ log "Enabling greetd and related services"
 # Enable greetd service
 systemctl enable greetd -f
 
-# Enable essential services for cinnamon
+# Enable essential services for xfce
 systemctl enable pipewire.service || true
 systemctl enable pipewire-pulse.service || true
 systemctl enable wireplumber.service || true
@@ -71,6 +71,6 @@ mkdir -p /usr/share/soltros/scripts
 
 chmod +x /usr/share/soltros/scripts/greetd-troubleshoot.sh
 
-log "cinnamon desktop environment with greetd setup complete"
+log "xfce desktop environment with greetd setup complete"
 log "After installation, users will see the gtkgreet login screen"
 log "Use /usr/share/soltros/scripts/greetd-troubleshoot.sh for debugging"

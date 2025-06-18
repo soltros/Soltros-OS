@@ -17,7 +17,7 @@ RUN chmod +x \
     /ctx/overrides.sh \
     /ctx/cleanup.sh \
     /ctx/desktop-packages.sh \
-    /ctx/cinnamon-desktop.sh \
+    /ctx/xfce-desktop.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
    /ctx/desktop-defaults.sh

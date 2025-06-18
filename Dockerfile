@@ -50,11 +50,6 @@ RUN rpm-ostree install \
 # Enable Tailscale
 RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
 
-# Set up Cosmic Settings Backup
-RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cbackup
-RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop
-RUN mv /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop /usr/share/applications/
-
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
     curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \

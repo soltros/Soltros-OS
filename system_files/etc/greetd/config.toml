@@ -1,0 +1,10 @@
+[terminal]
+# The VT to run the greeter on. Can be "next", "current" or a number
+# designating the VT.
+vt = 1
+
+[default_session]
+# Using cage compositor to run gtkgreet
+# -s enables VT switching to prevent lockout
+command = "cage -s -- gtkgreet"
+user = "greetd"

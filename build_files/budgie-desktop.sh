@@ -12,9 +12,12 @@ log "Setting up Budgie Desktop Environment with GDM"
 
 log "Installing GDM and essential display components (without GNOME Shell)"
 
-# Install only GDM and essential components, not the full GNOME desktop
+# Install the main budgie desktop group
+log "Installing budgie desktop group"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop"
 
-dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "@budgie-desktop @budgie-desktop-apps"
+log "Installing budgie desktop applications group"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "budgie-desktop-apps"
 
 log "Setting up GDM system configuration"
 

@@ -17,7 +17,7 @@ RUN chmod +x \
     /ctx/overrides.sh \
     /ctx/cleanup.sh \
     /ctx/desktop-packages.sh \
-    /ctx/cosmic-desktop.sh \
+    /ctx/budgie-desktop.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
    /ctx/desktop-defaults.sh

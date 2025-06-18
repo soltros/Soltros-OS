@@ -1,8 +1,6 @@
 # SoltrOS - Desktop Edition
 
-![SoltrOS Desktop with Cosmic](https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/Screenshot_2025-06-10_04-42-16.png)
-
-A gaming-optimized immutable Linux distribution based on Universal Blue's base image, featuring MacBook hardware support, gaming enhancments, the latest Cosmic Desktop, comprehensive package management, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Universal Blue's base image, featuring MacBook hardware support, gaming enhancments, the latest Budgie Desktop, comprehensive package management, and developer-friendly tools.
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 

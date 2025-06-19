@@ -44,6 +44,7 @@ RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
 
 # Add RPM Fusion repos and VirtualBo
 RUN rpm-ostree install \
+    http://mirror.yandex.ru/altlinux/p11/branch/noarch/RPMS.classic/gnome-shell-extension-arcmenu-65-alt5.noarch.rpm \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 

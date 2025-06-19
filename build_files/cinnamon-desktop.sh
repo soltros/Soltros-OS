@@ -8,13 +8,13 @@ log() {
   echo "=== $* ==="
 }
 
-log "Setting up xfce Desktop Environment with greetd + gtkgreet"
+log "Setting up cinnamon Desktop Environment with greetd + gtkgreet"
 
-log "Installing xfce desktop groups"
+log "Installing cinnamon desktop groups"
 
-# Install the main xfce desktop group
-log "Installing xfce desktop group"
-dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "xfce-desktop"
+# Install the main cinnamon desktop group
+log "Installing cinnamon desktop group"
+dnf5 group install --setopt=install_weak_deps=False --nogpgcheck -y "cinnamon-desktop"
 
 log "Installing greetd and essential display components"
 
@@ -28,17 +28,15 @@ ADDITIONAL_PACKAGES=(
     pop-gtk2-theme
     pop-gtk3-theme
     pop-gtk4-theme
-    xfceria-gtk-theme
+    cinnamonria-gtk-theme
     mint-themes-gtk3
     mint-themes-gtk4
-    xfce4-whiskermenu-plugin
     sweet-gtk-theme
     yaru-gtk2-theme
     yaru-gtk3-theme
     yaru-gtk4-theme
     pipewire
     wireplumber  
-    libxfce4ui
 
 )
 
@@ -58,7 +56,7 @@ log "Removing conflicting display managers and packages"
 dnf5 remove -y firefox firefox-* || true
 
 # Install GNOME Software for package management
-log "Install GNOME Software for xfce"
+log "Install GNOME Software for cinnamon"
 dnf5 install -y gnome-software gnome-software-rpm-ostree
 
 log "Enabling greetd and related services"
@@ -66,7 +64,7 @@ log "Enabling greetd and related services"
 # Enable greetd service
 systemctl enable greetd -f
 
-# Enable essential services for xfce
+# Enable essential services for cinnamon
 systemctl enable pipewire.service || true
 systemctl enable pipewire-pulse.service || true
 systemctl enable wireplumber.service || true
@@ -86,6 +84,6 @@ mkdir -p /usr/share/soltros/scripts
 
 chmod +x /usr/share/soltros/scripts/greetd-troubleshoot.sh
 
-log "xfce desktop environment with greetd setup complete"
+log "cinnamon desktop environment with greetd setup complete"
 log "After installation, users will see the gtkgreet login screen"
 log "Use /usr/share/soltros/scripts/greetd-troubleshoot.sh for debugging"

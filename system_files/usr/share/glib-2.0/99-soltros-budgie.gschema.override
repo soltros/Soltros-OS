@@ -6,7 +6,7 @@ color-scheme='prefer-dark'
 [org.gnome.desktop.wm.preferences]
 button-layout=':minimize,maximize,close'
 
-[com.solus-project.xfce-panel]
+[com.solus-project.cinnamon-panel]
 dark-theme=true
 
 [org.gnome.desktop.background]

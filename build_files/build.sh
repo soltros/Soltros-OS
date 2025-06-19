@@ -30,8 +30,8 @@ log "Building for base image: $BASE_IMAGE"
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
-log "Install plasma Desktop Environment"
-echo_group /ctx/plasma-desktop.sh
+log "Install Cosmic Desktop Environment"
+echo_group /ctx/cosmic-desktop.sh
 
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh

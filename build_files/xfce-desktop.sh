@@ -28,13 +28,17 @@ ADDITIONAL_PACKAGES=(
     pop-gtk2-theme
     pop-gtk3-theme
     pop-gtk4-theme
-    materia-gtk-theme
+    xfceria-gtk-theme
     mint-themes-gtk3
     mint-themes-gtk4
+    xfce4-whiskermenu-plugin
     sweet-gtk-theme
     yaru-gtk2-theme
     yaru-gtk3-theme
-    yaru-gtk4-theme  
+    yaru-gtk4-theme
+    pipewire
+    wireplumber  
+    libxfce4ui
 
 )
 

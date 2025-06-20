@@ -31,9 +31,6 @@ log "Building for base image: $BASE_IMAGE"
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
-log "Install gnome Desktop Environment"
-echo_group /ctx/gnome-desktop.sh
-
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 

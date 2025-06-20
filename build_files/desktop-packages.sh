@@ -147,3 +147,7 @@ systemctl enable wireplumber.service || true
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"
 dnf5 remove -y firefox firefox-* || true
+
+# Remove Plasma Discover from base image
+log "Removing Plasma Discover"
+dnf5 remove -y plasma-discover* || true

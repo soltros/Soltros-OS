@@ -41,7 +41,6 @@ LAYERED_PACKAGES=(
     deja-dup
     playerctl
     linux-firmware
-    gnome-shell-extension-dash-to-panel
     pipewire-alsa 
     pipewire-gstreamer
     pipewire-jack-audio-connection-kit

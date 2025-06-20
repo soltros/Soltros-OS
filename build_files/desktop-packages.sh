@@ -139,3 +139,12 @@ log "Disable Copr repos as we do not need it anymore"
 for repo in "${COPR_REPOS[@]}"; do
     dnf5 -y copr disable "$repo"
 done
+
+#Enabling various services
+systemctl enable pipewire.service || true
+systemctl enable pipewire-pulse.service || true
+systemctl enable wireplumber.service || true
+
+# Remove Firefox to replace with Waterfox
+log "Removing Firefox in favor of Waterfox"
+dnf5 remove -y firefox firefox-* || true

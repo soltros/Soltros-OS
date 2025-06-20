@@ -1,5 +1,6 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
+#ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
+ARG BASE_IMAGE=ghcr.io/ublue-os/budgie-atomic-main
 ARG TAG_VERSION=latest
 
 # Stage 1: context for scripts (not included in final image)
@@ -17,7 +18,6 @@ RUN chmod +x \
     /ctx/overrides.sh \
     /ctx/cleanup.sh \
     /ctx/desktop-packages.sh \
-    /ctx/gnome-desktop.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
    /ctx/desktop-defaults.sh

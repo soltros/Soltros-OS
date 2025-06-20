@@ -24,7 +24,8 @@ function echo_group() {
 log "Starting SoltrOS build process"
 
 # Base image for reference (though not used in conditional logic anymore)
-BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/base-main}"
+BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/budgie-atomic-main}"
+
 log "Building for base image: $BASE_IMAGE"
 
 log "Enable container signing"

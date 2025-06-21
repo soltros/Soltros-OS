@@ -129,7 +129,7 @@ systemctl enable pipewire-pulse.service || true
 systemctl enable wireplumber.service || true
 
 # Papirus Folders Utility
-wget -qO- https://git.io/papirus-folders-install | sh
+curl -fsSL https://git.io/papirus-folders-install | sh
 
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"

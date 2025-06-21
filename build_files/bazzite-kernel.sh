@@ -18,8 +18,8 @@ while read -r url; do
     curl -sL -O "$url"
 done < /tmp/rpm_urls.txt
 
-# Install Bazzite kernel
-rpm -ivh --force --nodeps *.rpm
+# Install Bazzite kernel (disable problematic scripts for container builds)
+rpm -ivh --force --nodeps --noscripts *.rpm
 
 # Remove Fedora CoreOS kernel after Bazzite is installed
 rpm -qa | grep '^kernel' | grep -v bazzite | xargs -r rpm -e --nodeps 2>/dev/null || true

@@ -1,9 +1,6 @@
 # Set base image and tag
-#ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
-#ARG BASE_IMAGE=ghcr.io/ublue-os/budgie-atomic-main
-#ARG TAG_VERSION=latest
-ARG BASE_IMAGE=docker.io/fedora
-ARG TAG_VERSION=latest
+ARG BASE_IMAGE=quay.io/fedora/fedora-coreos
+ARG TAG_VERSION=stable
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)

@@ -40,10 +40,8 @@ RUN dnf5 remove plasma-desktop plasma-workspace plasma-* kde-* -y && \
     dnf5 remove $(rpm -qa | grep -E "^(plasma|kde)" | grep -v kf6) -y && \
     dnf5 autoremove -y
 
-RUN dnf5 install kf6-kio-core-libs kf6-kio-gui -y && \
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y
-
 
 # Get rid of Plymouth
 

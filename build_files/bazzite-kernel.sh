@@ -22,7 +22,15 @@ done < /tmp/rpm_urls.txt
 rpm -ivh --force --nodeps --noscripts *.rpm
 
 # Remove Fedora CoreOS kernel after Bazzite is installed
-rpm -qa | grep '^kernel' | grep -v bazzite | xargs -r rpm -e --nodeps 2>/dev/null || true
+echo "Removing Fedora CoreOS kernel packages..."
+FEDORA_KERNELS=$(rpm -qa | grep '^kernel' | grep -v bazzite || true)
+if [ -n "$FEDORA_KERNELS" ]; then
+    echo "Found Fedora kernels to remove: $FEDORA_KERNELS"
+    echo "$FEDORA_KERNELS" | xargs -r rpm -e --nodeps || true
+    echo "Fedora kernel removal completed"
+else
+    echo "No Fedora kernel packages found to remove"
+fi
 
 # Cleanup
 rm -rf /tmp/bazzite-rpms /tmp/rpm_urls.txt

@@ -1,1 +1,0 @@
-Waterfox is to be placed here due to constraints with /opt and /usr/bin.

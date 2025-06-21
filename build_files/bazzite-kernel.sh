@@ -16,13 +16,6 @@ echo "Detected architecture: ${ARCH}"
 TEMP_DIR="/tmp/bazzite-kernel"
 mkdir -p "${TEMP_DIR}"
 
-# Function to cleanup on exit
-cleanup() {
-    echo "Cleaning up temporary files..."
-    rm -rf "${TEMP_DIR}"
-}
-trap cleanup EXIT
-
 # Get latest release information from GitHub API
 echo "Fetching latest release information from GitHub..."
 RELEASE_DATA=$(curl -s "${GITHUB_API_URL}")
@@ -55,18 +48,21 @@ echo "Downloading Bazzite kernel packages..."
 cd "${TEMP_DIR}"
 
 DOWNLOADED_COUNT=0
-for url in ${RPM_URLS}; do
-    PACKAGE_NAME=$(basename "${url}")
-    echo "Downloading: ${PACKAGE_NAME}"
-    
-    if curl -L -o "${PACKAGE_NAME}" "${url}"; then
-        ((DOWNLOADED_COUNT++))
-        echo "✓ Downloaded: ${PACKAGE_NAME}"
-    else
-        echo "✗ Failed to download: ${PACKAGE_NAME}"
-        exit 1
+while IFS= read -r url; do
+    if [ -n "${url}" ]; then
+        PACKAGE_NAME=$(basename "${url}")
+        echo "Downloading: ${PACKAGE_NAME}"
+        
+        if curl -sL -o "${PACKAGE_NAME}" "${url}"; then
+            ((DOWNLOADED_COUNT++))
+            echo "✓ Downloaded: ${PACKAGE_NAME}"
+        else
+            echo "✗ Failed to download: ${PACKAGE_NAME}"
+            rm -rf "${TEMP_DIR}"
+            exit 1
+        fi
     fi
-done
+done <<< "${RPM_URLS}"
 
 echo "Successfully downloaded ${DOWNLOADED_COUNT} packages"
 
@@ -76,9 +72,7 @@ ls -la "${TEMP_DIR}"/*.rpm
 
 # Remove existing Fedora kernel packages (if any)
 echo "Removing existing Fedora kernel packages..."
-dnf remove -y \
-    'kernel*' \
-    2>/dev/null || echo "No existing kernel packages to remove"
+rpm -qa | grep -E '^kernel' | xargs -r rpm -e --nodeps 2>/dev/null || echo "No existing kernel packages to remove"
 
 # Clean any leftover kernel files
 echo "Cleaning up any remaining kernel files..."
@@ -87,7 +81,7 @@ rm -rf /boot/vmlinuz-* /boot/initramfs-* /boot/System.map-* /boot/config-* 2>/de
 
 # Install Bazzite kernel packages
 echo "Installing Bazzite kernel packages..."
-rpm -ivh --force "${TEMP_DIR}"/*.rpm
+rpm -ivh --force --nodeps "${TEMP_DIR}"/*.rpm
 
 # Verify installation
 echo "Verifying Bazzite kernel installation..."
@@ -95,6 +89,7 @@ INSTALLED_KERNELS=$(rpm -qa | grep -E "^kernel.*bazzite" || true)
 
 if [ -z "${INSTALLED_KERNELS}" ]; then
     echo "ERROR: No Bazzite kernel packages found after installation"
+    rm -rf "${TEMP_DIR}"
     exit 1
 fi
 
@@ -103,20 +98,27 @@ echo "${INSTALLED_KERNELS}"
 
 # Update initramfs for all installed kernels
 echo "Updating initramfs..."
-for kernel_version in $(rpm -qa --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | grep bazzite); do
-    echo "Updating initramfs for kernel ${kernel_version}..."
-    dracut --force --kver "${kernel_version}" || echo "Warning: Failed to update initramfs for ${kernel_version}"
+KERNEL_VERSIONS=$(rpm -qa --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core 2>/dev/null | grep bazzite || true)
+for kernel_version in ${KERNEL_VERSIONS}; do
+    if [ -n "${kernel_version}" ]; then
+        echo "Updating initramfs for kernel ${kernel_version}..."
+        dracut --force --kver "${kernel_version}" 2>/dev/null || echo "Warning: Failed to update initramfs for ${kernel_version}"
+    fi
 done
 
-# Update bootloader configuration
-echo "Updating bootloader configuration..."
-if [ -f /boot/grub2/grub.cfg ]; then
-    grub2-mkconfig -o /boot/grub2/grub.cfg || echo "Warning: Failed to update GRUB configuration"
+# Update bootloader configuration if grub exists
+if command -v grub2-mkconfig >/dev/null 2>&1 && [ -d /boot/grub2 ]; then
+    echo "Updating bootloader configuration..."
+    grub2-mkconfig -o /boot/grub2/grub.cfg 2>/dev/null || echo "Warning: Failed to update GRUB configuration"
 fi
 
 # Clean package cache
 echo "Cleaning package manager cache..."
-dnf clean all
+dnf clean all 2>/dev/null || rpm --rebuilddb
+
+# Clean up temporary files
+echo "Cleaning up temporary files..."
+rm -rf "${TEMP_DIR}"
 
 echo "✓ Bazzite kernel installation completed successfully!"
 echo "Installed kernel version: ${VERSION_TAG}"

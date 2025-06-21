@@ -135,3 +135,6 @@ dnf5 remove -y firefox firefox-* || true
 # Remove Plasma Discover from base image
 log "Removing Plasma Discover"
 dnf5 remove -y plasma-discover* || true
+
+log "Re-installing Flatpak"
+dnf5 install -y gnome-software gnome-software-rpm-ostree flatpak

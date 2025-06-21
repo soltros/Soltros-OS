@@ -36,10 +36,8 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-RUN dnf5 remove *plasma* *kde* *qt5* *qt6* kf5-* kf6-* -y && \
-    dnf5 remove phonon* kwin* oxygen* breeze* -y && \
-    dnf5 autoremove -y && \
-    dnf5 clean all
+RUN dnf5 remove kde* plasma* qt5* qt6* kf5-* kf6-* --allowerasing -y && \
+    dnf5 autoremove -y
 
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y

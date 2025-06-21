@@ -48,8 +48,8 @@ RUN dnf5 group install "budgie-desktop-apps" -y
 RUN dnf5 group remove "gnome-desktop" -y
 
 # Re-run just in case
-RUN dnf5 group install -- "budgie-desktop" -y
-RUN dnf5 group install -- "budgie-desktop-apps" -y
+RUN dnf5 group install --skip-unavailable "budgie-desktop" -y
+RUN dnf5 group install --skip-unavailable "budgie-desktop-apps" -y
 
 # Enable Tailscale
 RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service

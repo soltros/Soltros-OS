@@ -37,13 +37,11 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 RUN for pkg in $(rpm -qa | grep -iE "(plasma|kde|qt[56]|kf[56])"); do \
-        echo "Removing $pkg and its dependencies..."; \
         dnf5 remove $pkg -y 2>/dev/null || rpm -e --nodeps $pkg 2>/dev/null || true; \
     done && \
-    while dnf5 autoremove -y 2>/dev/null; do \
-        echo "Continuing autoremove..."; \
-    done && \
-    dnf5 remove $(dnf5 repoquery --unneeded -q 2>/dev/null | head -100) -y 2>/dev/null || true && \
+    dnf5 autoremove -y && \
+    dnf5 autoremove -y && \
+    dnf5 autoremove -y && \
     find /usr -name "*plasma*" -o -name "*kde*" -o -name "*qt[56]*" -o -name "*kf[56]*" | head -1000 | xargs rm -rf 2>/dev/null || true && \
     rm -rf /usr/share/{plasma*,kde*,kf5,kf6} /usr/{lib,lib64}/{qt5,qt6,kde*,kf5,kf6,plasma*} /etc/xdg/{plasma*,kde*} && \
     dnf5 clean all && \

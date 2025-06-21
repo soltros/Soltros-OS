@@ -18,8 +18,8 @@ while read -r url; do
     curl -sL -O "$url"
 done < /tmp/rpm_urls.txt
 
-# Install Bazzite kernel (disable problematic scripts for container builds)
-rpm -ivh --force --nodeps --noscripts *.rpm
+# Install Bazzite kernel
+rpm -ivh --force --nodeps *.rpm
 
 # Remove Fedora CoreOS kernel after Bazzite is installed
 echo "Removing Fedora CoreOS kernel packages..."
@@ -30,6 +30,17 @@ if [ -n "$FEDORA_KERNELS" ]; then
     echo "Fedora kernel removal completed"
 else
     echo "No Fedora kernel packages found to remove"
+fi
+
+# Ensure bootloader setup for ostree systems
+echo "Setting up bootloader for new kernel..."
+KERNEL_VERSION=$(rpm -qa --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | grep bazzite | head -1)
+if [ -n "$KERNEL_VERSION" ]; then
+    echo "Found Bazzite kernel version: $KERNEL_VERSION"
+    # For ostree systems, ensure kernel is properly staged
+    if [ -f /boot/loader/entries ]; then
+        ostree admin deploy --karg-proc-cmdline --os=fedora || true
+    fi
 fi
 
 # Cleanup

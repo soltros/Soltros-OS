@@ -1,15 +1,15 @@
 # Set base image and tag
 #ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
-ARG BASE_IMAGE=ghcr.io/ublue-os/budgie-atomic-main
+#ARG BASE_IMAGE=ghcr.io/ublue-os/budgie-atomic-main
+#ARG TAG_VERSION=latest
+ARG BASE_IMAGE=docker.io/fedora
 ARG TAG_VERSION=latest
+FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
-
-# Make my Justfile the default justfile
-COPY system_files/usr/share/soltros/just/soltros.just /usr/share/ublue-os/justfile
 
 # Change perms
 RUN chmod +x \

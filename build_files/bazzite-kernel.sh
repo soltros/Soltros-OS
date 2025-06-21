@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "Installing Bazzite kernel..."
+echo "Installing Bazzite kernel for container image..."
 
 # Get architecture
 ARCH=$(uname -m)
@@ -18,32 +18,36 @@ while read -r url; do
     curl -sL -O "$url"
 done < /tmp/rpm_urls.txt
 
-# Install Bazzite kernel
-rpm -ivh --force --nodeps *.rpm
+# For container builds, we need to disable kernel-install scripts that don't work in containers
+# This is the proper approach for derived container images according to Fedora documentation
 
-# Remove Fedora CoreOS kernel after Bazzite is installed
+# Remove existing kernels first
 echo "Removing Fedora CoreOS kernel packages..."
-FEDORA_KERNELS=$(rpm -qa | grep '^kernel' | grep -v bazzite || true)
-if [ -n "$FEDORA_KERNELS" ]; then
-    echo "Found Fedora kernels to remove: $FEDORA_KERNELS"
-    echo "$FEDORA_KERNELS" | xargs -r rpm -e --nodeps || true
-    echo "Fedora kernel removal completed"
-else
-    echo "No Fedora kernel packages found to remove"
-fi
+rpm -qa | grep '^kernel' | xargs -r rpm -e --nodeps 2>/dev/null || true
 
-# Ensure bootloader setup for ostree systems
-echo "Setting up bootloader for new kernel..."
+# Install Bazzite kernel with scripts disabled (proper for container builds)
+echo "Installing Bazzite kernel packages (container mode)..."
+rpm -ivh --force --nodeps --noscripts *.rpm
+
+# Manually handle what the scripts would do, but in a container-safe way
 KERNEL_VERSION=$(rpm -qa --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' kernel-core | grep bazzite | head -1)
 if [ -n "$KERNEL_VERSION" ]; then
-    echo "Found Bazzite kernel version: $KERNEL_VERSION"
-    # For ostree systems, ensure kernel is properly staged
-    if [ -f /boot/loader/entries ]; then
-        ostree admin deploy --karg-proc-cmdline --os=fedora || true
-    fi
+    echo "Setting up kernel $KERNEL_VERSION for container image..."
+    
+    # Create necessary directories
+    mkdir -p /boot /lib/modules
+    
+    # The initramfs and bootloader will be handled by bootc/ostree at deployment time
+    # We just need the kernel files in place
+    echo "Kernel files installed successfully"
+    
+    # Verify installation
+    echo "Installed kernel packages:"
+    rpm -qa | grep bazzite
 fi
 
 # Cleanup
 rm -rf /tmp/bazzite-rpms /tmp/rpm_urls.txt
 
-echo "Bazzite kernel installed"
+echo "Bazzite kernel installation completed for container image"
+echo "Kernel version: $KERNEL_VERSION"

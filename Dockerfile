@@ -36,20 +36,30 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-RUN for pkg in $(rpm -qa | grep -iE "(plasma|kde|qt[56]|kf[56])"); do \
-        dnf5 remove $pkg -y 2>/dev/null || rpm -e --nodeps $pkg 2>/dev/null || true; \
-    done && \
-    dnf5 autoremove -y && \
-    dnf5 autoremove -y && \
-    dnf5 autoremove -y && \
-    find /usr -name "*plasma*" -o -name "*kde*" -o -name "*qt[56]*" -o -name "*kf[56]*" | head -1000 | xargs rm -rf 2>/dev/null || true && \
-    rm -rf /usr/share/{plasma*,kde*,kf5,kf6} /usr/{lib,lib64}/{qt5,qt6,kde*,kf5,kf6,plasma*} /etc/xdg/{plasma*,kde*} && \
-    dnf5 clean all && \
-    ldconfig
-    
+RUN dnf5 remove plasma-desktop plasma-workspace plasma-* kde-* -y && \
+    dnf5 remove $(rpm -qa | grep -E "^(plasma|kde)" | grep -v kf6) -y && \
+    dnf5 autoremove -y
+
 RUN dnf5 install kf6-kio-core-libs kf6-kio-gui -y && \
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y
+
+
+# Get rid of Plymouth
+
+RUN dnf5 remove plymouth* -y && \
+    systemctl disable plymouth-start.service plymouth-read-write.service plymouth-quit.service plymouth-quit-wait.service plymouth-reboot.service plymouth-kexec.service plymouth-halt.service plymouth-poweroff.service 2>/dev/null || true && \
+    rm -rf /usr/share/plymouth /usr/lib/plymouth /etc/plymouth && \
+    rm -f /usr/lib/systemd/system/plymouth* /usr/lib/systemd/system/*/plymouth* && \
+    rm -f /usr/bin/plymouth /usr/sbin/plymouthd && \
+    sed -i 's/rhgb quiet//' /etc/default/grub 2>/dev/null || true && \
+    sed -i 's/splash//' /etc/default/grub 2>/dev/null || true && \
+    sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true && \
+    echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf && \
+    grub2-mkconfig -o /boot/grub2/grub.cfg 2>/dev/null || true && \
+    dracut -f 2>/dev/null || true && \
+    dnf5 autoremove -y && \
+    dnf5 clean all
 
 # Enable Tailscale
 RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service

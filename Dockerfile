@@ -17,7 +17,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/bazzite-kernel.sh \
+    /ctx/cachyos-kernel.sh \
    /ctx/desktop-defaults.sh
 
 # Stage 2: final image

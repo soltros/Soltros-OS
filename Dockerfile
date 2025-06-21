@@ -36,15 +36,21 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-RUN dnf5 remove kde* plasma* qt5* qt6* kf5-* kf6-* --allowerasing -y && \
-    dnf5 autoremove -y
+RUN for pkg in $(rpm -qa | grep -iE "(plasma|kde|qt[56]|kf[56])"); do \
+        echo "Removing $pkg and its dependencies..."; \
+        dnf5 remove $pkg -y 2>/dev/null || rpm -e --nodeps $pkg 2>/dev/null || true; \
+    done && \
+    while dnf5 autoremove -y 2>/dev/null; do \
+        echo "Continuing autoremove..."; \
+    done && \
+    dnf5 remove $(dnf5 repoquery --unneeded -q 2>/dev/null | head -100) -y 2>/dev/null || true && \
+    find /usr -name "*plasma*" -o -name "*kde*" -o -name "*qt[56]*" -o -name "*kf[56]*" | head -1000 | xargs rm -rf 2>/dev/null || true && \
+    rm -rf /usr/share/{plasma*,kde*,kf5,kf6} /usr/{lib,lib64}/{qt5,qt6,kde*,kf5,kf6,plasma*} /etc/xdg/{plasma*,kde*} && \
+    dnf5 clean all && \
+    ldconfig
 
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y
-
-# Re-run just in case
-RUN dnf5 group install --skip-unavailable "budgie-desktop" -y
-RUN dnf5 group install --skip-unavailable "budgie-desktop-apps" -y
 
 # Enable Tailscale
 RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service

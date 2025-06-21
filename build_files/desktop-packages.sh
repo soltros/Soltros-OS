@@ -136,5 +136,8 @@ dnf5 remove -y firefox firefox-* || true
 log "Removing Plasma Discover"
 dnf5 remove -y plasma-discover* || true
 
+# Force enable Lightdm
+systemctl enable lightdm -f
+
 log "Re-installing Flatpak"
 dnf5 install -y gnome-software gnome-software-rpm-ostree flatpak

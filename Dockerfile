@@ -36,10 +36,7 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Create Greetd user
-RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
-
-RUN dnf5 remove kde* plasma* qt5* qt6* -y
+RUN dnf5 remove kde* plasma* qt5* qt6* -y --skip-broken 
 
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y

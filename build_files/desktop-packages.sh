@@ -10,16 +10,6 @@ log() {
 
 log "Installing RPM packages"
 
-log "Enable Copr repos"
-
-COPR_REPOS=(
-    pgdev/ghostty
-    # Add any other COPR repos you need for greetd/gtkgreet if they're not in main repos
-)
-for repo in "${COPR_REPOS[@]}"; do
-    dnf5 -y copr enable "$repo"
-done
-
 log "Install layered applications"
 
 # Layered Applications

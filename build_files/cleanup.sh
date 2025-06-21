@@ -47,5 +47,5 @@ mkdir -p /var/log
 log "Cleanup completed"
 
 # Validate container and commit changes
-bootc container lint
-ostree container commit
+#bootc container lint
+#ostree container commit

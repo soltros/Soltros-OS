@@ -43,7 +43,7 @@ RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
 
 # Add RPM Fusion repos and VirtualBo
-RUN rpm-ostree install \
+RUN sudo dnf5 install install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 

@@ -45,7 +45,7 @@ RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y
 
-RUN dnf5 group remove "gnome-desktop" -y
+RUN dnf5 remove gnome* -y
 
 # Re-run just in case
 RUN dnf5 group install --skip-unavailable "budgie-desktop" -y

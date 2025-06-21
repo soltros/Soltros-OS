@@ -133,12 +133,6 @@ LAYERED_PACKAGES=(
 
 dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
 
-log "Disable Copr repos as we do not need it anymore"
-
-for repo in "${COPR_REPOS[@]}"; do
-    dnf5 -y copr disable "$repo"
-done
-
 #Enabling various services
 systemctl enable pipewire.service || true
 systemctl enable pipewire-pulse.service || true

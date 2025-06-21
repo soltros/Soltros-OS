@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora/fedora-coreos
+ARG BASE_IMAGE=ghcr.io/ublue-os/bazzite
 ARG TAG_VERSION=stable
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
@@ -17,7 +17,6 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/cachyos-kernel.sh \
    /ctx/desktop-defaults.sh
 
 # Stage 2: final image

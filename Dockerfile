@@ -45,10 +45,11 @@ RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y
 
-# Add RPM Fusion repos and VirtualBox
-RUN sudo dnf5 install \
-    https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-    https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+RUN dnf5 group remove "gnome-desktop" -y
+
+# Re-run just in case
+RUN dnf5 group install -- "budgie-desktop" -y
+RUN dnf5 group install -- "budgie-desktop-apps" -y
 
 # Enable Tailscale
 RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service

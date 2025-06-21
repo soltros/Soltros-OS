@@ -42,8 +42,11 @@ RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 # Create Greetd user
 RUN useradd -r -s /sbin/nologin -d /var/lib/greeter -m greeter
 
-# Add RPM Fusion repos and VirtualBo
-RUN sudo dnf5 install install \
+RUN dnf5 group install "budgie-desktop" -y
+RUN dnf5 group install "budgie-desktop-apps" -y
+
+# Add RPM Fusion repos and VirtualBox
+RUN sudo dnf5 install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 

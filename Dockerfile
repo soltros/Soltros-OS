@@ -17,13 +17,14 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
+    /ctx/bazzite-kernel.sh \
    /ctx/desktop-defaults.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
 LABEL org.opencontainers.image.title="SoltrOS" \
-    org.opencontainers.image.description="Gaming-ready Universal Blue image with MacBook support" \
+    org.opencontainers.image.description="Gaming-ready Fedora CoreOS image with MacBook support" \
     org.opencontainers.image.vendor="Derrik" \
     org.opencontainers.image.version="42"
 

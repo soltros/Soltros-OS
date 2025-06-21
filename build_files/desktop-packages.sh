@@ -30,7 +30,7 @@ LAYERED_PACKAGES=(
     pipewire-alsa
     deja-dup
     playerctl
-    linux-firmware
+    linux-firmware*
     pipewire-alsa 
     pipewire-gstreamer
     pipewire-jack-audio-connection-kit

@@ -31,6 +31,9 @@ log "Building for base image: $BASE_IMAGE"
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
+log "Installing Bazzite kernel and removing Fedora CoreOS kernel."
+echo_group /ctx/bazzite-kernel.sh
+
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 

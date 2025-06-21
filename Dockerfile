@@ -46,7 +46,8 @@ RUN for pkg in $(rpm -qa | grep -iE "(plasma|kde|qt[56]|kf[56])"); do \
     rm -rf /usr/share/{plasma*,kde*,kf5,kf6} /usr/{lib,lib64}/{qt5,qt6,kde*,kf5,kf6,plasma*} /etc/xdg/{plasma*,kde*} && \
     dnf5 clean all && \
     ldconfig
-
+    
+RUN dnf5 install kf6-kio-core-libs kf6-kio-gui -y && \
 RUN dnf5 group install "budgie-desktop" -y
 RUN dnf5 group install "budgie-desktop-apps" -y
 

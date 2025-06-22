@@ -42,6 +42,7 @@ RUN dnf5 remove plasma-desktop plasma-workspace plasma-* kde-* -y && \
 
 RUN dnf5 group install --skip-broken "deepin-desktop" -y
 RUN dnf5 group install --skip-broken "deepin-desktop-apps" -y
+RUN dnf5 install lightdm -y
 
 # Get rid of Plymouth
 

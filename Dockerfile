@@ -55,9 +55,8 @@ RUN wget -O /tmp/qt5-qtbase-common-5.15.15-1.fc41.noarch.rpm \
 # Force install qt5-qtbase 5.15.15 (downgrade from 5.15.16)
 RUN rpm -Uvh --force --oldpackage --nodeps /tmp/qt5-qtbase-*.rpm
 
-RUN dnf5 group install --skip-broken "deepin-desktop" -y
-RUN dnf5 group install --skip-broken "deepin-desktop-apps" -y
-RUN dnf5 install deepin* -y
+RUN dnf5 group install --skip-broken "cinnamon-desktop" -y
+RUN dnf5 install cinnamon* -y
 RUN dnf5 install lightdm -y
 
 # Get rid of Plymouth

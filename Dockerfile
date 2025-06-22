@@ -40,6 +40,21 @@ RUN dnf5 remove plasma-desktop plasma-workspace plasma-* kde-* -y && \
     dnf5 remove $(rpm -qa | grep -E "^(plasma|kde)" | grep -v kf6) -y && \
     dnf5 autoremove -y
 
+# Download qt5-qtbase 5.15.15 from Fedora 41
+RUN wget -O /tmp/qt5-qtbase-5.15.15-1.fc41.x86_64.rpm \
+    https://kojipkgs.fedoraproject.org/packages/qt5-qtbase/5.15.15/1.fc41/x86_64/qt5-qtbase-5.15.15-1.fc41.x86_64.rpm
+
+# Download qt5-qtbase-gui from Fedora 41
+RUN wget -O /tmp/qt5-qtbase-gui-5.15.15-1.fc41.x86_64.rpm \
+    https://kojipkgs.fedoraproject.org/packages/qt5-qtbase/5.15.15/1.fc41/x86_64/qt5-qtbase-gui-5.15.15-1.fc41.x86_64.rpm
+
+# Download qt5-qtbase-common from Fedora 41
+RUN wget -O /tmp/qt5-qtbase-common-5.15.15-1.fc41.noarch.rpm \
+    https://kojipkgs.fedoraproject.org/packages/qt5-qtbase/5.15.15/1.fc41/noarch/qt5-qtbase-common-5.15.15-1.fc41.noarch.rpm
+
+# Force install qt5-qtbase 5.15.15 (downgrade from 5.15.16)
+RUN rpm -Uvh --force --oldpackage --nodeps /tmp/qt5-qtbase-*.rpm
+
 RUN dnf5 group install --skip-broken "deepin-desktop" -y
 RUN dnf5 group install --skip-broken "deepin-desktop-apps" -y
 RUN dnf5 install deepin* -y

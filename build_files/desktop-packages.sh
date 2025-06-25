@@ -115,6 +115,8 @@ LAYERED_PACKAGES=(
     gvfs-nfs
     samba-client
     cifs-utils
+    virt-manager
+    gnome-boxes
     
     # Multimedia/audio
     pipewire-utils

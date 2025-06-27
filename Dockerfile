@@ -1,8 +1,8 @@
 ARG FEDORA_VERSION="${FEDORA_VERSION:-42}"
+ARG KERNEL_FLAVOR="${KERNEL_FLAVOR:-bazzite}"
 ARG KERNEL_VERSION="${KERNEL_VERSION:-6.15.3-200.fc42.x86_64}"
 
-# Get Bazzite kernel and akmods
-FROM ghcr.io/ublue-os/akmods:bazzite-${FEDORA_VERSION}-${KERNEL_VERSION} AS bazzite-akmods
+FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS bazzite-akmods
 
 # Build context
 FROM scratch AS ctx

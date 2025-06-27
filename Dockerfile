@@ -7,10 +7,12 @@ FROM ghcr.io/ublue-os/akmods:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION
 FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_VERSION} AS bazzite-akmods-extra
 
 
-# Build context
-FROM scratch AS ctx
+# Stage 1: context for scripts (not included in final image)
+FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
+
+# Change perms
 RUN chmod +x \
     /ctx/bazzite-gaming.sh \
     /ctx/bazzite-kernel.sh \
@@ -24,7 +26,7 @@ RUN chmod +x \
     /ctx/repo-setup.sh \
     /ctx/signing.sh \
     /ctx/waterfox-installer.sh
-    
+
 # Main build - clean Fedora base
 FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS soltros
 
@@ -49,6 +51,7 @@ RUN --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=bind,from=bazzite-akmods,src=/kernel-rpms,dst=/tmp/kernel-rpms \
     --mount=type=bind,from=bazzite-akmods,src=/rpms,dst=/tmp/akmods-rpms \
+    --mount=type=bind,from=bazzite-akmods-extra,src=/rpms,dst=/tmp/akmods-extra-rpms \
     --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/install-bazzite-kernel.sh

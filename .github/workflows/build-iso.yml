@@ -92,7 +92,7 @@ jobs:
           iso_name: ${{ steps.iso-name.outputs.iso-name }}
           enrollment_password: universalblue
           secure_boot_key_url: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'
-          enable_cache_dnf: "false"
+          enable_cache_dnf5: "false"
           enable_cache_skopeo: "false"
           kickstart_file: kickstart/soltros-desktop.ks
       

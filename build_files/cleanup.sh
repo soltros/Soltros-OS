@@ -18,8 +18,8 @@ rm -rf /var/tmp/*
 rm -rf /var/cache/*
 rm -rf /var/log/*
 
-# Clean DNF cache and repos that cause lint failures
-rm -rf /var/lib/dnf/repos/*
+# Clean dnf5 cache and repos that cause lint failures
+rm -rf /var/lib/dnf5/repos/*
 
 # Remove /usr/etc entirely as bootc doesn't support it
 # The signing script already copies to /etc/containers/policy.json

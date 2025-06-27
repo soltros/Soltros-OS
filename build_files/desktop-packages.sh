@@ -58,6 +58,7 @@ LAYERED_PACKAGES=(
     fwupd-plugin-flashrom
     fwupd-plugin-modem-manager
     fwupd-plugin-uefi-capsule-data
+    libvirtd
     
     # Display manager and desktop groups (installed via group install elsewhere)
     greetd

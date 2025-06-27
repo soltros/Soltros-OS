@@ -16,7 +16,6 @@ COPY soltros.pub /ctx/soltros.pub
 RUN chmod +x \
     /ctx/bazzite-gaming.sh \
     /ctx/bazzite-kernel.sh \
-    /ctx/buildah.sh \
     /ctx/cinnamon-desktop.sh \
     /ctx/cleanup.sh \
     /ctx/desktop-defaults.sh \

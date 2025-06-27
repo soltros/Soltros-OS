@@ -11,8 +11,20 @@ FROM ghcr.io/ublue-os/akmods-extra:${KERNEL_FLAVOR}-${FEDORA_VERSION}-${KERNEL_V
 FROM scratch AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
-RUN chmod +x /ctx/*.sh
-
+RUN chmod +x \
+    /ctx/bazzite-gaming.sh \
+    /ctx/bazzite-kernel.sh \
+    /ctx/buildah.sh \
+    /ctx/cinnamon-desktop.sh \
+    /ctx/cleanup.sh \
+    /ctx/desktop-defaults.sh \
+    /ctx/desktop-packages.sh \
+    /ctx/gaming.sh \
+    /ctx/overrides.sh \
+    /ctx/repo-setup.sh \
+    /ctx/signing.sh \
+    /ctx/waterfox-installer.sh
+    
 # Main build - clean Fedora base
 FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS soltros
 

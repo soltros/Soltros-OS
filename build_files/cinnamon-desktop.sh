@@ -23,9 +23,6 @@ sed -i 's/splash//' /etc/default/grub 2>/dev/null || true
 sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true
 echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf
 
-# Force install Qt5 5.15.15 (downgrade from 5.15.16)
-rpm -Uvh --force --oldpackage --nodeps /tmp/qt5-qtbase-*.rpm
-
 # Install Cinnamon desktop group
 log "Installing Cinnamon Desktop Environment"
 dnf5 group install --skip-broken "cinnamon-desktop" -y

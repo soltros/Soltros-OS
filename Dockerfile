@@ -19,6 +19,7 @@ RUN chmod +x \
     /ctx/waterfox-installer.sh \
     /ctx/cinnamon-desktop.sh \
     /ctx/build-initramfs.sh \
+    /ctx/lightdm-fix.sh \
     /ctx/desktop-defaults.sh 
 
 # Stage 2: final image

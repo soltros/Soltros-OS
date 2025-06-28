@@ -31,8 +31,6 @@ dnf5 group install --skip-broken "cinnamon-desktop" -y
 log "Installing LightDM display manager"
 dnf5 install -y \
     lightdm \
-    lightdm-gtk \
-    lightdm-gtk-greeter-settings \
     slick-greeter
 
 # Configure LightDM as the default display manager
@@ -40,55 +38,6 @@ log "Configuring LightDM as default display manager"
 systemctl disable gdm.service 2>/dev/null || true
 systemctl disable sddm.service 2>/dev/null || true
 systemctl enable lightdm.service
-
-# Configure LightDM to use Cinnamon by default
-log "Configuring LightDM for Cinnamon"
-cat > /etc/lightdm/lightdm.conf << 'EOF'
-[LightDM]
-greeter-user=lightdm
-greeter-session=lightdm-gtk-greeter
-user-session=cinnamon
-greeter-setup-script=
-greeter-hide-users=false
-greeter-allow-guest=false
-
-[Seat:*]
-type=local
-pam-service=lightdm
-pam-autologin-service=lightdm-autologin
-pam-greeter-service=lightdm-greeter
-session-wrapper=/etc/lightdm/Xsession
-greeter-session=lightdm-gtk-greeter
-user-session=cinnamon
-allow-user-switching=true
-allow-guest=false
-greeter-show-manual-login=true
-greeter-hide-users=false
-EOF
-
-# Configure LightDM GTK greeter with SoltrOS branding
-log "Configuring LightDM GTK greeter theme"
-cat > /etc/lightdm/lightdm-gtk-greeter.conf << 'EOF'
-[greeter]
-background=/usr/share/pixmaps/soltros-gdm.png
-theme-name=Adwaita-dark
-icon-theme-name=Papirus
-font-name=Cantarell 11
-xft-antialias=true
-xft-dpi=96
-xft-hintstyle=hintslight
-xft-rgba=rgb
-show-indicators=~host;~spacer;~clock;~spacer;~layout;~session;~a11y;~power
-show-clock=true
-clock-format=%a, %b %d  %H:%M
-position=50%,center 50%,center
-default-user-image=/usr/share/pixmaps/nobody.png
-hide-user-image=false
-round-user-image=true
-highlight-logged-user=true
-panel-position=bottom
-active-monitor=#cursor
-EOF
 
 # Set up systemd user directories for LightDM
 log "Setting up LightDM user directories"
@@ -110,10 +59,6 @@ chown lightdm:lightdm /run/lightdm
 
 # Update dconf database
 dconf update
-
-# Clean up temporary Qt5 packages
-log "Cleaning up temporary files"
-rm -f /tmp/qt5-qtbase-*.rpm
 
 # Rebuild initramfs without Plymouth
 log "Rebuilding initramfs"

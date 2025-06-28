@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 set ${SET_X:+-x} -eou pipefail
 

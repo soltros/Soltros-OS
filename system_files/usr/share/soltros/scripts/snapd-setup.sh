@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # SoltrOS Snap Setup Script - maintains snap compatibility on boot
 # Based on snapd-in-Silverblue solution
 

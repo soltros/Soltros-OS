@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # SoltrOS: Container Signing Setup Script
 # Author: Derrik
 # Description: Configures sigstore signing trust for ghcr.io/soltros containers

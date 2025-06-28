@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # SoltrOS Greetd Troubleshooting Script
 
 echo "=== Greetd Status ==="

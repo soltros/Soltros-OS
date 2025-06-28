@@ -72,23 +72,20 @@ RUN for i in {1..3}; do \
     curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
     break || sleep 10; \
     done
-
 # Set identity and system branding with better error handling
 RUN for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/os-release && \
+    curl --retry 3 --retry-delay 5 -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/soltros-os/refs/heads/main/resources/os-release && \
     break || sleep 10; \
     done && \
     for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/motd https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/motd && \
+    curl --retry 3 --retry-delay 5 -Lo /etc/motd https://raw.githubusercontent.com/soltros/soltros-os/refs/heads/main/resources/motd && \
     break || sleep 10; \
     done && \
     for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/dconf/db/local.d/00-soltros-settings https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/00-soltros-settings && \
+    curl --retry 3 --retry-delay 5 -Lo /etc/dconf/db/local.d/00-soltros-settings https://raw.githubusercontent.com/soltros/soltros-os/refs/heads/main/resources/00-soltros-settings && \
     break || sleep 10; \
     done && \
-    dconf update && \
-    echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora CoreOS\e[0m\n' > /etc/issue && \
-    gtk-update-icon-cache -f /usr/share/icons/hicolor
+    echo -e '\n\e[1;36mWelcome to SoltrOS Server — powered by Fedora CoreOS\e[0m\n' > /etc/issue
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE

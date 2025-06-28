@@ -87,7 +87,7 @@ RUN for i in {1..3}; do \
     break || sleep 10; \
     done && \
     dconf update && \
-    echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Universal Blue\e[0m\n' > /etc/issue && \
+    echo -e '\n\e[1;36mWelcome to SoltrOS — powered by Fedora CoreOS\e[0m\n' > /etc/issue && \
     gtk-update-icon-cache -f /usr/share/icons/hicolor
 
 # Mount and run build script from ctx stage

@@ -34,6 +34,18 @@ echo_group /ctx/signing.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
+log "Repo Setup."
+echo_group /ctx/repo-setup.sh
+
+log "Install Cinnamon Desktop"
+echo_group /ctx/cinnamon-desktop.sh
+
+log "Install Bazzite Gaming"
+echo_group /ctx/bazzite-gaming.sh
+
+log "Install Bazzite Kernel"
+echo_group /ctx/bazzite-kernel.sh
+
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh
 

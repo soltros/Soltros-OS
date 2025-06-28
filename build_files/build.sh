@@ -37,10 +37,6 @@ echo_group /ctx/waterfox-installer.sh
 log "Install Cinnamon Desktop"
 echo_group /ctx/cinnamon-desktop.sh
 
-# Replace Bazzite kernel with CachyOS kernel
-log "Install CachyOS Kernel"
-echo_group /ctx/cachyos-kernel.sh
-
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh
 

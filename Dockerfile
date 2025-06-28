@@ -17,10 +17,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/desktop-defaults.sh \
-    /ctx/cinnamon-desktop.sh \
-    /ctx/build-initramfs.sh \
-    /ctx/cachyos-kernel.sh
+    /ctx/desktop-defaults.sh 
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
@@ -47,7 +44,35 @@ RUN dnf5 -y install dnf5-plugins && \
 
 # Remove default kernel packages and install CachyOS kernel
 RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
-    dnf5 -y install kernel-cachyos
+    echo "Installing CachyOS kernel..." && \
+    if dnf5 -y install kernel-cachyos; then \
+        echo "CachyOS kernel installed successfully"; \
+        echo "Installed CachyOS kernel packages:"; \
+        dnf5 list installed | grep cachyos || true; \
+    else \
+        echo "Failed to install kernel-cachyos, trying LTS version..."; \
+        if dnf5 -y install kernel-cachyos-lts; then \
+            echo "CachyOS LTS kernel installed successfully"; \
+        else \
+            echo "All CachyOS kernel installation attempts failed"; \
+            echo "Available CachyOS packages:"; \
+            dnf5 search kernel-cachyos || true; \
+            echo "Falling back to default kernel installation"; \
+            dnf5 -y install kernel kernel-core kernel-modules || true; \
+        fi; \
+    fi && \
+    echo "Final kernel verification:" && \
+    dnf5 list installed | grep -E "(kernel|cachyos)" || true && \
+    echo "Available kernel modules:" && \
+    ls -la /usr/lib/modules/ || true
+
+# Install desktop environments
+RUN dnf5 group install --skip-broken "deepin-desktop" -y
+RUN dnf5 group install --skip-broken "deepin-desktop-apps" -y
+RUN dnf5 install deepin* -y
+RUN dnf5 group install --skip-broken "cinnamon-desktop" -y
+RUN dnf5 install cinnamon* -y
+RUN dnf5 install lightdm -y
 
 # Get rid of Plymouth
 RUN dnf5 remove plymouth* -y && \
@@ -72,20 +97,6 @@ RUN for i in {1..3}; do \
     curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
     break || sleep 10; \
     done
-# Set identity and system branding with better error handling
-RUN for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /usr/lib/os-release https://raw.githubusercontent.com/soltros/soltros-os/refs/heads/main/resources/os-release && \
-    break || sleep 10; \
-    done && \
-    for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/motd https://raw.githubusercontent.com/soltros/soltros-os/refs/heads/main/resources/motd && \
-    break || sleep 10; \
-    done && \
-    for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/dconf/db/local.d/00-soltros-settings https://raw.githubusercontent.com/soltros/soltros-os/refs/heads/main/resources/00-soltros-settings && \
-    break || sleep 10; \
-    done && \
-    echo -e '\n\e[1;36mWelcome to SoltrOS Server — powered by Fedora CoreOS\e[0m\n' > /etc/issue
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE

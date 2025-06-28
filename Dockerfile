@@ -23,6 +23,7 @@ RUN chmod +x \
     /ctx/overrides.sh \
     /ctx/repo-setup.sh \
     /ctx/signing.sh \
+    /ctx/build.sh \
     /ctx/waterfox-installer.sh
 # Main build - clean Fedora base
 FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS soltros

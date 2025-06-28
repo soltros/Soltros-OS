@@ -19,7 +19,7 @@ RUN chmod +x \
     /ctx/waterfox-installer.sh \
     /ctx/desktop-defaults.sh \
     /ctx/cinnamon-desktop.sh \
-    /ctx/build-initramfs.sh
+    /ctx/build-initramfs.sh \
     /ctx/cachyos-kernel.sh
 
 # Stage 2: final image

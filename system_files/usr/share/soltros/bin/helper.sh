@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-
-# Soltros OS Setup Script
-# Converted from justfile to bash script
+# SoltrOS Setup Script
+# Converted from justfile to standalone bash script
 
 set -euo pipefail
 
@@ -10,6 +9,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Helper functions
@@ -29,18 +29,22 @@ print_error() {
     echo -e "${RED}✗ $1${NC}"
 }
 
-show_help() {
-    cat << EOF
-Soltros OS Setup Script
+print_info() {
+    echo -e "${CYAN}ℹ $1${NC}"
+}
 
-Usage: $0 [COMMAND]
+show_help() {
+    cat << 'EOF'
+SoltrOS Setup Script
+
+Usage: soltros [COMMAND]
 
 INSTALL COMMANDS:
-  install                 Install all Soltros components
+  install                 Install all SoltrOS components
   install-flatpaks        Install Flatpak applications from remote list
   install-dev-tools       Install development tools via Flatpak
   install-gaming          Install gaming tools via Flatpak
-  install-multimedia      Install multimedia tools
+  install-multimedia      Install multimedia tools via Flatpak
 
 SETUP COMMANDS:
   setup-git              Configure Git with user credentials and SSH signing
@@ -49,7 +53,13 @@ SETUP COMMANDS:
 
 CONFIGURE COMMANDS:
   enable-amdgpu-oc       Enable AMD GPU overclocking support
-  toggle-session         Information about toggling between X11 and Wayland
+  toggle-session         Toggle between X11 and Wayland sessions
+
+UNIVERSAL BLUE COMMANDS:
+  update                 Update the system (rpm-ostree, flatpaks, etc.)
+  clean                  Clean up the system
+  distrobox              Manage distrobox containers
+  toolbox                Manage toolbox containers
 
 OTHER COMMANDS:
   help                   Show this help message
@@ -64,12 +74,16 @@ list_commands() {
     echo "  install install-flatpaks install-dev-tools install-gaming install-multimedia"
     echo "  setup-git setup-cli setup-distrobox"
     echo "  enable-amdgpu-oc toggle-session"
+    echo "  update clean distrobox toolbox"
     echo "  help list"
 }
 
-# Install Functions
+# ───────────────────────────────────────────────
+# INSTALL FUNCTIONS
+# ───────────────────────────────────────────────
+
 soltros_install() {
-    print_header "Installing all Soltros components"
+    print_header "Installing all SoltrOS components"
     soltros_install_flatpaks
 }
 
@@ -81,7 +95,7 @@ soltros_install_flatpaks() {
         exit 1
     fi
     
-    echo "Downloading flatpak list and installing..."
+    print_info "Downloading flatpak list and installing..."
     if xargs -a <(curl --retry 3 -sL https://raw.githubusercontent.com/soltros/Soltros-OS/main/repo_files/flatpaks) flatpak --system -y install --reinstall; then
         print_success "Flatpaks installation complete"
     else
@@ -91,9 +105,9 @@ soltros_install_flatpaks() {
 }
 
 install_dev_tools() {
-    print_header "Installing development tools"
+    print_header "Installing development tools via Flatpak"
     
-    echo "Installing development tools via Flatpak..."
+    print_info "Installing development tools..."
     if flatpak install -y flathub \
         com.visualstudio.code \
         org.freedesktop.Sdk \
@@ -109,9 +123,9 @@ install_dev_tools() {
 }
 
 install_gaming() {
-    print_header "Installing gaming applications"
+    print_header "Installing gaming applications via Flatpak"
     
-    echo "Installing gaming applications via Flatpak..."
+    print_info "Installing gaming applications..."
     if flatpak install -y flathub \
         com.valvesoftware.Steam \
         com.heroicgameslauncher.hgl \
@@ -127,9 +141,9 @@ install_gaming() {
 }
 
 install_multimedia() {
-    print_header "Installing multimedia applications"
+    print_header "Installing multimedia applications via Flatpak"
     
-    echo "Installing multimedia applications via Flatpak..."
+    print_info "Installing multimedia applications..."
     if flatpak install -y flathub \
         org.audacityteam.Audacity \
         org.blender.Blender \
@@ -145,11 +159,14 @@ install_multimedia() {
     fi
 }
 
-# Setup Functions
+# ───────────────────────────────────────────────
+# SETUP FUNCTIONS
+# ───────────────────────────────────────────────
+
 soltros_setup_git() {
     print_header "Setting up Git configuration"
     
-    echo "Setting up Git config..."
+    print_info "Setting up Git config..."
     read -p "Enter your Git username: " git_username
     read -p "Enter your Git email: " git_email
 
@@ -158,18 +175,18 @@ soltros_setup_git() {
     git config --global user.email "$git_email"
 
     if [ ! -f "${HOME}/.ssh/id_ed25519.pub" ]; then
-        echo "SSH key not found. Generating..."
+        print_info "SSH key not found. Generating..."
         ssh-keygen -t ed25519 -C "$git_email"
     fi
 
-    echo "Your SSH public key:"
+    print_info "Your SSH public key:"
     cat "${HOME}/.ssh/id_ed25519.pub"
 
     git config --global gpg.format ssh
     git config --global user.signingkey "key::$(cat ${HOME}/.ssh/id_ed25519.pub)"
     git config --global commit.gpgSign true
 
-    echo "Setting up Git aliases..."
+    print_info "Setting up Git aliases..."
     git config --global alias.add-nowhitespace '!git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -'
     git config --global alias.graph 'log --decorate --oneline --graph'
     git config --global alias.ll 'log --oneline'
@@ -195,20 +212,20 @@ soltros_setup_cli() {
              "${HOME}/.config/fish/conf.d" \
              "${HOME}/.config/fish/functions"
 
-    echo "Setting up shell aliases..."
+    print_info "Setting up shell aliases..."
     echo '[ -f "/usr/share/soltros/bling/aliases.sh" ]; bass source /usr/share/soltros/bling/aliases.sh' | tee "${HOME}/.config/fish/conf.d/soltros-aliases.fish" >/dev/null
     echo '[ -f "/usr/share/soltros/bling/aliases.sh" ] && . "/usr/share/soltros/bling/aliases.sh"' | tee "${HOME}/.bashrc.d/soltros-aliases.bashrc" "${HOME}/.zshrc.d/soltros-aliases.zshrc" >/dev/null
 
-    echo "Setting up shell defaults..."
+    print_info "Setting up shell defaults..."
     echo '[ -f "/usr/share/soltros/bling/defaults.fish" ]; source /usr/share/soltros/bling/defaults.fish' | tee "${HOME}/.config/fish/conf.d/soltros-defaults.fish" >/dev/null
     echo '[ -f "/usr/share/soltros/bling/defaults.sh" ] && . "/usr/share/soltros/bling/defaults.sh"' | tee "${HOME}/.bashrc.d/soltros-defaults.bashrc" "${HOME}/.zshrc.d/soltros-defaults.zshrc" >/dev/null
 
-    echo "Downloading Fish plugins..."
+    print_info "Downloading Fish plugins..."
     wget -q https://github.com/edc/bass/raw/7296c6e70cf577a08a2a7d0e919e428509640e0f/functions/__bass.py -O "${HOME}/.config/fish/functions/__bass.py"
     wget -q https://github.com/edc/bass/raw/7296c6e70cf577a08a2a7d0e919e428509640e0f/functions/bass.fish -O "${HOME}/.config/fish/functions/bass.fish"
     wget -q https://github.com/garabik/grc/raw/4e1e9d7fdc9965c129f27d89c493d07f4b8307bb/grc.fish -O "${HOME}/.config/fish/conf.d/grc.fish"
 
-    echo "Setting up Fish tools..."
+    print_info "Setting up Fish tools..."
     echo '[ -f "${HOME}/.cargo/env.fish" ] && source "${HOME}/.cargo/env.fish"' | tee "${HOME}/.config/fish/conf.d/cargo-env.fish" >/dev/null
 
     ATUIN_INIT_FLAGS=${ATUIN_INIT_FLAGS:-"--disable-up-arrow"}
@@ -231,14 +248,14 @@ soltros_setup_cli() {
         fi
     done
 
-    echo "Configuring rc file sourcing..."
+    print_info "Configuring rc file sourcing..."
     for shell in bash zsh; do
         rc_file="${HOME}/.${shell}rc"
         rc_dir=".${shell}rc.d"
 
         # Check if the snippet already exists
         if [ -f "$rc_file" ] && grep -q "${rc_dir}/\*" "$rc_file"; then
-            echo "RC sourcing already configured for $shell"
+            print_info "RC sourcing already configured for $shell"
         else
             # Add the snippet using printf to avoid parsing issues
             printf '\n%s\n' "# User-specific aliases and functions" >> "$rc_file"
@@ -250,7 +267,7 @@ soltros_setup_cli() {
             printf '%s\n' "  done" >> "$rc_file"
             printf '%s\n' "fi" >> "$rc_file"
             printf '%s\n' "unset rc" >> "$rc_file"
-            echo "Added RC sourcing for $shell"
+            print_info "Added RC sourcing for $shell"
         fi
     done
 
@@ -267,26 +284,29 @@ setup_distrobox() {
     
     # Ubuntu container for general development
     if ! distrobox list | grep -q "ubuntu-dev"; then
-        echo "Creating Ubuntu development container..."
+        print_info "Creating Ubuntu development container..."
         distrobox create --name ubuntu-dev --image ubuntu:latest
         distrobox enter ubuntu-dev -- sudo apt update && sudo apt install -y build-essential git curl wget
     else
-        echo "Ubuntu development container already exists"
+        print_info "Ubuntu development container already exists"
     fi
     
     # Arch container for AUR packages
     if ! distrobox list | grep -q "arch-dev"; then
-        echo "Creating Arch development container..."
+        print_info "Creating Arch development container..."
         distrobox create --name arch-dev --image archlinux:latest
         distrobox enter arch-dev -- sudo pacman -Syu --noconfirm base-devel git
     else
-        echo "Arch development container already exists"
+        print_info "Arch development container already exists"
     fi
     
     print_success "Distrobox setup complete!"
 }
 
-# Configure Functions
+# ───────────────────────────────────────────────
+# CONFIGURE FUNCTIONS
+# ───────────────────────────────────────────────
+
 soltros_enable_amdgpu_oc() {
     print_header "Enabling AMD GPU overclocking support"
     
@@ -294,6 +314,8 @@ soltros_enable_amdgpu_oc() {
         print_error "rpm-ostree is not available"
         exit 1
     fi
+    
+    print_info "Enabling AMD GPU overclocking..."
     
     if ! rpm-ostree kargs | grep -q "amdgpu.ppfeaturemask="; then
         sudo rpm-ostree kargs --append "amdgpu.ppfeaturemask=0xFFF7FFFF"
@@ -307,16 +329,16 @@ toggle_session() {
     print_header "Session Toggle Information"
     
     current_session=$(echo $XDG_SESSION_TYPE)
-    echo "Current session: $current_session"
+    print_info "Current session: $current_session"
     
     if [ "$current_session" = "wayland" ]; then
-        echo "To switch to X11:"
+        print_info "To switch to X11:"
         echo "1. Log out of your current session"
         echo "2. On the login screen, click the gear icon"
         echo "3. Select the X11 session option"
         echo "4. Log back in"
     else
-        echo "To switch to Wayland:"
+        print_info "To switch to Wayland:"
         echo "1. Log out of your current session"
         echo "2. On the login screen, click the gear icon"
         echo "3. Select the Wayland session option"
@@ -324,7 +346,77 @@ toggle_session() {
     fi
 }
 
-# Main script logic
+# ───────────────────────────────────────────────
+# UNIVERSAL BLUE FUNCTIONS
+# ───────────────────────────────────────────────
+
+ublue_update() {
+    print_header "Updating the system"
+    
+    print_info "Updating rpm-ostree..."
+    sudo rpm-ostree upgrade || true
+    
+    print_info "Updating Flatpaks..."
+    flatpak update -y || true
+    
+    if command -v distrobox &> /dev/null; then
+        print_info "Updating distrobox containers..."
+        distrobox upgrade --all || true
+    fi
+    
+    if command -v toolbox &> /dev/null; then
+        print_info "Updating toolbox containers..."
+        for container in $(toolbox list -c | tail -n +2 | awk '{print $2}'); do
+            toolbox run -c "$container" sudo dnf update -y || true
+        done
+    fi
+    
+    print_success "System update complete"
+}
+
+ublue_clean() {
+    print_header "Cleaning up the system"
+    
+    print_info "Cleaning rpm-ostree..."
+    sudo rpm-ostree cleanup -p || true
+    
+    print_info "Cleaning Flatpak cache..."
+    flatpak uninstall --unused -y || true
+    
+    print_info "Cleaning system cache..."
+    sudo journalctl --vacuum-time=7d || true
+    
+    print_success "System cleanup complete"
+}
+
+ublue_distrobox() {
+    print_header "Managing distrobox containers"
+    
+    if ! command -v distrobox &> /dev/null; then
+        print_error "Distrobox is not installed"
+        exit 1
+    fi
+    
+    print_info "Available distrobox containers:"
+    distrobox list
+}
+
+ublue_toolbox() {
+    print_header "Managing toolbox containers"
+    
+    if ! command -v toolbox &> /dev/null; then
+        print_error "Toolbox is not installed"
+        exit 1
+    fi
+    
+    print_info "Available toolbox containers:"
+    toolbox list
+}
+
+# ───────────────────────────────────────────────
+# MAIN SCRIPT LOGIC
+# ───────────────────────────────────────────────
+
 main() {
     case "${1:-help}" in
         "install")
@@ -357,6 +449,18 @@ main() {
         "toggle-session")
             toggle_session
             ;;
+        "update")
+            ublue_update
+            ;;
+        "clean")
+            ublue_clean
+            ;;
+        "distrobox")
+            ublue_distrobox
+            ;;
+        "toolbox")
+            ublue_toolbox
+            ;;
         "list")
             list_commands
             ;;
@@ -365,7 +469,7 @@ main() {
             ;;
         *)
             echo "Unknown command: $1"
-            echo "Run '$0 help' for usage information"
+            echo "Run 'soltros help' for usage information"
             exit 1
             ;;
     esac

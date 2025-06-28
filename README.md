@@ -1,21 +1,20 @@
 # SoltrOS - Desktop Edition
 
-A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancments, the latest gnome Desktop, comprehensive package management, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, Cinnamon desktop environment, and developer-friendly tools.
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
 ### Installation
 Right now, the easiest way to get SoltrOS working is to download [Fedora Silverblue](https://fedoraproject.org/atomic-desktops/silverblue/download) and install it. Then, run:
-```
+```bash
 sudo bootc switch ghcr.io/soltros/soltros-os:latest
-
 sudo systemctl reboot
 ```
-The "Latest" image will give you the experience that is suggested (Cosmic). However, if you'd like to check out other versions (that are still under development as well), you can. Just check the "packages" section.
 
 ## 🚀 Features
 
 ### 🎮 Gaming Ready
+- **CachyOS kernel** for up to 15% better gaming performance with optimized scheduler
 - **Gaming optimizations** with enhanced kernel parameters for performance
 - **Controller support** for PlayStation, Xbox, Nintendo Switch Pro, Steam, and 8BitDo controllers
 - **MangoHud** and **GameMode** integration for performance monitoring and optimization
@@ -31,17 +30,18 @@ The "Latest" image will give you the experience that is suggested (Cosmic). Howe
 ### 📦 Triple Package Management
 - **RPM-OSTree** (System packages) - Immutable base system
 - **Flatpak** (Applications) - Sandboxed desktop applications
-- **Homebrew** (Additional tools) - macOS-style package manager for Linux
+- **Distrobox** (Development tools) - Containerized development environments
 
 ### 🛠️ Developer Experience
 - **Fish shell** as default with modern tooling integration
-- **Just** command runner with extensive SoltrOS-specific recipes
+- **SoltrOS command runner** with extensive system management capabilities
 - **Git integration** with SSH signing and useful aliases
 - **Shell enhancements** with aliases, plugins, and modern CLI tools
 - **Container signing** with cosign for security
 
 ### 🎨 Desktop Environment
-- **Cosmic** with dark theme by default
+- **Cinnamon Desktop** with dark theme by default for lightweight performance
+- **LightDM** display manager for fast boot times
 - **Papirus icon theme** for a modern look
 - **Custom branding** and SoltrOS identity
 - **Optimized settings** for productivity and aesthetics
@@ -56,6 +56,7 @@ The "Latest" image will give you the experience that is suggested (Cosmic). Howe
 - `papirus-icon-theme` - Modern icon set
 - `thermald` & `mbpfan` - Thermal management
 - `lm_sensors` - Hardware monitoring
+- `kernel-cachyos` - High-performance gaming kernel
 
 ### Flatpak Applications
 Over 40 pre-configured applications including:
@@ -67,8 +68,8 @@ Over 40 pre-configured applications including:
 - **Productivity**: LibreOffice, Bitwarden
 - **System Tools**: Flatseal, Mission Center, Warehouse
 
-### Development Tools (Available via Homebrew)
-Access to packages via Homebrew - all without affecting the base system.
+### Development Tools (Available via Distrobox)
+Access to any Linux distribution's packages via containerized environments - all without affecting the base system.
 
 ## 🚀 Quick Start
 
@@ -86,45 +87,51 @@ Use the provided ISO configuration to install directly.
 
 1. **Install Flatpaks**:
    ```bash
-   just soltros-install-flatpaks
+   sh /usr/share/soltros/bin/helper.sh install-flatpaks
    ```
 
 2. **Setup development environment**:
    ```bash
-   just soltros-setup-cli
+   sh /usr/share/soltros/bin/helper.sh setup-cli
    ```
 
 3. **Configure Git** (optional):
    ```bash
-   just soltros-setup-git
+   sh /usr/share/soltros/bin/helper.sh setup-git
    ```
 
-4. **Install Homebrew** (optional):
+4. **Setup development containers** (optional):
    ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   sh /usr/share/soltros/bin/helper.sh setup-distrobox
    ```
 
 ## 🛠️ Available Commands
 
-SoltrOS includes a comprehensive set of `just` recipes for system management:
+SoltrOS includes a comprehensive helper script for system management:
 
 ### Installation & Setup
 ```bash
-just soltros-install-flatpaks    # Install all Flatpak applications
-just soltros-setup-cli           # Setup shell configurations
-just soltros-setup-git           # Configure Git with SSH signing
-```
-### System Configuration
-```bash
-just soltros-enable-amdgpu-oc    # Enable AMD GPU overclocking
+sh /usr/share/soltros/bin/helper.sh install                  # Install all SoltrOS components
+sh /usr/share/soltros/bin/helper.sh install-flatpaks         # Install all Flatpak applications
+sh /usr/share/soltros/bin/helper.sh install-dev-tools        # Install development tools
+sh /usr/share/soltros/bin/helper.sh install-gaming           # Install gaming applications
+sh /usr/share/soltros/bin/helper.sh install-multimedia       # Install multimedia tools
+sh /usr/share/soltros/bin/helper.sh setup-cli                # Setup shell configurations
+sh /usr/share/soltros/bin/helper.sh setup-git                # Configure Git with SSH signing
+sh /usr/share/soltros/bin/helper.sh setup-distrobox          # Setup development containers
 ```
 
-### Standard Universal Blue Commands
-All existing Universal Blue and Aurora commands are available:
+### System Configuration
 ```bash
-just                             # List all available commands
-just update                      # Update the system
-just clean                       # Clean up the system
+sh /usr/share/soltros/bin/helper.sh enable-amdgpu-oc         # Enable AMD GPU overclocking
+sh /usr/share/soltros/bin/helper.sh toggle-session           # Toggle between X11 and Wayland
+```
+
+### System Management
+```bash
+sh /usr/share/soltros/bin/helper.sh update                   # Update the system (rpm-ostree, flatpaks, containers)
+sh /usr/share/soltros/bin/helper.sh clean                    # Clean up the system
+sh /usr/share/soltros/bin/helper.sh help                     # Show all available commands
 ```
 
 ## 🔧 Customization
@@ -138,6 +145,7 @@ SoltrOS automatically sets up:
 
 ### Gaming Optimizations
 Pre-configured settings include:
+- CachyOS kernel with gaming-optimized scheduler
 - Increased memory map areas (`vm.max_map_count = 2147483642`)
 - Network optimizations for online gaming
 - Controller udev rules for proper access
@@ -153,23 +161,22 @@ Pre-configured settings include:
 - **Container signing** with cosign verification
 - **Immutable base system** via rpm-ostree
 - **Sandboxed applications** via Flatpak
+- **Containerized development** via Distrobox
 - **Verified package sources** for all package managers
 
 ## 🏗️ Building
 
 ### Prerequisites
 - Podman or Docker
-- Just command runner
 
 ### Build locally
 ```bash
-just build
+podman build -t soltros-os .
 ```
 
-### Build and push
+### Run locally
 ```bash
-just build
-just push
+podman run -it soltros-os
 ```
 
 ## Server Image
@@ -192,7 +199,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - [VenOS](https://github.com/Venefilyn/veneos) for the inspiration and innovative approach to immutable gaming distributions
 - [Universal Blue](https://github.com/ublue-os) for the excellent foundation
 - [Fedora Project](https://fedoraproject.org/) for the underlying OS
-- [Homebrew](https://brew.sh/) for cross-platform package management
+- [CachyOS](https://cachyos.org/) for the high-performance kernel
 
 ## 🆘 Support
 

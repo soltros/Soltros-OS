@@ -27,11 +27,15 @@ sudo systemctl reboot
 - **Hardware-specific configurations** optimized for MacBook Pro models
 - **Humidity-resistant thermal settings** for better longevity
 
-### 📦 Triple Package Management
+### 📦 Quadruple Package Management
 - **RPM-OSTree** (System packages) - Immutable base system
 - **Flatpak** (Applications) - Sandboxed desktop applications
 - **Distrobox** (Development tools) - Containerized development environments
-
+- **Homebrew** (Additional tools) - macOS-style package manager for Linux
+   
+   ```
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
 ### 🛠️ Developer Experience
 - **Fish shell** as default with modern tooling integration
 - **SoltrOS command runner** with extensive system management capabilities

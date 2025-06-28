@@ -2,40 +2,29 @@
 set -euo pipefail
 
 log() {
-  echo "=== $* ==="
+    echo "=== $* ==="
 }
 
 log "Installing Bazzite gaming package stack"
 
-# Core gaming packages from Bazzite
+# Core gaming packages from Bazzite: Gaming launchers, runtimes, gamescope compositor, performance tools, audio compatibility, graphics enhancement layers, and OBS capture support
 dnf5 -y install \
-    # Gaming launchers and runtimes
     steam \
     lutris \
     umu-launcher \
-    \
-    # Gamescope compositor for gaming
     gamescope.x86_64 \
     gamescope-libs.x86_64 \
     gamescope-libs.i686 \
     gamescope-shaders \
-    \
-    # Performance tools
     gamemode \
     mangohud.x86_64 \
     mangohud.i686 \
-    \
-    # Audio compatibility
     libFAudio.x86_64 \
     libFAudio.i686 \
-    \
-    # Graphics enhancement layers
     latencyflex-vulkan-layer \
     vkBasalt.x86_64 \
     vkBasalt.i686 \
     VK_hdr_layer \
-    \
-    # OBS capture support for streaming
     libobs_vkcapture.x86_64 \
     libobs_glcapture.x86_64 \
     libobs_vkcapture.i686 \
@@ -82,7 +71,7 @@ cat > /etc/udev/rules.d/99-bazzite-gaming.rules << 'EOF'
 SUBSYSTEM=="usb", ATTRS{idVendor}=="054c", MODE="0666", TAG+="uaccess"
 SUBSYSTEM=="hidraw", KERNELS=="*054c*", MODE="0666", TAG+="uaccess"
 
-# Xbox controllers  
+# Xbox controllers
 SUBSYSTEM=="usb", ATTRS{idVendor}=="045e", MODE="0666", TAG+="uaccess"
 SUBSYSTEM=="hidraw", KERNELS=="*045e*", MODE="0666", TAG+="uaccess"
 

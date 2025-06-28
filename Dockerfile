@@ -26,7 +26,8 @@ RUN chmod +x \
     /ctx/build-initramfs.sh \
     /ctx/waterfox-installer.sh
 
-
+# Stage 2: Repository setup stage - separate from ctx
+FROM quay.io/fedora/fedora-bootc:${FEDORA_VERSION} AS repo-setup
 
 # Setup Copr repos
 RUN --mount=type=cache,dst=/var/cache \
@@ -86,6 +87,10 @@ LABEL org.opencontainers.image.title="SoltrOS" \
 # Copy system configurations
 COPY system_files/etc /etc
 COPY system_files/usr/share /usr/share
+
+# Copy repository setup from previous stage
+COPY --from=repo-setup /etc/yum.repos.d/ /etc/yum.repos.d/
+COPY --from=repo-setup /etc/pki/rpm-gpg/ /etc/pki/rpm-gpg/
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE

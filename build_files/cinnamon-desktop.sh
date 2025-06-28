@@ -108,43 +108,6 @@ chown lightdm:lightdm /var/cache/lightdm
 chown lightdm:lightdm /var/log/lightdm
 chown lightdm:lightdm /run/lightdm
 
-# Configure Cinnamon as default session
-log "Setting Cinnamon as default session"
-mkdir -p /etc/skel/.dmrc
-cat > /etc/skel/.dmrc << 'EOF'
-[Desktop]
-Session=cinnamon
-EOF
-
-# Set up Cinnamon default settings via dconf
-log "Applying Cinnamon default settings"
-mkdir -p /etc/dconf/db/local.d
-cat > /etc/dconf/db/local.d/00-cinnamon-defaults << 'EOF'
-[org/cinnamon]
-enabled-applets=['panel1:left:0:menu@cinnamon.org:0', 'panel1:left:1:show-desktop@cinnamon.org:1', 'panel1:left:2:panel-launchers@cinnamon.org:2', 'panel1:left:3:window-list@cinnamon.org:3', 'panel1:right:0:notifications@cinnamon.org:4', 'panel1:right:1:user@cinnamon.org:5', 'panel1:right:2:removable-drives@cinnamon.org:6', 'panel1:right:3:keyboard@cinnamon.org:7', 'panel1:right:4:network@cinnamon.org:8', 'panel1:right:5:sound@cinnamon.org:9', 'panel1:right:6:power@cinnamon.org:10', 'panel1:right:7:calendar@cinnamon.org:11']
-panel-launchers=['firefox.desktop', 'org.gnome.Terminal.desktop', 'nemo.desktop']
-favorite-apps=['firefox.desktop', 'org.gnome.Terminal.desktop', 'nemo.desktop', 'org.gnome.Calculator.desktop']
-
-[org/cinnamon/desktop/interface]
-gtk-theme='Adwaita-dark'
-icon-theme='Papirus'
-cursor-theme='Adwaita'
-font-name='Cantarell 11'
-
-[org/cinnamon/desktop/wm/preferences]
-theme='Adwaita'
-button-layout=':minimize,maximize,close'
-
-[org/cinnamon/theme]
-name='Adwaita-dark'
-
-[org/cinnamon/desktop/background]
-picture-uri='file:///usr/share/pixmaps/soltros-gdm.png'
-picture-options='zoom'
-color-shading-type='solid'
-primary-color='#023c88'
-EOF
-
 # Update dconf database
 dconf update
 

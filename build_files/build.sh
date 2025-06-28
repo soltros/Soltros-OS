@@ -23,8 +23,8 @@ function echo_group() {
 
 log "Starting SoltrOS build process"
 
-# Base image for reference (though not used in conditional logic anymore)
-BASE_IMAGE="${BASE_IMAGE:-ghcr.io/ublue-os/budgie-atomic-main}"
+# Base image for reference
+BASE_IMAGE="${BASE_IMAGE:-quay.io/fedora/fedora-bootc}"
 
 log "Building for base image: $BASE_IMAGE"
 
@@ -37,11 +37,9 @@ echo_group /ctx/waterfox-installer.sh
 log "Install Cinnamon Desktop"
 echo_group /ctx/cinnamon-desktop.sh
 
-log "Install Bazzite Gaming"
-echo_group /ctx/bazzite-gaming.sh
-
-log "Install Bazzite Kernel"
-echo_group /ctx/bazzite-kernel.sh
+# Replace Bazzite kernel with CachyOS kernel
+log "Install CachyOS Kernel"
+echo_group /ctx/cachyos-kernel.sh
 
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh

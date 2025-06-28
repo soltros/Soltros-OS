@@ -34,9 +34,6 @@ echo_group /ctx/signing.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Repo Setup."
-echo_group /ctx/repo-setup.sh
-
 log "Install Cinnamon Desktop"
 echo_group /ctx/cinnamon-desktop.sh
 
@@ -57,6 +54,9 @@ echo_group /ctx/gaming.sh
 
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
+
+log "Build InitramFS"
+echo_group /ctx/build-initramfs.sh
 
 log "Post build cleanup"
 echo_group /ctx/cleanup.sh

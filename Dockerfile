@@ -17,6 +17,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
+    /ctc/cinnamon-desktop.sh \
     /ctx/desktop-defaults.sh 
 
 # Stage 2: final image

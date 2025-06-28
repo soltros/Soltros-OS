@@ -66,14 +66,6 @@ RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modu
     echo "Available kernel modules:" && \
     ls -la /usr/lib/modules/ || true
 
-# Install desktop environments
-RUN dnf5 group install --skip-broken "deepin-desktop" -y
-RUN dnf5 group install --skip-broken "deepin-desktop-apps" -y
-RUN dnf5 install deepin* -y
-RUN dnf5 group install --skip-broken "cinnamon-desktop" -y
-RUN dnf5 install cinnamon* -y
-RUN dnf5 install lightdm -y
-
 # Get rid of Plymouth
 RUN dnf5 remove plymouth* -y && \
     systemctl disable plymouth-start.service plymouth-read-write.service plymouth-quit.service plymouth-quit-wait.service plymouth-reboot.service plymouth-kexec.service plymouth-halt.service plymouth-poweroff.service 2>/dev/null || true && \

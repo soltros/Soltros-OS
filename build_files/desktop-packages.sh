@@ -29,6 +29,7 @@ LAYERED_PACKAGES=(
     just
     starship
     pipewire-alsa
+    distrobox
     deja-dup
     playerctl
     linux-firmware*

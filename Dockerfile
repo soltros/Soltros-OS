@@ -33,7 +33,7 @@ LABEL org.opencontainers.image.title="SoltrOS Desktop" \
 # Copy static system configuration and branding
 COPY system_files/etc /etc
 COPY system_files/usr /usr
-COPY repo_files/tailscale.repo /etc/yum.repos.d/tailscale.repo
+COPY repo_files/ /etc/yum.repos.d/
 COPY resources/soltros-gdm.png /usr/share/pixmaps/fedora-gdm-logo.png
 COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermark.png
 
@@ -41,9 +41,8 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 # Install dnf5 plugins and setup CachyOS kernel repo
-RUN dnf5 -y install dnf5-plugins && \
-    dnf5 -y copr enable bieszczaders/kernel-cachyos && \
-    dnf5 -y config-manager setopt "*cachyos*".priority=1
+RUN dnf5 -y install dnf5-plugins
+RUN dnf5 -y config-manager setopt "*cachyos*".priority=1
 
 # Remove default kernel packages and install CachyOS kernel
 RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \

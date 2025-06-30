@@ -1,6 +1,6 @@
 # SoltrOS - Desktop Edition
 
-A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, Cinnamon desktop environment, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, Budgie desktop environment, and developer-friendly tools.
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
@@ -44,7 +44,7 @@ sudo systemctl reboot
 - **Container signing** with cosign for security
 
 ### 🎨 Desktop Environment
-- **Cinnamon Desktop** with dark theme by default for lightweight performance
+- **Budgie Desktop** with dark theme by default for lightweight performance
 - **LightDM** display manager for fast boot times
 - **Papirus icon theme** for a modern look
 - **Custom branding** and SoltrOS identity

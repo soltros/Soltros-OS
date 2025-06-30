@@ -34,8 +34,8 @@ echo_group /ctx/signing.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Install Cinnamon Desktop"
-echo_group /ctx/cinnamon-desktop.sh
+log "Install Budgie Desktop"
+echo_group /ctx/budgie-desktop.sh
 
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh

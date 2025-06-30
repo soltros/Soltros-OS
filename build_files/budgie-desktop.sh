@@ -25,8 +25,8 @@ echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth
 
 # Install Budgie desktop group
 log "Installing Budgie Desktop Environment"
-dnf5 group install --skip-broken "budgie-desktop" -y
-dnf5 group install --skip-broken "budgie-desktop-apps" -y
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "budgie-desktop" -y
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "budgie-desktop-apps" -y
 
 # Install LightDM display manager and greeters
 log "Installing LightDM display manager"

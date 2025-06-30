@@ -40,6 +40,9 @@ COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermar
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
+# Ensure Distrobox is installed
+RUN dnf5 install -y distrobox
+
 # Install dnf5 plugins and setup CachyOS kernel repo
 RUN dnf5 -y install dnf5-plugins
 RUN dnf5 -y config-manager setopt "*cachyos*".priority=1

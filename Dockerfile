@@ -32,7 +32,7 @@ LABEL org.opencontainers.image.title="SoltrOS Desktop" \
 
 # Copy static system configuration and branding
 COPY system_files/etc /etc
-COPY system_files/usr/share /usr/share
+COPY system_files/usr /usr
 COPY repo_files/tailscale.repo /etc/yum.repos.d/tailscale.repo
 COPY resources/soltros-gdm.png /usr/share/pixmaps/fedora-gdm-logo.png
 COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermark.png

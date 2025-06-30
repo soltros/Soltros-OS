@@ -133,6 +133,18 @@ systemctl enable pipewire.service || true
 systemctl enable pipewire-pulse.service || true
 systemctl enable wireplumber.service || true
 
+log "Setting up DisplayPort audio suspend/resume fix"
+
+# Make the systemd-sleep script executable
+chmod +x /usr/lib/systemd/system-sleep/soltros-audio-resume
+
+# Verify the script is in place
+if [ -f "/usr/lib/systemd/system-sleep/soltros-audio-resume" ]; then
+    echo "DisplayPort audio resume script installed successfully"
+else
+    echo "Warning: DisplayPort audio resume script not found"
+fi
+
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"
 dnf5 remove -y firefox firefox-* || true

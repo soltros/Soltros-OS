@@ -1,0 +1,24 @@
+#!/bin/bash
+# SoltrOS: Fix DisplayPort/HDMI audio after suspend/resume
+# This script restarts WirePlumber for all users after resume to re-detect audio devices
+
+case "$1" in
+    post)
+        # After resume from suspend
+        echo "SoltrOS: Restarting WirePlumber after resume to fix DisplayPort audio detection"
+        
+        # Get all logged-in users with active sessions
+        for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+            user_name=$(id -nu "$user_id" 2>/dev/null)
+            if [ -n "$user_name" ]; then
+                echo "Restarting WirePlumber for user: $user_name"
+                # Restart WirePlumber for this user
+                sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
+                    systemctl --user restart wireplumber.service || true
+            fi
+        done
+        ;;
+    *)
+        # Do nothing for pre-suspend
+        ;;
+esac

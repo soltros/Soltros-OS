@@ -148,12 +148,6 @@ fi
 log "Removing Firefox in favor of Waterfox"
 dnf5 remove -y firefox firefox-* || true
 
-# Remove Plasma Discover from base image
-log "Removing Plasma Discover"
-dnf5 remove -y plasma-discover* || true
-
-# Force enable Lightdm
-systemctl enable lightdm -f
-
-log "Re-installing Flatpak"
-dnf5 install -y gnome-software gnome-software-rpm-ostree flatpak
+# Install Discover plugins
+log "Installing Plasma Discover additions"
+dnf5 install -y plasma-discover-*

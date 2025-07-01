@@ -26,6 +26,7 @@ echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth
 # Install deepin desktop group
 log "Installing deepin Desktop Environment"
 dnf5 group install --skip-broken --setopt=install_weak_deps=False "deepin-desktop" -y
+dnf5 install deepin* -y
 
 # Install LightDM display manager and greeters
 log "Installing LightDM display manager"

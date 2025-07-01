@@ -43,9 +43,6 @@ echo_group /ctx/desktop-packages.sh
 log "Setup desktop defaults"
 echo_group /ctx/desktop-defaults.sh
 
-log "Fix Lightdm"
-echo_group /ctx/lightdm-fix.sh
-
 log "Enabling gaming enhancements"
 echo_group /ctx/gaming.sh
 

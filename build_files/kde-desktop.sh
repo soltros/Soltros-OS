@@ -7,7 +7,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing KDE Desktop Environment with LightDM"
+log "Installing KDE Desktop Environment"
 
 # Remove any existing Plymouth components first (as you were doing)
 log "Removing Plymouth boot splash (for clean boot)"

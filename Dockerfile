@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/base-main
+ARG BASE_IMAGE=ghcr.io/ublue-os/bazzite
 ARG TAG_VERSION=latest
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
@@ -44,31 +44,6 @@ RUN dnf5 install -y distrobox
 
 # Install dnf5 plugins and setup CachyOS kernel repo
 RUN dnf5 -y install dnf5-plugins
-RUN dnf5 -y config-manager setopt "*cachyos*".priority=1
-
-# Remove default kernel packages and install CachyOS kernel
-RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
-    echo "Installing CachyOS kernel..." && \
-    if dnf5 -y install kernel-cachyos; then \
-        echo "CachyOS kernel installed successfully"; \
-        echo "Installed CachyOS kernel packages:"; \
-        dnf5 list installed | grep cachyos || true; \
-    else \
-        echo "Failed to install kernel-cachyos, trying LTS version..."; \
-        if dnf5 -y install kernel-cachyos-lts; then \
-            echo "CachyOS LTS kernel installed successfully"; \
-        else \
-            echo "All CachyOS kernel installation attempts failed"; \
-            echo "Available CachyOS packages:"; \
-            dnf5 search kernel-cachyos || true; \
-            echo "Falling back to default kernel installation"; \
-            dnf5 -y install kernel kernel-core kernel-modules || true; \
-        fi; \
-    fi && \
-    echo "Final kernel verification:" && \
-    dnf5 list installed | grep -E "(kernel|cachyos)" || true && \
-    echo "Available kernel modules:" && \
-    ls -la /usr/lib/modules/ || true
 
 # Get rid of Plymouth
 RUN dnf5 remove plymouth* -y && \

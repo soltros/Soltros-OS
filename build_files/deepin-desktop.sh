@@ -7,7 +7,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing Budgie Desktop Environment with LightDM"
+log "Installing deepin Desktop Environment with LightDM"
 
 # Remove any existing Plymouth components first (as you were doing)
 log "Removing Plymouth boot splash (for clean boot)"
@@ -23,10 +23,10 @@ sed -i 's/splash//' /etc/default/grub 2>/dev/null || true
 sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true
 echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf
 
-# Install Budgie desktop group
-log "Installing Budgie Desktop Environment"
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "budgie-desktop" -y
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "budgie-desktop-apps" -y
+# Install deepin desktop group
+log "Installing deepin Desktop Environment"
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "deepin-desktop" -y
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "deepin-desktop-apps" -y
 
 # Install LightDM display manager and greeters
 log "Installing LightDM display manager"
@@ -74,5 +74,5 @@ log "Performing final cleanup"
 dnf5 autoremove -y
 dnf5 clean all
 
-log "Budgie Desktop Environment with LightDM installation complete"
-log "System will boot to LightDM login screen with Budgie desktop"
+log "deepin Desktop Environment with LightDM installation complete"
+log "System will boot to LightDM login screen with deepin desktop"

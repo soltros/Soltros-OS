@@ -147,7 +147,3 @@ fi
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"
 dnf5 remove -y firefox firefox-* || true
-
-# Install Discover plugins
-log "Installing Plasma Discover additions"
-dnf5 install -y plasma-discover-*

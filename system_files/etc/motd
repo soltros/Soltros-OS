@@ -61,7 +61,7 @@ echo ""
 # Fun facts rotation (shows different fact each time)
 FACTS=(
     "CachyOS kernel provides up to 15% better gaming performance"
-    "deepin desktop uses 40% less RAM than GNOME"
+    "kde desktop uses 40% less RAM than GNOME"
     "SoltrOS includes pre-configured gaming optimizations"
     "Immutable OS means your system never breaks from updates"
     "Flatpak sandboxing keeps your applications secure"

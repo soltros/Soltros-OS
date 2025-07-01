@@ -17,7 +17,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/deepin-desktop.sh \
+    /ctx/kde-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/lightdm-fix.sh \
     /ctx/desktop-defaults.sh 

@@ -34,8 +34,8 @@ echo_group /ctx/signing.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Install deepin Desktop"
-echo_group /ctx/deepin-desktop.sh
+log "Install kde Desktop"
+echo_group /ctx/kde-desktop.sh
 
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh

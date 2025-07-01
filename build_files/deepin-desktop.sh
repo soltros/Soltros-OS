@@ -7,7 +7,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing deepin Desktop Environment with LightDM"
+log "Installing KDE Desktop Environment with LightDM"
 
 # Remove any existing Plymouth components first (as you were doing)
 log "Removing Plymouth boot splash (for clean boot)"
@@ -23,41 +23,13 @@ sed -i 's/splash//' /etc/default/grub 2>/dev/null || true
 sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true
 echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf
 
-# Install deepin desktop group
-log "Installing deepin Desktop Environment"
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "deepin-desktop" -y
-dnf5 install deepin* -y
+# Install kde desktop group
+log "Installing kde Desktop Environment"
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-desktop" -y
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-apps" -y
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-media" -y
+dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-software-development" -y
 
-# Install LightDM display manager and greeters
-log "Installing LightDM display manager"
-dnf5 install -y \
-    lightdm \
-    lightdm-gtk \
-    lightdm-gtk-greeter-settings
-
-# Configure LightDM as the default display manager
-log "Configuring LightDM as default display manager"
-systemctl disable gdm.service 2>/dev/null || true
-systemctl disable sddm.service 2>/dev/null || true
-systemctl enable lightdm.service
-
-# Set up systemd user directories for LightDM
-log "Setting up LightDM user directories"
-mkdir -p /var/lib/lightdm
-mkdir -p /var/cache/lightdm
-mkdir -p /var/log/lightdm
-mkdir -p /run/lightdm
-
-# Create lightdm user if it doesn't exist
-if ! id lightdm >/dev/null 2>&1; then
-    useradd -r -s /sbin/nologin -d /var/lib/lightdm lightdm
-fi
-
-# Set proper ownership
-chown lightdm:lightdm /var/lib/lightdm
-chown lightdm:lightdm /var/cache/lightdm  
-chown lightdm:lightdm /var/log/lightdm
-chown lightdm:lightdm /run/lightdm
 
 # Rebuild initramfs without Plymouth
 log "Rebuilding initramfs"
@@ -72,5 +44,5 @@ log "Performing final cleanup"
 dnf5 autoremove -y
 dnf5 clean all
 
-log "deepin Desktop Environment with LightDM installation complete"
-log "System will boot to LightDM login screen with deepin desktop"
+log "kde Desktop Environment with LightDM installation complete"
+log "System will boot to LightDM login screen with kde desktop"

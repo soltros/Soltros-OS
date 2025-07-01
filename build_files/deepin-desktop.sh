@@ -31,7 +31,8 @@ dnf5 group install --skip-broken --setopt=install_weak_deps=False "deepin-deskto
 log "Installing LightDM display manager"
 dnf5 install -y \
     lightdm \
-    slick-greeter
+    lightdm-gtk \
+    lightdm-gtk-greeter-settings
 
 # Configure LightDM as the default display manager
 log "Configuring LightDM as default display manager"

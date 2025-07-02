@@ -119,6 +119,7 @@ LAYERED_PACKAGES=(
     cifs-utils
     virt-manager
     gnome-boxes
+    gnome-tweaks
     
     # Multimedia/audio
     pipewire-utils

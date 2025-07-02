@@ -1,6 +1,6 @@
 # SoltrOS - Desktop Edition
 
-A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, kde desktop environment, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, the Gnome Shell desktop environment, and developer-friendly tools.
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 

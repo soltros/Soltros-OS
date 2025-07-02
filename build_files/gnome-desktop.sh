@@ -1,3 +1,4 @@
+@ -0,0 +1,172 @@
 #!/usr/bin/bash
 set -euo pipefail
 
@@ -7,7 +8,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing KDE Desktop Environment"
+log "Installing Gnome Desktop Environment with LightDM"
 
 # Remove any existing Plymouth components first (as you were doing)
 log "Removing Plymouth boot splash (for clean boot)"
@@ -23,13 +24,17 @@ sed -i 's/splash//' /etc/default/grub 2>/dev/null || true
 sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true
 echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf
 
-# Install kde desktop group
-log "Installing kde Desktop Environment"
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-desktop" -y
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-apps" -y
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-media" -y
-dnf5 group install --skip-broken --setopt=install_weak_deps=False "kde-software-development" -y
 
+# Install Gnome desktop group
+log "Installing Gnome Desktop Environment"
+dnf5 group install --skip-broken "gnome-desktop" -y
+
+# Update dconf database
+dconf update
+
+# Clean up temporary Qt5 packages
+log "Cleaning up temporary files"
+rm -f /tmp/qt5-qtbase-*.rpm
 
 # Rebuild initramfs without Plymouth
 log "Rebuilding initramfs"
@@ -44,5 +49,5 @@ log "Performing final cleanup"
 dnf5 autoremove -y
 dnf5 clean all
 
-log "kde Desktop Environment with LightDM installation complete"
-log "System will boot to LightDM login screen with kde desktop"
+log "Gnome Desktop Environment with LightDM installation complete"
+log "System will boot to LightDM login screen with Gnome desktop"

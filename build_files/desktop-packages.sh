@@ -61,10 +61,8 @@ LAYERED_PACKAGES=(
     fwupd-plugin-uefi-capsule-data
     libvirtd
     
-    # Display manager and desktop groups (installed via group install elsewhere)
-    greetd
-    greetd-gtkgreet
-    cage
+    # Display manager
+    gdm
     
     # Gaming & performance
     gamemode

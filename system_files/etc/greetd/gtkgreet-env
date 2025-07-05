@@ -1,3 +1,0 @@
-#!/bin/sh
-export GTK_THEME=Adwaita:dark
-exec gtkgreet -s /etc/greetd/gtkgreet/style.css "$@"

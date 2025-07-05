@@ -446,6 +446,9 @@ main() {
         "install-multimedia")
             install_multimedia
             ;;
+        "install-homebrew")
+            install_homebrew
+            ;;
         "setup-git")
             soltros_setup_git
             ;;

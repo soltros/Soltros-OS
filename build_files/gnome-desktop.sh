@@ -29,33 +29,6 @@ echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth
 log "Installing Gnome Desktop Environment"
 dnf5 group install --skip-broken "gnome-desktop" -y
 
-# Explicitly install and configure GDM
-log "Installing and configuring GDM"
-dnf5 install -y gdm
-
-# ADD THIS SECTION HERE:
-log "Ensuring GDM user and group setup"
-
-# Recreate gdm group and user if needed  
-groupadd -f -g 42 gdm
-useradd -r -u 42 -g gdm -d /var/lib/gdm -s /sbin/nologin -c "GNOME Display Manager" gdm || true
-
-# Create necessary directories for gdm
-mkdir -p /var/lib/gdm
-mkdir -p /var/lib/gdm/.config
-mkdir -p /var/log/gdm
-mkdir -p /run/gdm
-mkdir -p /var/cache/gdm
-
-# Set proper ownership and permissions
-chown -R gdm:gdm /var/lib/gdm /var/log/gdm /var/cache/gdm
-chmod 755 /var/lib/gdm /var/log/gdm /var/cache/gdm
-chmod 700 /var/lib/gdm/.config
-
-# Enable GDM service
-log "Enabling GDM service"
-systemctl enable gdm
-
 # Update dconf database
 dconf update
 

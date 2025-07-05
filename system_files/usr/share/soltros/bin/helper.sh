@@ -90,8 +90,9 @@ soltros_install() {
 soltros_install_flatpaks() {
     print_header "Installing Flatpak applications from remote list"
     
-    if ! command -v flatpak &> /dev/null; then
-        print_error "Flatpak is not installed"
+    print_info "Setting up Flathub repository..."
+    if ! flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; then
+        print_error "Failed to add Flathub repository"
         exit 1
     fi
     
@@ -120,6 +121,11 @@ install_dev_tools() {
         print_error "Failed to install development tools"
         exit 1
     fi
+}
+
+setup_homebrew() {
+    print_header "Setting up Homebrew"
+    
 }
 
 install_gaming() {

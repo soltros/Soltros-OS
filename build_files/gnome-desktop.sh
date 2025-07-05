@@ -29,6 +29,9 @@ echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth
 log "Installing Gnome Desktop Environment"
 dnf5 group install --skip-broken "gnome-desktop" -y
 
+# Enabling Flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
 # Update dconf database
 dconf update
 

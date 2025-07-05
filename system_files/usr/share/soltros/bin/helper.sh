@@ -45,6 +45,7 @@ INSTALL COMMANDS:
   install-dev-tools       Install development tools via Flatpak
   install-gaming          Install gaming tools via Flatpak
   install-multimedia      Install multimedia tools via Flatpak
+  install-homebrew        Install the Homebrew package manager
 
 SETUP COMMANDS:
   setup-git              Configure Git with user credentials and SSH signing
@@ -123,9 +124,14 @@ install_dev_tools() {
     fi
 }
 
-setup_homebrew() {
+install_homebrew() {
     print_header "Setting up Homebrew"
-    
+    if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        print_success "Brew package manager installed!"
+    else
+        print_error "Failed to install the Brew package manager"
+        exit 1
+    fi
 }
 
 install_gaming() {

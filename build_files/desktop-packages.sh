@@ -16,6 +16,7 @@ log "Install layered applications"
 LAYERED_PACKAGES=(
     # Core system
     fish
+    zsh
     tailscale
     ptyxis
     papirus-icon-theme

@@ -85,9 +85,6 @@ RUN dnf5 remove plymouth* -y && \
     dnf5 autoremove -y && \
     dnf5 clean all
 
-# Enable Tailscale
-RUN ln -sf /usr/lib/systemd/system/tailscaled.service /etc/systemd/system/multi-user.target.wants/tailscaled.service
-
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
     curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \

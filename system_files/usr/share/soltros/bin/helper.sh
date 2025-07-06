@@ -127,7 +127,10 @@ install_dev_tools() {
 install_homebrew() {
     print_header "Setting up Homebrew"
     if /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+        # Add Homebrew to PATH (the installer usually tells you the correct path)
+        echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> ~/.bashrc
         print_success "Brew package manager installed!"
+        echo "Please restart your terminal or run 'source ~/.bashrc' to use brew"
     else
         print_error "Failed to install the Brew package manager"
         exit 1

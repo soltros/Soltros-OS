@@ -46,6 +46,7 @@ INSTALL COMMANDS:
   install-gaming          Install gaming tools via Flatpak
   install-multimedia      Install multimedia tools via Flatpak
   install-homebrew        Install the Homebrew package manager
+  download-appimages      Download Feishin and Ryubing to the ~/AppImages folder
 
 SETUP COMMANDS:
   setup-git              Configure Git with user credentials and SSH signing
@@ -151,6 +152,20 @@ install_gaming() {
         print_success "Gaming setup complete!"
     else
         print_error "Failed to install gaming applications"
+        exit 1
+    fi
+}
+
+download_appimages() {
+    print_header "Downloading AppImages"
+
+    print_info "Downloading AppImages..."
+    if mkdir -p ~/AppImages/; then
+        wget https://github.com/jeffvli/feishin/releases/download/v0.17.0/Feishin-0.17.0-linux-x86_64.AppImage -O ~/AppImages/Feishin-0.17.0-linux-x86_64.AppImage
+        wget https://git.ryujinx.app/api/v4/projects/1/packages/generic/Ryubing/1.3.2/ryujinx-1.3.2-x64.AppImage -O ~/AppImages/ryujinx-1.3.2-x64.AppImage
+        print_success AppImage files downloaded to ~/AppImages/
+    else
+        print_error "Failed to download AppImage files"
         exit 1
     fi
 }
@@ -451,6 +466,9 @@ main() {
             ;;
         "install-homebrew")
             install_homebrew
+            ;;
+        "download-appimages")
+            download_appimages
             ;;
         "setup-git")
             soltros_setup_git

@@ -134,7 +134,7 @@ install_package() {
     
     echo -e "${BLUE}Installing package: $package${NC}"
     
-    if nix profile install "nixpkgs#$package"; then
+    if NIXPKGS_ALLOW_UNFREE=1 nix profile add "nixpkgs#$package"; then
         echo -e "${GREEN}✓ Successfully installed: $package${NC}"
         update_desktop_shortcuts
     else
@@ -183,7 +183,7 @@ search_packages() {
     fi
     
     echo -e "${BLUE}Searching for packages matching: $query${NC}"
-    nix search nixpkgs "$query"
+    NIXPKGS_ALLOW_UNFREE=1 nix search nixpkgs "$query"
 }
 
 # Function to upgrade all packages

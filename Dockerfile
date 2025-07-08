@@ -19,7 +19,7 @@ RUN chmod +x \
     /ctx/waterfox-installer.sh \
     /ctx/gnome-desktop.sh \
     /ctx/build-initramfs.sh \
-    /ctx//ctx/nix-package-manager.sh \
+    /ctx/nix-package-manager.sh \
     /ctx/desktop-defaults.sh 
 
 # Stage 2: final image

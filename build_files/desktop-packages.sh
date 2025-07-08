@@ -63,7 +63,7 @@ LAYERED_PACKAGES=(
     libvirtd
     
     # Display manager
-    gdm
+    sddm
     
     # Gaming & performance
     gamemode

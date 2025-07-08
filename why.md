@@ -26,7 +26,7 @@ Gaming setups often involve complex driver configurations and system tweaks. Tra
 
 ## The SoltrOS Solution
 
-SoltrOS addresses these challenges through a revolutionary multi-layered architecture that separates concerns while maximizing both performance and reliability.
+SoltrOS addresses these challenges through a multi-layered architecture that separates concerns while maximizing both performance and reliability.
 
 ### Immutable Foundation with Performance Optimization
 

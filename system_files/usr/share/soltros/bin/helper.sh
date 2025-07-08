@@ -47,6 +47,7 @@ INSTALL COMMANDS:
   install-multimedia      Install multimedia tools via Flatpak
   install-homebrew        Install the Homebrew package manager
   install-nix             Install the Nix package manager
+  setup-nixmanager        Add the nixmanager.sh script to ~/scripts for easy Nix use
   download-appimages      Download Feishin and Ryubing to the ~/AppImages folder
   install-oh-my-zsh       Download and install the Oh My Zsh plugins/tools
   change-to-zsh           Swap shell to Zsh
@@ -148,6 +149,18 @@ install_nix() {
         print_success "Successfully installed and enabled the Nix package manager on SoltrOS."
     else
         print_error "Failed to install and enable the Nix package manager on SoltrOS."
+        exit 1
+    fi
+}
+
+setup-nixmanager() {
+    print_header "Setting up the nixmanager.sh script."
+    if mkdir -p ~/scripts/
+    cp /usr/share/soltros/bin/nixmanager.sh ~/scripts/
+    chmod +x ~/scripts/nixmanager.sh; then
+        print_success "nixmanager.sh installed! Please run sh ~/scripts/nixmanager.sh, or nixmanager in the Zsh shell!"
+    else
+        print_error "Failed to setup nixmanager.sh"
         exit 1
     fi
 }
@@ -514,7 +527,9 @@ main() {
         "install-nix")
             install_nix
             ;;
-
+        "setup-nixmanager")
+            setup-nixmanager
+            ;;
         "install-oh-my-zsh")
             install_oh_my_zsh
             ;;

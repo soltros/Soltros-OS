@@ -153,7 +153,7 @@ install_nix() {
     fi
 }
 
-setup-nixmanager() {
+setup_nixmanager() {
     print_header "Setting up the nixmanager.sh script."
     if mkdir -p ~/scripts/
     cp /usr/share/soltros/bin/nixmanager.sh ~/scripts/
@@ -528,7 +528,7 @@ main() {
             install_nix
             ;;
         "setup-nixmanager")
-            setup-nixmanager
+            setup_nixmanager
             ;;
         "install-oh-my-zsh")
             install_oh_my_zsh

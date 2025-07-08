@@ -8,7 +8,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing Gnome Desktop Environment with LightDM"
+log "Installing KDE Desktop Environment with LightDM"
 
 # Remove any existing Plymouth components first (as you were doing)
 log "Removing Plymouth boot splash (for clean boot)"
@@ -25,9 +25,11 @@ sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true
 echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf
 
 
-# Install Gnome desktop group
-log "Installing Gnome Desktop Environment"
-dnf5 group install --skip-broken "gnome-desktop" -y
+# Install KDE desktop groups
+log "Installing KDE Desktop Environment"
+dnf5 group install --skip-broken "kde-apps" -y
+dnf5 group install --skip-broken "kde-media" -y
+dnf5 group install --skip-broken "kde-desktop" -y
 
 # Enabling Flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -35,9 +37,6 @@ flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.f
 # Update dconf database
 dconf update
 
-# Clean up temporary Qt5 packages
-log "Cleaning up temporary files"
-rm -f /tmp/qt5-qtbase-*.rpm
 
 # Rebuild initramfs without Plymouth
 log "Rebuilding initramfs"
@@ -52,5 +51,5 @@ log "Performing final cleanup"
 dnf5 autoremove -y
 dnf5 clean all
 
-log "Gnome Desktop Environment with LightDM installation complete"
-log "System will boot to LightDM login screen with Gnome desktop"
+log "KDE Desktop Environment with SDDM installation complete"
+log "System will boot to SDDM login screen with KDE desktop"

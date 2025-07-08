@@ -173,7 +173,8 @@ change_to_zsh() {
 }
 
 download_zsh_configs() {
-    if wget https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/zsh/zshrc -O ~/.zshrc; then
+    if wget https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/zsh/zshrc -O ~/.zshrc
+        git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions; then
         print_success "Successfully downloaded Zshrc."
     else
         print_error "Failed to download Zshrc"

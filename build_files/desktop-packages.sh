@@ -72,7 +72,6 @@ LAYERED_PACKAGES=(
     goverlay
     corectrl
     steam-devices
-    
     # MacBook thermal management
     mbpfan
     thermald

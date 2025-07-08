@@ -31,6 +31,9 @@ log "Building for base image: $BASE_IMAGE"
 log "Enable container signing"
 echo_group /ctx/signing.sh
 
+log "Setup /nix and download Determinite Systems Nix installer"
+echo_group /ctx/nix-package-manager.sh
+
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 

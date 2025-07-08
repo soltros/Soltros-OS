@@ -46,7 +46,11 @@ INSTALL COMMANDS:
   install-gaming          Install gaming tools via Flatpak
   install-multimedia      Install multimedia tools via Flatpak
   install-homebrew        Install the Homebrew package manager
+  install-nix             Install the Nix package manager
   download-appimages      Download Feishin and Ryubing to the ~/AppImages folder
+  install-oh-my-zsh       Download and install the Oh My Zsh plugins/tools
+  change-to-zsh           Swap shell to Zsh
+  download-zsh-configs    Download Derrik's Zshrc config
 
 SETUP COMMANDS:
   setup-git              Configure Git with user credentials and SSH signing
@@ -134,6 +138,45 @@ install_homebrew() {
         echo "Please restart your terminal or run 'source ~/.bashrc' to use brew"
     else
         print_error "Failed to install the Brew package manager"
+        exit 1
+    fi
+}
+
+install_nix() {
+    print_header "Setting up Nix via Determinite Nix installer."
+    if /bin/bash /nix/determinate-nix-installer.sh install; then
+        print_success "Successfully installed and enabled the Nix package manager on SoltrOS."
+    else
+        print_error "Failed to install and enable the Nix package manager on SoltrOS."
+        exit 1
+    fi
+}
+
+install_oh_my_zsh() {
+    print_header "Setting up Oh My Zsh!"
+    if sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
+        print_success "Oh My Zsh! installed."
+    else
+        print_error "Failed to install Oh My Zsh"
+        exit 1
+    fi
+} 
+
+change_to_zsh() {
+    print_header "Changing shell to Zsh"
+    if chsh -s /usr/sbin/zsh; then
+        print_success "Changed from Bash to Zsh"
+    else
+        print_error "Failed to change from Bash to Zsh"
+        exit 1
+    fi
+}
+
+download_zsh_configs() {
+    if wget https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/zsh/zshrc -O ~/.zshrc; then
+        print_success "Successfully downloaded Zshrc."
+    else
+        print_error "Failed to download Zshrc"
         exit 1
     fi
 }
@@ -466,6 +509,19 @@ main() {
             ;;
         "install-homebrew")
             install_homebrew
+            ;;
+        "install-nix")
+            install_nix
+            ;;
+
+        "install-oh-my-zsh")
+            install_oh_my_zsh
+            ;;
+        "change-to-zsh")
+            change_to_zsh
+            ;;
+        "download-zsh-configs")
+            download_zsh_configs
             ;;
         "download-appimages")
             download_appimages

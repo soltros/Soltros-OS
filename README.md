@@ -34,12 +34,10 @@ sudo systemctl reboot
 - **Flatpak** (Applications) - Sandboxed desktop applications
 - **Distrobox** (Development tools) - Containerized development environments
 - **Homebrew** (Additional tools) - macOS-style package manager for Linux
-   
-   ```
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
+- **Nix** (Additional tools) - NixOS package manager for access to a wide variety of applications and tools
+
 ### 🛠️ Developer Experience
-- **Fish shell** as default with modern tooling integration
+- **Zsh shell** as default with modern tooling integration
 - **SoltrOS command runner** with extensive system management capabilities
 - **Git integration** with SSH signing and useful aliases
 - **Shell enhancements** with aliases, plugins, and modern CLI tools
@@ -55,7 +53,7 @@ sudo systemctl reboot
 ## 📋 Included Software
 
 ### System Packages (RPM)
-- `fish` - Modern shell with autocompletion
+- `Zsh` - Modern shell with many plugins
 - `gimp` - Image editing
 - `tailscale` - Zero-config VPN
 - `gamemode` & `mangohud` - Gaming performance tools
@@ -125,6 +123,11 @@ sh /usr/share/soltros/bin/helper.sh install-multimedia       # Install multimedi
 sh /usr/share/soltros/bin/helper.sh setup-cli                # Setup shell configurations
 sh /usr/share/soltros/bin/helper.sh setup-git                # Configure Git with SSH signing
 sh /usr/share/soltros/bin/helper.sh setup-distrobox          # Setup development containers
+sh /usr/share/soltros/bin/helper.sh install-homebrew         # Setup MacOS style Brew package manager
+sh /usr/share/soltros/bin/helper.sh install-nix              # Setup NixOS package manager via Determinite Systems tooling
+sh /usr/share/soltros/bin/helper.sh install-oh-my-zsh        # Setup Oh My Zsh plugins/tools for Zsh
+sh /usr/share/soltros/bin/helper.sh change-to-zsh            # Switch the current user from Bash to Zsh
+sh /usr/share/soltros/bin/helper.sh download-zsh-configs     # Download Derrik's Zshrc config
 ```
 
 ### System Configuration
@@ -206,6 +209,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - [Universal Blue](https://github.com/ublue-os) for the excellent foundation
 - [Fedora Project](https://fedoraproject.org/) for the underlying OS
 - [CachyOS](https://cachyos.org/) for the high-performance kernel
+- [NixOS](https://nixos.org/) for the top-of-the-line package manager
 
 ## 🆘 Support
 

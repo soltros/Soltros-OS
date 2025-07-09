@@ -48,6 +48,7 @@ INSTALL COMMANDS:
   install-homebrew        Install the Homebrew package manager
   install-nix             Install the Nix package manager
   setup-nixmanager        Add the nixmanager.sh script to ~/scripts for easy Nix use
+  enable-nix-nonfree      Enable non-free package support in the Nix package manager
   download-appimages      Download Feishin and Ryubing to the ~/AppImages folder
   install-oh-my-zsh       Download and install the Oh My Zsh plugins/tools
   change-to-zsh           Swap shell to Zsh
@@ -163,6 +164,18 @@ setup_nixmanager() {
         print_error "Failed to setup nixmanager.sh"
         exit 1
     fi
+}
+
+enable_nix_nonfree(){
+    print_header "Setting up access to non-free Nix packages."
+    if mkdir -p ~/.config/nixpkgs/
+       wget https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/config-for-soltros.nix -O ~/.config/nixpkgs/config.nix; then
+        print_success "Successfully enabled non-free support."
+    else
+        print_error "Failed to enable non-free support."
+        exit 1
+    fi
+
 }
 
 install_oh_my_zsh() {
@@ -529,6 +542,9 @@ main() {
             ;;
         "setup-nixmanager")
             setup_nixmanager
+            ;;
+        "setup-nix-nonfree")
+            enable_nix_nonfree
             ;;
         "install-oh-my-zsh")
             install_oh_my_zsh

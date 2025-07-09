@@ -543,7 +543,7 @@ main() {
         "setup-nixmanager")
             setup_nixmanager
             ;;
-        "setup-nix-nonfree")
+        "enable-nix-nonfree")
             enable_nix_nonfree
             ;;
         "install-oh-my-zsh")
@@ -593,7 +593,7 @@ main() {
             ;;
         *)
             echo "Unknown command: $1"
-            echo "Run 'soltros help' for usage information"
+            echo "Run 'helper' for usage information"
             exit 1
             ;;
     esac

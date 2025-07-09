@@ -37,7 +37,7 @@ show_help() {
     cat << 'EOF'
 SoltrOS Setup Script
 
-Usage: soltros [COMMAND]
+Usage: helper [COMMAND]
 
 INSTALL COMMANDS:
   install                 Install all SoltrOS components

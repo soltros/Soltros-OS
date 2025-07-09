@@ -146,7 +146,9 @@ install_homebrew() {
 
 install_nix() {
     print_header "Setting up Nix via Determinite Nix installer."
-    if /bin/bash /nix/determinate-nix-installer.sh install; then
+    if /bin/bash /nix/determinate-nix-installer.sh install
+        mkdir -p ~/.config/nixpkgs-soltros/
+        wget https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/configs/flake.nix -O ~/.config/nixpkgs-soltros/flake.nix; then
         print_success "Successfully installed and enabled the Nix package manager on SoltrOS."
     else
         print_error "Failed to install and enable the Nix package manager on SoltrOS."

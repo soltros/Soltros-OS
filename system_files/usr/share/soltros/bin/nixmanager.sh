@@ -134,7 +134,7 @@ install_package() {
     
     echo -e "${BLUE}Installing package: $package${NC}"
     
-    if NIXPKGS_ALLOW_UNFREE=1 nix profile add "nixpkgs#$package"; then
+    if nix profile add "~/.config/nixpkgs-soltros#$package"; then
         echo -e "${GREEN}✓ Successfully installed: $package${NC}"
         update_desktop_shortcuts
     else
@@ -147,16 +147,17 @@ install_package() {
 # Function to remove a package
 remove_package() {
     local package="$1"
-    
+
     if [[ -z "$package" ]]; then
         echo -e "${RED}Error: Package name or index is required${NC}" >&2
-        echo "Usage: $SCRIPT_NAME remove <package_name_or_index>"
+        echo "Usage: $SCRIPT_NAME remove <package_name>"
         exit 1
     fi
-    
+
     echo -e "${BLUE}Removing package: $package${NC}"
-    
-    if nix profile remove "$package"; then
+
+    # Remove package by referencing local flake attribute path
+    if nix profile remove "~/.config/nixpkgs-soltros#$package"; then
         echo -e "${GREEN}✓ Successfully removed: $package${NC}"
         update_desktop_shortcuts
     else

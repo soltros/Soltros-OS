@@ -1,9 +1,9 @@
 NAME="SoltrOS"
-VERSION="42"
+VERSION="1"
 ID=soltros
 ID_LIKE=fedora
-VERSION_ID=42
-PRETTY_NAME="SoltrOS 42"
+VERSION_ID=1
+PRETTY_NAME="SoltrOS"
 ANSI_COLOR="0;36"
 HOME_URL="https://github.com/soltros/soltros-os"
 SUPPORT_URL="https://github.com/soltros/soltros-os"

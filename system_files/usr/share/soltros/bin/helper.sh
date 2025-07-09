@@ -48,7 +48,7 @@ INSTALL COMMANDS:
   install-homebrew        Install the Homebrew package manager
   install-nix             Install the Nix package manager
   setup-nixmanager        Add the nixmanager.sh script to ~/scripts for easy Nix use
-  enable-nix-nonfree      Enable non-free package support in the Nix package manager
+  add-helper              This adds the helper.sh alias to Bash to make it easier to access
   download-appimages      Download Feishin and Ryubing to the ~/AppImages folder
   install-oh-my-zsh       Download and install the Oh My Zsh plugins/tools
   change-to-zsh           Swap shell to Zsh
@@ -63,7 +63,7 @@ CONFIGURE COMMANDS:
   enable-amdgpu-oc       Enable AMD GPU overclocking support
   toggle-session         Toggle between X11 and Wayland sessions
 
-UNIVERSAL BLUE COMMANDS:
+OTHER COMMANDS:
   update                 Update the system (rpm-ostree, flatpaks, etc.)
   clean                  Clean up the system
   distrobox              Manage distrobox containers
@@ -166,16 +166,17 @@ setup_nixmanager() {
     fi
 }
 
-enable_nix_nonfree(){
-    print_header "Setting up access to non-free Nix packages."
-    if mkdir -p ~/.config/nixpkgs/
-       wget https://raw.githubusercontent.com/soltros/random-stuff/refs/heads/main/bash/config-for-soltros.nix -O ~/.config/nixpkgs/config.nix; then
-        print_success "Successfully enabled non-free support."
-    else
-        print_error "Failed to enable non-free support."
-        exit 1
-    fi
+add_helper() {
+    local bashrc="$HOME/.bashrc"
+    local alias_cmd='alias helper="sh /usr/share/soltros/bin/helper.sh"'
 
+    # Check if the alias already exists
+    if grep -Fxq "$alias_cmd" "$bashrc"; then
+        echo "✓ Alias already exists in $bashrc"
+    else
+        echo "$alias_cmd" >> "$bashrc"
+        echo "✓ Alias added to $bashrc"
+    fi
 }
 
 install_oh_my_zsh() {
@@ -543,8 +544,8 @@ main() {
         "setup-nixmanager")
             setup_nixmanager
             ;;
-        "enable-nix-nonfree")
-            enable_nix_nonfree
+        "add-helper")
+            add_helper
             ;;
         "install-oh-my-zsh")
             install_oh_my_zsh

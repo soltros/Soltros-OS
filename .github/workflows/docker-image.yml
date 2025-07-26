@@ -57,7 +57,12 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ github.repository_url }}
           no-cache: true
-
+      - name: Install crane
+        run: |
+            # Install go-containerregistry tools
+            go install github.com/google/go-containerregistry/cmd/crane@latest
+            echo "$(go env GOPATH)/bin" >> $GITHUB_PATH    
+            
       - name: Sign with Cosign
         run: |
           # Sign with digest to avoid tag warnings

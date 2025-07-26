@@ -20,44 +20,52 @@ mkdir -p /etc/containers
 mkdir -p /etc/pki/containers
 mkdir -p /etc/containers/registries.d/
 
-log "Setting up policy.json for sigstore"
-# Handle existing policy from base image
-if [ -f /usr/etc/containers/policy.json ]; then
-    cp /usr/etc/containers/policy.json "$POLICY"
-elif [ ! -f "$POLICY" ]; then
-    # Create basic policy if none exists
-    cat > "$POLICY" << 'EOF'
+log "Setting up secure policy.json"
+cat > "$POLICY" << EOF
 {
     "default": [
         {
-            "type": "insecureAcceptAnything"
+            "type": "reject"
         }
     ],
     "transports": {
+        "docker": {
+            "$REGISTRY": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "$PUBKEY",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ]
+        },
         "docker-daemon": {
             "": [
                 {
                     "type": "insecureAcceptAnything"
                 }
             ]
-        },
-        "docker": {}
+        }
     }
 }
 EOF
+
+log "Installing cosign public key"
+if [ -f /ctx/soltros.pub ]; then
+    # Legacy path for backward compatibility
+    cp /ctx/soltros.pub "$PUBKEY"
+else
+    # Preferred path - key should be copied via Dockerfile
+    if [ ! -f "$PUBKEY" ]; then
+        echo "ERROR: Public key not found at /ctx/soltros.pub or $PUBKEY" >&2
+        exit 1
+    fi
 fi
 
-# Add sigstore configuration for our registry
-jq ".transports.docker[\"${REGISTRY}\"] = [{
-    \"type\": \"sigstoreSigned\",
-    \"keyPaths\": [\"${PUBKEY}\"],
-    \"signedIdentity\": {
-        \"type\": \"matchRepository\"
-    }
-}]" "$POLICY" > /tmp/policy.json && mv /tmp/policy.json "$POLICY"
-
-log "Copying cosign public key"
-cp /ctx/soltros.pub "$PUBKEY"
+log "Setting correct permissions"
+chmod 644 "$PUBKEY"
+chmod 644 "$POLICY"
 
 log "Creating registry policy YAML"
 cat > "/etc/containers/registries.d/${NAMESPACE}.yaml" << EOF
@@ -65,5 +73,9 @@ docker:
   ${REGISTRY}:
     use-sigstore-attachments: true
 EOF
+
+log "Verifying policy configuration"
+# Basic syntax check
+jq empty "$POLICY"
 
 log "Signing policy setup complete for $REGISTRY"

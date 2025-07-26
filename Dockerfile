@@ -6,7 +6,7 @@ FROM ${BASE_IMAGE}:${TAG_VERSION}
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
-COPY soltros.pub /ctx/soltros.pub
+COPY soltros.pub /etc/pki/containers/soltros.pub
 
 # Change perms
 RUN chmod +x \

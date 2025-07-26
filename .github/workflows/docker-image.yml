@@ -22,7 +22,7 @@ jobs:
       - name: Validate Keys
         run: |
           # Verify public key matches secret
-          curl -sL https://raw.githubusercontent.com/soltros/Soltros-OS/main/keys/soltros.pub > repo-key.pub
+          curl -sL https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/soltros.pub > repo-key.pub
           echo "${{ secrets.COSIGN_PUBLIC_KEY }}" > secret-key.pub
           if ! diff -u repo-key.pub secret-key.pub; then
             echo "::error::Key mismatch between repo and GitHub secret!"

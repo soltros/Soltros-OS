@@ -28,6 +28,7 @@ LAYERED_PACKAGES=(
     pipewire-pulse
     wireplumber
     just
+    nebula
     starship
     pipewire-alsa
     deja-dup

@@ -8,6 +8,7 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
+RUN chmod 644 /etc/pki/containers/soltros.pub
 
 # Change perms
 RUN chmod +x \

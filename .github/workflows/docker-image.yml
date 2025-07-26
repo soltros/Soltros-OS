@@ -12,27 +12,39 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write  # Required for cosign
+      id-token: write
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0
+
+      - name: Validate Keys
+        run: |
+          # Verify public key matches secret
+          curl -sL https://raw.githubusercontent.com/soltros/Soltros-OS/main/keys/soltros.pub > repo-key.pub
+          echo "${{ secrets.COSIGN_PUBLIC_KEY }}" > secret-key.pub
+          if ! diff -u repo-key.pub secret-key.pub; then
+            echo "::error::Key mismatch between repo and GitHub secret!"
+            exit 1
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
         with:
           cosign-release: 'v2.2.4'
-      
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Build and Push Image (AMD64 Only)
+
+      - name: Build and Push Image
         uses: docker/build-push-action@v5
         id: build
         with:
@@ -40,12 +52,50 @@ jobs:
           file: Dockerfile
           push: true
           platforms: linux/amd64
-          tags: ghcr.io/${{ github.repository_owner }}/soltros-os:latest
-          no-cache: true  # Forces fresh pull of base image
-      
-      - name: Sign container image
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+            ghcr.io/${{ github.repository_owner }}/soltros-os:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.repository_url }}
+          no-cache: true
+
+      - name: Sign with Cosign
         run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+          # Sign the image with key and attestations
+          cosign sign --yes \
+            --key env://COSIGN_PRIVATE_KEY \
+            --upload=true \
+            --tlog-upload=true \
+            --recursive \
+            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+
+          # Attach SBOM
+          cosign attest --yes \
+            --key env://COSIGN_PRIVATE_KEY \
+            --predicate-type=https://spdx.dev/Document \
+            --type spdx \
+            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+
+      - name: Verify Deployment Ready
+        run: |
+          # Verify signatures
+          cosign verify \
+            --key <(echo "${{ secrets.COSIGN_PUBLIC_KEY }}") \
+            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+
+          # Verify policy.json exists in image
+          podman run --rm ghcr.io/${{ github.repository_owner }}/soltros-os:latest \
+            test -f /etc/containers/policy.json
+
+          # Verify public key exists in correct location
+          podman run --rm ghcr.io/${{ github.repository_owner }}/soltros-os:latest \
+            test -f /etc/pki/containers/soltros.pub
+
+      - name: Smoke Test
+        run: |
+          # Test the image can actually run
+          podman run --rm ghcr.io/${{ github.repository_owner }}/soltros-os:latest \
+            cat /etc/os-release

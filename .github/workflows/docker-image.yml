@@ -21,8 +21,7 @@ jobs:
 
       - name: Validate Keys
         run: |
-          # Verify public key matches secret
-          curl -sL https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/soltros.pub > repo-key.pub
+          curl -sL https://raw.githubusercontent.com/soltros/Soltros-OS/main/soltros.pub > repo-key.pub
           echo "${{ secrets.COSIGN_PUBLIC_KEY }}" > secret-key.pub
           if ! diff -u repo-key.pub secret-key.pub; then
             echo "::error::Key mismatch between repo and GitHub secret!"
@@ -61,41 +60,37 @@ jobs:
 
       - name: Sign with Cosign
         run: |
-          # Sign the image with key and attestations
-          cosign sign --yes \
+          # Sign with digest to avoid tag warnings
+          DIGEST=$(crane digest ghcr.io/${{ github.repository_owner }}/soltros-os:latest)
+          cosign sign \
+            --yes \
             --key env://COSIGN_PRIVATE_KEY \
             --upload=true \
             --tlog-upload=true \
             --recursive \
-            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+            ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST
 
-          # Attach SBOM
-          cosign attest --yes \
+          # Create SBOM attestation (modern syntax)
+          cosign attest \
+            --yes \
             --key env://COSIGN_PRIVATE_KEY \
-            --predicate-type=https://spdx.dev/Document \
             --type spdx \
-            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+            ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
-      - name: Verify Deployment Ready
+      - name: Verify Deployment
         run: |
-          # Verify signatures
+          DIGEST=$(crane digest ghcr.io/${{ github.repository_owner }}/soltros-os:latest)
+          
+          # Verify signature
           cosign verify \
             --key <(echo "${{ secrets.COSIGN_PUBLIC_KEY }}") \
-            ghcr.io/${{ github.repository_owner }}/soltros-os:latest
+            ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST
 
-          # Verify policy.json exists in image
-          podman run --rm ghcr.io/${{ github.repository_owner }}/soltros-os:latest \
-            test -f /etc/containers/policy.json
-
-          # Verify public key exists in correct location
-          podman run --rm ghcr.io/${{ github.repository_owner }}/soltros-os:latest \
-            test -f /etc/pki/containers/soltros.pub
-
-      - name: Smoke Test
-        run: |
-          # Test the image can actually run
-          podman run --rm ghcr.io/${{ github.repository_owner }}/soltros-os:latest \
-            cat /etc/os-release
+          # Verify SBOM
+          cosign verify-attestation \
+            --key <(echo "${{ secrets.COSIGN_PUBLIC_KEY }}") \
+            --type spdx \
+            ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST

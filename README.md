@@ -16,17 +16,20 @@ sudo systemctl reboot
 # NOTICE:
 There has been an issue with policy.json not being generated correctly, resulting in an issue with bootc. This should now be fixed in future, fresh installed images. However, if you are experiencing this issue on a current version of SoltrOS, do the following: 
 ### 1. Download the public key
+```
 sudo mkdir -p /etc/pki/containers
 sudo curl -L https://github.com/soltros/Soltros-OS/raw/main/soltros.pub -o /etc/pki/containers/soltros.pub
-
+```
 ### 2. Download the secure policy
+```
 sudo mkdir -p /etc/containers
 sudo curl -L https://github.com/soltros/Soltros-OS/raw/main/resources/policy.json -o /etc/containers/policy.json
-
+```
 ### 3. Verify permissions
+```
 sudo chmod 644 /etc/pki/containers/soltros.pub
 sudo chmod 644 /etc/containers/policy.json
-
+```
 
 ## 🚀 Features
 

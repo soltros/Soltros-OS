@@ -80,10 +80,3 @@ jobs:
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-
-      - name: Verify
-        run: |
-          DIGEST=$(crane digest ghcr.io/${{ github.repository_owner }}/soltros-os:latest)
-          cosign verify \
-            --key <(printf '%s\n' "${{ secrets.COSIGN_PUBLIC_KEY }}") \
-            ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST

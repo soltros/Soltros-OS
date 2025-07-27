@@ -9,7 +9,6 @@ on:
         type: choice
         options:
           - amd64
-          - arm64
   pull_request:
     branches:
       - main
@@ -34,7 +33,7 @@ concurrency:
 jobs:
   build:
     name: Build SoltrOS disk images
-    runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
+    runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' }}
     strategy:
       fail-fast: false
       matrix:

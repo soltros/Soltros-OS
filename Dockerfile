@@ -22,15 +22,22 @@ RUN chmod +x \
     /ctx/kde-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/nix-package-manager.sh \
-    /ctx/desktop-defaults.sh 
+    /ctx/desktop-defaults.sh
 
 # Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
+# EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
+# These override any conflicting labels and force correct distro detection
+LABEL ostree.linux="fedora" \
+    org.opencontainers.image.version="41" \
+    distro.name="fedora" \
+    distro.version="41"
+
+# Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready Fedora CoreOS image with MacBook support" \
-    org.opencontainers.image.vendor="Derrik" \
-    org.opencontainers.image.version="42"
+    org.opencontainers.image.description="Gaming-ready Fedora Kinoite image with MacBook support" \
+    org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding
 COPY system_files/etc /etc
@@ -100,3 +107,6 @@ ENV KERNEL_FLAVOR=cachyos
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
+
+# Ensure bootc compatibility
+RUN ostree container commit

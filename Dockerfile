@@ -30,9 +30,9 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 # EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
 # These override any conflicting labels and force correct distro detection
 LABEL ostree.linux="fedora" \
-    org.opencontainers.image.version="41" \
+    org.opencontainers.image.version="42" \
     distro.name="fedora" \
-    distro.version="41"
+    distro.version="42"
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \

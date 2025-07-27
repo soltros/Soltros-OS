@@ -85,5 +85,5 @@ jobs:
         run: |
           DIGEST=$(crane digest ghcr.io/${{ github.repository_owner }}/soltros-os:latest)
           cosign verify \
-            --key <(echo "${{ secrets.COSIGN_PUBLIC_KEY }}") \
+            --key <(printf '%s\n' "${{ secrets.COSIGN_PUBLIC_KEY }}") \
             ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST

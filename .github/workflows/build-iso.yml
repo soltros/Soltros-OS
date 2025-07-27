@@ -1,9 +1,11 @@
 name: Build SoltrOS Desktop ISO
+
 on:
   workflow_dispatch:
   # You can also trigger on releases or tags
   # release:
   #   types: [published]
+
 jobs:
   build-iso:
     runs-on: ubuntu-latest
@@ -31,23 +33,22 @@ jobs:
           network --bootproto=dhcp --device=link --activate
           
           # Use network installation
-          url --mirrorlist="https://mirrors.fedoraproject.org/mirrorlist?repo=fedora-42&arch=x86_64"
+          url --url="https://download.fedoraproject.org/pub/fedora/linux/releases/39/Everything/x86_64/os/"
           
           # Do NOT set root password - let user configure during install
-          # rootpw --lock
+          rootpw --lock
           
           # System services
           services --enabled="NetworkManager,sshd"
           
           # System timezone (will be configurable during install)
-          # timezone America/New_York --utc
+          timezone UTC --utc
           
           # Do NOT pre-create user - let installer handle this
           # This ensures the user creation screen appears during installation
           
           # Disk partitioning - let user configure during install
-          # autopart
-          # clearpart --none --initlabel
+          autopart
           
           # SELinux configuration
           selinux --enforcing
@@ -58,7 +59,8 @@ jobs:
           # Package selection
           %packages
           @core
-          @standard
+          @workstation-product-environment
+          gnome-shell
           NetworkManager
           openssh-server
           sudo
@@ -84,11 +86,11 @@ jobs:
         id: build
         with:
           arch: x86_64
-          image_name: soltros-os-server
+          image_name: soltros-desktop
           image_repo: ghcr.io/${{ github.repository_owner }}
           image_tag: latest
-          version: 42
-          variant: Silverblue
+          version: 42  # Matching Fedora version in kickstart
+          variant: Workstation
           iso_name: ${{ steps.iso-name.outputs.iso-name }}
           enrollment_password: universalblue
           secure_boot_key_url: 'https://github.com/ublue-os/akmods/raw/main/certs/public_key.der'

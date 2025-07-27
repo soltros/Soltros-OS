@@ -64,7 +64,7 @@ jobs:
         with:
           bootc-image-builder-image: ghcr.io/centos-workstation/bootc-image-builder:latest
           use-librepo: true
-          config-file: ./iso.toml
+          config-file: ./disk_config/iso.toml
           image: ${{ env.IMAGE_REGISTRY }}:${{ env.DEFAULT_TAG }}
 
       - name: Upload ISOs and Checksum to Job Artifacts

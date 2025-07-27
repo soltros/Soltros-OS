@@ -50,16 +50,9 @@ jobs:
           tags: ghcr.io/${{ github.repository_owner }}/soltros-os:latest
           no-cache: true
 
-      - name: Prepare SBOM predicate
-        run: |
-          cat <<EOF > sbom.json
-          {
-            "version": "1.0",
-            "predicateType": "https://spdx.dev/Document"
-          }
-          EOF
-
       - name: Sign and attest
+        # Only run if the cosign private key exists
+        if: ${{ secrets.COSIGN_PRIVATE_KEY != '' }}
         run: |
           DIGEST=$(crane digest ghcr.io/${{ github.repository_owner }}/soltros-os:latest)
           
@@ -69,6 +62,42 @@ jobs:
             --key env://COSIGN_PRIVATE_KEY \
             --tlog-upload=true \
             ghcr.io/${{ github.repository_owner }}/soltros-os@$DIGEST
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+
+      - name: Create and sign SBOM attestation
+        # Only run if the cosign private key exists
+        if: ${{ secrets.COSIGN_PRIVATE_KEY != '' }}
+        run: |
+          DIGEST=$(crane digest ghcr.io/${{ github.repository_owner }}/soltros-os:latest)
+          
+          # Create a proper SBOM predicate
+          cat <<EOF > sbom.json
+          {
+            "predicateType": "https://spdx.dev/Document",
+            "predicate": {
+              "spdxVersion": "SPDX-2.3",
+              "dataLicense": "CC0-1.0",
+              "SPDXID": "SPDXRef-DOCUMENT",
+              "name": "SoltrOS Image SBOM",
+              "documentNamespace": "https://github.com/${{ github.repository }}/sbom-${{ github.run_id }}",
+              "creationInfo": {
+                "created": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+                "creators": ["Tool: GitHub Actions"]
+              },
+              "packages": [
+                {
+                  "SPDXID": "SPDXRef-Package",
+                  "name": "soltros-os",
+                  "downloadLocation": "NOASSERTION",
+                  "filesAnalyzed": false,
+                  "copyrightText": "NOASSERTION"
+                }
+              ]
+            }
+          }
+          EOF
 
           # Attach SBOM
           cosign attest \

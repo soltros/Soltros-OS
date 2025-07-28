@@ -1,14 +1,12 @@
 lang en_US.UTF-8
 keyboard us
 timezone UTC --isUtc
-auth --useshadow --enablemd5
 selinux --disabled
 firewall --disabled
 services --enabled=sshd,NetworkManager
 bootloader --timeout=0 --location=mbr --append="quiet"
 
 # Use minimal installation
-install
 text
 reboot
 
@@ -18,8 +16,6 @@ repo --name=fedora --baseurl=https://mirror.stream.centos.org/9-stream/BaseOS/x8
 @core
 bash
 coreutils
-dnf5
-dnf5-plugins
 fedora-release-container
 glibc-minimal-langpack
 rootfiles

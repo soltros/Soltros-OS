@@ -1,78 +1,139 @@
----
 name: Build SoltrOS ISO
 
 on:
   workflow_dispatch:
-    inputs:
-      platform:
-        required: true
-        type: choice
-        options:
-          - amd64
-          - arm64
-  pull_request:
-    branches:
-      - main
+  push:
+    branches: [ main ]
     paths:
-      - "./disk_config/iso.toml"
-      - "./.github/workflows/build-iso.yml"
+      - './disk_config/config.toml'
+      - '.github/workflows/build-iso.yml'
+  schedule:
+    # Run daily at 2 AM UTC to pick up latest base image updates
+    - cron: '0 2 * * *'
 
 env:
-  IMAGE_REGISTRY: "ghcr.io/${{ github.repository }}"
-  DEFAULT_TAG: "latest"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
+  IMAGE_NAME: ghcr.io/soltros/soltros-os:latest
+  ISO_OUTPUT_NAME: soltros-workstation
 
 jobs:
-  build:
-    name: Build ISOs
-    runs-on: ${{ inputs.platform == 'amd64' && 'ubuntu-24.04' || 'ubuntu-24.04-arm' }}
-    strategy:
-      fail-fast: false
+  build-iso:
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: read
-      id-token: write
 
     steps:
-      - name: lower case the image registry in case of any capitalization
-        run: |
-          echo "IMAGE_REGISTRY=${IMAGE_REGISTRY,,}" >> ${GITHUB_ENV}
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Install dependencies
-        if: inputs.platform == 'arm64'
-        run: |
-          set -x
-          sudo apt update -y
-          sudo apt install -y \
-            podman
+    - name: Set up Podman
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y podman
 
-      - name: Maximize build space
-        if: inputs.platform != 'arm64'
-        uses: ublue-os/remove-unwanted-software@cc0becac701cf642c8f0a6613bbdaf5dc36b259e # v9
-        with:
-          remove-codeql: true
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+    - name: Pull latest SoltrOS image
+      run: |
+        echo "🔄 Pulling latest SoltrOS image..."
+        podman pull ${{ env.IMAGE_NAME }}
 
-      - name: Build ISO
-        id: build
-        uses: ublue-os/bootc-image-builder-action@main
-        with:
-          bootc-image-builder-image: ghcr.io/centos-workstation/bootc-image-builder:latest
-          use-librepo: true
-          config-file: ./disk_config/iso.toml
-          image: ${{ env.IMAGE_REGISTRY }}:${{ env.DEFAULT_TAG }}
+    - name: Verify image and os-release
+      run: |
+        echo "🔍 Verifying os-release in container..."
+        podman run --rm ${{ env.IMAGE_NAME }} cat /etc/os-release
 
-      - name: Upload ISOs and Checksum to Job Artifacts
-        if: inputs.upload-to-s3 != true && github.event_name != 'pull_request'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          path: ${{ steps.build.outputs.output-directory }}
-          if-no-files-found: error
-          retention-days: 0
-          compression-level: 0
-          overwrite: true
+    - name: Create output directory
+      run: |
+        mkdir -p ./output
+        sudo chown -R $(id -u):$(id -g) ./output
+
+    - name: Build ISO with bootc-image-builder
+      run: |
+        echo "🏗️ Building SoltrOS ISO..."
+        sudo podman run \
+          --rm \
+          -it \
+          --privileged \
+          --pull=always \
+          --security-opt label=type:unconfined_t \
+          -v ${{ github.workspace }}/config.toml:/config.toml:ro \
+          -v ${{ github.workspace }}/output:/output \
+          -v /var/lib/containers/storage:/var/lib/containers/storage \
+          quay.io/centos-bootc/bootc-image-builder:latest \
+          --type anaconda-iso \
+          --rootfs xfs \
+          ${{ env.IMAGE_NAME }}
+
+    - name: List generated files
+      run: |
+        echo "📁 Generated files:"
+        ls -la ./output/
+
+    - name: Get ISO filename
+      id: iso_info
+      run: |
+        ISO_FILE=$(find ./output -name "*.iso" -type f | head -1)
+        ISO_FILENAME=$(basename "$ISO_FILE")
+        echo "iso_file=$ISO_FILE" >> $GITHUB_OUTPUT
+        echo "iso_filename=$ISO_FILENAME" >> $GITHUB_OUTPUT
+        echo "Found ISO: $ISO_FILENAME"
+
+    - name: Generate release name
+      id: release_info
+      run: |
+        DATE=$(date +'%Y-%m-%d')
+        COMMIT_SHORT=$(echo ${{ github.sha }} | cut -c1-7)
+        RELEASE_NAME="${{ env.ISO_OUTPUT_NAME }}-${DATE}-${COMMIT_SHORT}"
+        echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
+        echo "Release name: $RELEASE_NAME"
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ steps.release_info.outputs.release_name }}
+        name: "SoltrOS Workstation ${{ steps.release_info.outputs.release_name }}"
+        body: |
+          ## SoltrOS Workstation ISO
+
+          **Built on:** $(date +'%Y-%m-%d %H:%M:%S UTC')
+          **Commit:** ${{ github.sha }}
+          **Base Image:** ${{ env.IMAGE_NAME }}
+
+          ### Installation Instructions
+          1. Download the ISO file
+          2. Create a bootable USB drive or boot in a VM
+          3. Follow the interactive installer
+
+          ### What's New
+          - Interactive Anaconda installer with all modules enabled
+          - Automatic bootc switch to latest registry image post-install
+          - XFS root filesystem
+
+          **Note:** This is an automated build. Test in a VM before deploying to production systems.
+        files: |
+          ${{ steps.iso_info.outputs.iso_file }}
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload ISO as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.release_info.outputs.release_name }}
+        path: ${{ steps.iso_info.outputs.iso_file }}
+        retention-days: 30
+
+    - name: Build summary
+      run: |
+        echo "## 🎉 Build Complete!" >> $GITHUB_STEP_SUMMARY
+        echo "- **ISO File:** ${{ steps.iso_info.outputs.iso_filename }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Release:** ${{ steps.release_info.outputs.release_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Size:** $(ls -lh ${{ steps.iso_info.outputs.iso_file }} | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
+        echo "- **Download:** [Release Page](https://github.com/${{ github.repository }}/releases/tag/${{ steps.release_info.outputs.release_name }})" >> $GITHUB_STEP_SUMMARY

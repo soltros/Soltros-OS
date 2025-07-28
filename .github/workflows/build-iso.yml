@@ -41,12 +41,12 @@ jobs:
     - name: Pull latest SoltrOS image
       run: |
         echo "🔄 Pulling latest SoltrOS image..."
-        podman pull ${{ env.IMAGE_NAME }}
+        sudo podman pull ${{ env.IMAGE_NAME }}
 
     - name: Verify image and os-release
       run: |
         echo "🔍 Verifying os-release in container..."
-        podman run --rm ${{ env.IMAGE_NAME }} cat /etc/os-release
+        sudo podman run --rm ${{ env.IMAGE_NAME }} cat /etc/os-release
 
     - name: Create output directory
       run: |

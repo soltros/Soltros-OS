@@ -3,12 +3,9 @@ set -euo pipefail
 
 IMAGE="ghcr.io/soltros/soltros-os:latest"
 
-echo "=== SoltrOS Installer ==="
+echo "=== SoltrOS Secure Installer ==="
 
-# Prompt for target device
 read -rp "Enter target disk (e.g., /dev/sda or /dev/nvme0n1): " TARGET
-
-# Basic sanity checks
 if [ ! -b "$TARGET" ]; then
     echo "❌ Error: $TARGET is not a valid block device."
     exit 1
@@ -16,18 +13,54 @@ fi
 
 echo "⚠️  WARNING: This will erase all data on $TARGET"
 read -rp "Are you sure you want to continue? (yes/[no]): " CONFIRM
+[[ "$CONFIRM" != "yes" ]] && { echo "Aborted."; exit 1; }
 
-if [[ "$CONFIRM" != "yes" ]]; then
-    echo "Aborted."
-    exit 1
-fi
+# Prompt for username and secure password
+read -rp "Enter desired username: " NEWUSER
+read -rsp "Enter password for $NEWUSER: " NEWPASS
+echo
+read -rsp "Confirm password: " CONFIRM_PASS
+echo
+[[ "$NEWPASS" != "$CONFIRM_PASS" ]] && { echo "❌ Passwords do not match."; exit 1; }
 
-echo "🔄 Pulling image: $IMAGE"
-# Optionally pre-pull the image (not required; bootc does it)
-podman pull "$IMAGE" || true
+# Generate password hash using SHA-512
+PASSHASH=$(openssl passwd -6 "$NEWPASS")
 
+# Create temporary systemd unit for user creation
+TMPDIR=$(mktemp -d)
+mkdir -p "$TMPDIR/install.d"
+
+# Create install.d config
+cat > "$TMPDIR/install.d/99-create-user.conf" <<EOF
+[Install]
+AddFile=/etc/systemd/system/99-create-user.service:/etc/systemd/system/99-create-user.service
+EnableService=99-create-user.service
+EOF
+
+# Create secure systemd service
+cat > "$TMPDIR/install.d/99-create-user.service" <<EOF
+[Unit]
+Description=Create user $NEWUSER securely on first boot
+ConditionPathExists=!/home/$NEWUSER
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/useradd -m -G wheel -s /bin/bash -p '$PASSHASH' $NEWUSER
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Run bootc install with injected files
 echo "🚀 Installing SoltrOS to $TARGET"
-sudo bootc install --image "$IMAGE" --target "$TARGET"
+sudo bootc install \
+    --image "$IMAGE" \
+    --target "$TARGET" \
+    --add-file "$TMPDIR/install.d/99-create-user.conf":/etc/bootc/install.d/99-create-user.conf \
+    --add-file "$TMPDIR/install.d/99-create-user.service":/etc/systemd/system/99-create-user.service
 
-echo "✅ Install complete!"
-echo "You can now reboot into your new SoltrOS installation."
+# Clean up temp files
+rm -rf "$TMPDIR"
+
+echo "✅ Install complete! User '$NEWUSER' will be created securely on first boot."

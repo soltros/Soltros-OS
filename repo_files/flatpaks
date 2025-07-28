@@ -2,7 +2,6 @@ com.discordapp.Discord
 com.github.rafostar.Clapper
 com.github.tchx84.Flatseal
 com.bitwarden.desktop
-com.mattjakeman.ExtensionManager
 com.valvesoftware.Steam
 org.telegram.desktop
 org.videolan.VLC
@@ -16,7 +15,6 @@ io.missioncenter.MissionCenter
 com.vysp3r.ProtonPlus
 org.libretro.RetroArch
 net.lutris.Lutris
-org.qbittorrent.qBittorrent
 org.libreoffice.LibreOffice
 com.github.iwalton3.jellyfin-media-player
 io.podman_desktop.PodmanDesktop
@@ -34,17 +32,13 @@ org.blender.Blender
 org.audacityteam.Audacity
 org.inkscape.Inkscape
 org.kde.kdenlive
-org.gnome.Logs
 com.github.hugolabe.Wike
-org.gnome.Calculator
-org.gnome.Evolution
+org.kde.kcalc
 com.slack.Slack
-org.gnome.Notes
-org.gnome.Characters
 com.github.johnfactotum.Foliate
-org.gnome.baobab
-org.gnome.FileRoller
-org.gnome.Evince
+org.kde.filelight
+org.kde.ark
+org.kde.okular
 org.mozilla.Thunderbird
 org.nicotine_plus.Nicotine
 com.vscodium.codium

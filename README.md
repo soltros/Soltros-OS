@@ -6,11 +6,7 @@ A gaming-optimized immutable Linux distribution based on Fedora Bootc's base ima
 
 *Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
-### Installation
-You can install SoltrOS easily on any amd64 system by [downloading the ISO](https://archive.org/download/soltros-os-07.27.2025/soltros-os-07.27.2025.iso), and using a tool like Popsicle, Fedora Media Writer, Etcher, etc. to flash it to USB. Then, install it. The installer is Anaconda, and follows a standard Fedora installation.
-
-
-Alternatively, if you are using an RPM-OSTree based system like Fedora Silverblue, Bazzite, Bluefin, etc., you can use ``bootc`` to quickly swap to it.
+If you are using an RPM-OSTree based system like Fedora Silverblue, Bazzite, Bluefin, etc., you can use ``bootc`` to quickly swap to it.
 ```bash
 sudo bootc switch ghcr.io/soltros/soltros-os:latest
 sudo systemctl reboot

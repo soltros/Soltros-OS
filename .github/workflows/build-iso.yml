@@ -5,7 +5,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - './disk_config/config.toml'
+      - 'disk_config/config.toml'
       - '.github/workflows/build-iso.yml'
   schedule:
     # Run daily at 2 AM UTC to pick up latest base image updates
@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
       packages: read
-
+    
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
           --privileged \
           --pull=always \
           --security-opt label=type:unconfined_t \
-          -v ${{ github.workspace }}/config.toml:/config.toml:ro \
+          -v ${{ github.workspace }}/disk_config/config.toml:/config.toml:ro \
           -v ${{ github.workspace }}/output:/output \
           -v /var/lib/containers/storage:/var/lib/containers/storage \
           quay.io/centos-bootc/bootc-image-builder:latest \
@@ -100,21 +100,21 @@ jobs:
         name: "SoltrOS Workstation ${{ steps.release_info.outputs.release_name }}"
         body: |
           ## SoltrOS Workstation ISO
-
+          
           **Built on:** $(date +'%Y-%m-%d %H:%M:%S UTC')
           **Commit:** ${{ github.sha }}
           **Base Image:** ${{ env.IMAGE_NAME }}
-
+          
           ### Installation Instructions
           1. Download the ISO file
           2. Create a bootable USB drive or boot in a VM
           3. Follow the interactive installer
-
+          
           ### What's New
           - Interactive Anaconda installer with all modules enabled
           - Automatic bootc switch to latest registry image post-install
           - XFS root filesystem
-
+          
           **Note:** This is an automated build. Test in a VM before deploying to production systems.
         files: |
           ${{ steps.iso_info.outputs.iso_file }}

@@ -22,7 +22,7 @@ LAYERED_PACKAGES=(
     papirus-icon-theme
     papirus-icon-theme-dark
     papirus-icon-theme-light
-    materia-kde*
+    materia*
     kvantum
     qt5-qtgraphicaleffects
     lm_sensors

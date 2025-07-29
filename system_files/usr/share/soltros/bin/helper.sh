@@ -242,11 +242,11 @@ apply_soltros_look() {
     print_info "Applying Materia Dark color scheme..."
     kwriteconfig5 --file kdeglobals --group General --key ColorScheme "Materia Dark"
 
-    print_info "Setting SDDM login theme to 'materia-dark'..."
+    print_info "Setting SDDM login theme to 'breeze'..."
     if grep -q "^\[Theme\]" /etc/sddm.conf.d/kde_settings.conf 2>/dev/null; then
-        sudo sed -i '/^\[Theme\]/,/^\[.*\]/ {/^Current=/d}; /^\[Theme\]/a Current=materia-dark' /etc/sddm.conf.d/kde_settings.conf
+        sudo sed -i '/^\[Theme\]/,/^\[.*\]/ {/^Current=/d}; /^\[Theme\]/a Current=breeze' /etc/sddm.conf.d/kde_settings.conf
     else
-        echo -e "\n[Theme]\nCurrent=materia-dark" | sudo tee -a /etc/sddm.conf.d/kde_settings.conf > /dev/null
+        echo -e "\n[Theme]\nCurrent=breeze" | sudo tee -a /etc/sddm.conf.d/kde_settings.conf > /dev/null
     fi
 
     print_info "Restarting Plasma shell..."

@@ -233,7 +233,6 @@ apply_soltros_look() {
     print_success "SoltrOS look applied!"
     print_info "Some changes may require logging out and back in to take full effect"
 }
-g
 
 install_oh_my_zsh() {
     print_header "Setting up Oh My Zsh!"

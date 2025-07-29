@@ -53,6 +53,7 @@ INSTALL COMMANDS:
   install-oh-my-zsh       Download and install the Oh My Zsh plugins/tools
   change-to-zsh           Swap shell to Zsh
   download-zsh-configs    Download Derrik's Zshrc config
+  apply-soltros-look      Apply the SoltrOS theme to Plasma
 
 SETUP COMMANDS:
   setup-git              Configure Git with user credentials and SSH signing
@@ -179,6 +180,55 @@ add_helper() {
         echo "$alias_cmd" >> "$bashrc"
         echo "✓ Alias added to $bashrc"
     fi
+}
+
+apply_soltros_look() {
+    print_header "Applying the official SoltrOS look."
+    
+    local remote_url="https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/kde-plasma-settings.tar.gz"
+    local temp_archive="/tmp/kde-plasma-settings.tar.gz"
+    
+    print_info "Downloading KDE settings from SoltrOS repository..."
+    if ! curl --retry 3 -sL "$remote_url" -o "$temp_archive"; then
+        print_error "Failed to download settings archive"
+        return 1
+    fi
+    
+    print_warning "This will overwrite your current KDE settings!"
+    read -p "Continue? (y/N): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_info "Restore cancelled"
+        rm -f "$temp_archive"
+        return 0
+    fi
+    
+    print_info "Stopping Plasma shell..."
+    killall plasmashell 2>/dev/null || true
+    
+    print_info "Extracting KDE settings..."
+    if tar -xzf "$temp_archive" -C ~ --overwrite; then
+        print_success "Settings extracted successfully"
+        print_info "Restored files:"
+        print_info "  • Icon theme (kdeglobals, kdedefaults/kdeglobals)"
+        print_info "  • Panel & kickoff configuration (plasma-org.kde.plasma.desktop-appletsrc)"
+        print_info "  • Plasma shell settings (plasmashellrc, plasmarc)"
+        print_info "  • Window manager settings (kwinrc)"
+        print_info "  • Global shortcuts (kglobalshortcutsrc)"
+    else
+        print_error "Failed to extract settings"
+        rm -f "$temp_archive"
+        return 1
+    fi
+    
+    print_info "Restarting Plasma shell..."
+    nohup plasmashell &>/dev/null &
+    
+    # Cleanup
+    rm -f "$temp_archive"
+    
+    print_success "SoltrOS look applied!"
+    print_info "Some changes may require logging out and back in to take full effect"
 }
 
 install_oh_my_zsh() {
@@ -545,6 +595,9 @@ main() {
             ;;
         "setup-nixmanager")
             setup_nixmanager
+            ;;
+        "apply-soltros-look")
+            apply_soltros_look
             ;;
         "add-helper")
             add_helper

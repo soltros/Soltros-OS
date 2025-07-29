@@ -20,6 +20,8 @@ LAYERED_PACKAGES=(
     tailscale
     ptyxis
     papirus-icon-theme
+    papirus-icon-theme-dark
+    papirus-icon-theme-light
     lm_sensors
     udisks2
     udiskie

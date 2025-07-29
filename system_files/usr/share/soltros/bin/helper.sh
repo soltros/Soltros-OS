@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # SoltrOS Setup Script
-# Converted from justfile to standalone bash script
 
 set -euo pipefail
 
@@ -246,7 +245,7 @@ install_oh_my_zsh() {
 
 change_to_zsh() {
     print_header "Changing shell to Zsh"
-    if chsh -s /usr/sbin/zsh; then
+    if chsh -s /usr/bin/zsh; then
         print_success "Changed from Bash to Zsh"
     else
         print_error "Failed to change from Bash to Zsh"

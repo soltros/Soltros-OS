@@ -220,7 +220,10 @@ apply_soltros_look() {
         rm -f "$temp_archive"
         return 1
     fi
-    
+
+    print_info "Setting Papirus icon theme explicitly..."
+    kwriteconfig5 --file kdeglobals --group Icons --key Theme Papirus
+
     print_info "Restarting Plasma shell..."
     nohup plasmashell &>/dev/null &
     
@@ -230,6 +233,7 @@ apply_soltros_look() {
     print_success "SoltrOS look applied!"
     print_info "Some changes may require logging out and back in to take full effect"
 }
+
 
 install_oh_my_zsh() {
     print_header "Setting up Oh My Zsh!"

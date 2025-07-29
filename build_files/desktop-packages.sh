@@ -30,6 +30,7 @@ LAYERED_PACKAGES=(
     just
     nebula
     starship
+    syslinux
     pipewire-alsa
     deja-dup
     playerctl

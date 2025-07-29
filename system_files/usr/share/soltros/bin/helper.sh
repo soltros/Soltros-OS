@@ -545,8 +545,8 @@ toggle_session() {
 ublue_update() {
     print_header "Updating the system"
     
-    print_info "Updating rpm-ostree..."
-    sudo rpm-ostree upgrade || true
+    print_info "Updating SoltrOS with Bootc..."
+    sudo sudo bootc upgrade || true
     
     print_info "Updating Flatpaks..."
     flatpak update -y || true

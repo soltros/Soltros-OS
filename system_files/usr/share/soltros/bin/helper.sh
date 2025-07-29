@@ -48,9 +48,11 @@ INSTALL COMMANDS:
   install-nix             Install the Nix package manager
   setup-nixmanager        Add the nixmanager.sh script to ~/scripts for easy Nix use
   add-helper              This adds the helper.sh alias to Bash to make it easier to access
+  add-nixmanager          This adds the nixmanager.sh alias to Bash to make it easier to use Nix packages on SoltrOS
   download-appimages      Download Feishin and Ryubing to the ~/AppImages folder
   install-oh-my-zsh       Download and install the Oh My Zsh plugins/tools
   change-to-zsh           Swap shell to Zsh
+  change-to-fish          Swap shell to Fish
   download-zsh-configs    Download Derrik's Zshrc config
   apply-soltros-look      Apply the SoltrOS theme to Plasma
 
@@ -181,6 +183,19 @@ add_helper() {
     fi
 }
 
+add_nixmanager() {
+    local bashrc="$HOME/.bashrc"
+    local alias_cmd='alias nixmanager="sh /usr/share/soltros/bin/nixmanager.sh"'
+
+    #Check if the alias already exists
+    if grep -Fxq "$alias_cmd" "$bashrc"; then
+        echo "✓ Alias already exists in $bashrc"
+    else
+        echo "$alias_cmd" >> "$bashrc"
+        echo "✓ Alias added to $bashrc"
+    fi
+}
+
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
     
@@ -214,14 +229,25 @@ apply_soltros_look() {
         print_info "  • Plasma shell settings (plasmashellrc, plasmarc)"
         print_info "  • Window manager settings (kwinrc)"
         print_info "  • Global shortcuts (kglobalshortcutsrc)"
+        print_info "  • Kvantum theme config (kvantum.kvconfig)"
     else
         print_error "Failed to extract settings"
         rm -f "$temp_archive"
         return 1
     fi
 
-    print_info "Setting Papirus icon theme explicitly..."
+    print_info "Applying Papirus-Dark icon theme..."
     kwriteconfig5 --file kdeglobals --group Icons --key Theme Papirus-Dark
+
+    print_info "Applying Materia Dark color scheme..."
+    kwriteconfig5 --file kdeglobals --group General --key ColorScheme "Materia Dark"
+
+    print_info "Setting SDDM login theme to 'materia-dark'..."
+    if grep -q "^\[Theme\]" /etc/sddm.conf.d/kde_settings.conf 2>/dev/null; then
+        sudo sed -i '/^\[Theme\]/,/^\[.*\]/ {/^Current=/d}; /^\[Theme\]/a Current=materia-dark' /etc/sddm.conf.d/kde_settings.conf
+    else
+        echo -e "\n[Theme]\nCurrent=materia-dark" | sudo tee -a /etc/sddm.conf.d/kde_settings.conf > /dev/null
+    fi
 
     print_info "Restarting Plasma shell..."
     nohup plasmashell &>/dev/null &
@@ -233,6 +259,7 @@ apply_soltros_look() {
     print_info "Some changes may require logging out and back in to take full effect"
 }
 
+
 install_oh_my_zsh() {
     print_header "Setting up Oh My Zsh!"
     if sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; then
@@ -242,6 +269,16 @@ install_oh_my_zsh() {
         exit 1
     fi
 } 
+
+change_to_fish() {
+    print_header "Changing to Fish"
+    if chsh -s /usr/bin/fish;then
+        print_success "Changed from Bash or Zsh to Fish"
+    else
+        print_error "Failed to change from Bash or Zsh to Fish"
+        exit 1
+    fi
+}
 
 change_to_zsh() {
     print_header "Changing shell to Zsh"
@@ -604,11 +641,17 @@ main() {
         "add-helper")
             add_helper
             ;;
+        "add-nixmanager")
+            add_nixmanager
+            ;;
         "install-oh-my-zsh")
             install_oh_my_zsh
             ;;
         "change-to-zsh")
             change_to_zsh
+            ;;
+        "change-to-fish")
+            change_to_fish
             ;;
         "download-zsh-configs")
             download_zsh_configs

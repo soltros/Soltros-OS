@@ -24,6 +24,7 @@ LAYERED_PACKAGES=(
     papirus-icon-theme-light
     materia-kde*
     kvantum
+    qt5-qtgraphicaleffects
     lm_sensors
     udisks2
     udiskie

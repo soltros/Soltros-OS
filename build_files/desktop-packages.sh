@@ -32,7 +32,6 @@ LAYERED_PACKAGES=(
     pipewire
     pipewire-pulse
     wireplumber
-    just
     nebula
     starship
     syslinux

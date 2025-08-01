@@ -47,6 +47,20 @@ jobs:
           variant: ${{ env.VARIANT }}
           iso_name: ${{ steps.name.outputs.iso_name }}
 
+      - name: Create and push Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Check if tag exists; if not, create and push it
+          if git rev-parse "refs/tags/v${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Tag v${{ env.VERSION }} already exists."
+          else
+            git tag -a v${{ env.VERSION }} -m "Release v${{ env.VERSION }}"
+            git push origin v${{ env.VERSION }}
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload ISO to GitHub Release
         uses: softprops/action-gh-release@v2
         with:

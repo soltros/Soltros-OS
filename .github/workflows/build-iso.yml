@@ -1,5 +1,4 @@
 name: Build Soltros Installer ISO
-
 on:
   workflow_dispatch:
   push:
@@ -20,20 +19,11 @@ jobs:
     name: Build Installer ISO
     runs-on: ubuntu-latest
     permissions:
-      contents: write 
+      contents: read
       packages: write
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Set build date and ISO name
-        id: name
-        run: |
-          DATE=$(date +%F)
-          ISO_NAME="soltros-os-desktop-$DATE.iso"
-          echo "date=$DATE" >> "$GITHUB_OUTPUT"
-          echo "iso_name=$ISO_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Build Soltros ISO
         uses: jasonn3/build-container-installer@main
@@ -45,29 +35,3 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ env.VERSION }}
           variant: ${{ env.VARIANT }}
-          iso_name: ${{ steps.name.outputs.iso_name }}
-
-      - name: Create and push Git tag
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Check if tag exists; if not, create and push it
-          if git rev-parse "refs/tags/v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "Tag v${{ env.VERSION }} already exists."
-          else
-            git tag -a v${{ env.VERSION }} -m "Release v${{ env.VERSION }}"
-            git push origin v${{ env.VERSION }}
-          fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload ISO to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ env.VERSION }}
-          name: "SoltrOS Installer - ${{ steps.name.outputs.date }}"
-          files: |
-            ${{ steps.build.outputs.iso_path }}
-            ${{ steps.build.outputs.iso_path }}-CHECKSUM
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

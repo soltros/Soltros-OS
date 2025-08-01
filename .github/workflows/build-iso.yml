@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: soltros-os
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
-  VERSION: 2025.08.01
+  VERSION: 42
   VARIANT: Kinoite
 
 jobs:

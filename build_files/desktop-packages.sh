@@ -39,6 +39,8 @@ LAYERED_PACKAGES=(
     pipewire-alsa
     deja-dup
     playerctl
+    guestmount
+    libguestfs-tools
     linux-firmware*
     pipewire-alsa 
     pipewire-gstreamer

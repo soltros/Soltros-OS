@@ -35,3 +35,15 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ env.VERSION }}
           variant: ${{ env.VARIANT }}
+          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}.iso
+
+      - name: Upload ISO as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build.outputs.iso_name }}
+          path: |
+            ${{ steps.build.outputs.iso_path }}
+            ${{ steps.build.outputs.iso_path }}-CHECKSUM
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0

@@ -2,12 +2,27 @@
 
 ![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)
 
-A gaming-optimized immutable Linux distribution based on Fedora Bootc's base image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, the KDE Plasma desktop environment, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Fedora Kinoite's image, featuring MacBook hardware support, gaming enhancements, CachyOS kernel performance, the KDE Plasma desktop environment, and developer-friendly tools.
 
-*Inspired by [VenOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
+*Inspired by [VeneOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
 ### Installation
-You can install SoltrOS easily on any amd64 system by downloading [Silverblue](https://github.com/soltros/Soltros-OS/raw/refs/heads/main/resources/Soltros-Minimal-20250728-1417.iso) directly, install it, and swap to Soltros OS.
+There are a few ways you can install SoltrosOS. The reccomended way is to download the official ISO, flash it to a USB device, and install it to your computer.
+
+You can get the latest ISO [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso), and the checksum [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso-CHECKSUM). To verify the checksum, do the following:
+
+#### Verifying the ISO Checksum
+```bash
+sha256sum -c soltros-os-latest-42.iso-CHECKSUM
+```
+If the output shows:
+
+```
+soltros-os-latest-42.iso: OK
+```
+the ISO is verified and safe to use.
+
+ However, you can also install it through Silverblue/Kinoite/Bazzite/Bluefin with Bootc Switch:
 
 ```bash
 sudo bootc switch ghcr.io/soltros/soltros-os:latest

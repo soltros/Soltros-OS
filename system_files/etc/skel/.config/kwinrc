@@ -18,6 +18,9 @@ tiles={"layoutDirection":"horizontal","tiles":[{"width":0.25},{"width":0.5},{"wi
 [Tiling][57b59a13-77be-472c-afb6-84b743e87522][5d1f57a1-512c-4b60-9b62-31f2bd57a5b0]
 tiles={"layoutDirection":"horizontal","tiles":[{"width":0.25},{"width":0.5},{"width":0.25}]}
 
+[Tiling][57b59a13-77be-472c-afb6-84b743e87522][f4a10f02-1f91-4162-b66d-7f79d4bca2f0]
+tiles={"layoutDirection":"horizontal","tiles":[{"width":0.25},{"width":0.5},{"width":0.25}]}
+
 [Xwayland]
 Scale=1
 

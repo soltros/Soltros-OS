@@ -4,28 +4,6 @@ RightButton;NoModifier=org.kde.contextmenu
 [ActionPlugins][1]
 RightButton;NoModifier=org.kde.contextmenu
 
-[Containments][1]
-ItemGeometries-2560x1440=
-ItemGeometriesHorizontal=
-activityId=c6acbb6b-86cb-4e37-8da7-f989489a60d5
-formfactor=0
-immutability=1
-lastScreen=0
-location=0
-plugin=org.kde.plasma.folder
-wallpaperplugin=org.kde.image
-
-[Containments][1][ConfigDialog]
-DialogHeight=540
-DialogWidth=720
-
-[Containments][1][General]
-positions={"2560x1440":[]}
-
-[Containments][1][Wallpaper][org.kde.image][General]
-Image=/var/home/soltros/wallpaper_collection/90 - OqsoGra.jpg
-SlidePaths=/usr/share/wallpapers/
-
 [Containments][2]
 activityId=
 formfactor=2
@@ -51,20 +29,20 @@ fontWeight=400
 immutability=1
 plugin=org.kde.plasma.showdesktop
 
-[Containments][2][Applets][3]
+[Containments][2][Applets][30]
 immutability=1
-plugin=org.kde.plasma.kickoff
+plugin=org.kde.plasma.kicker
 
-[Containments][2][Applets][3][Configuration]
+[Containments][2][Applets][30][Configuration]
 PreloadWeight=100
-popupHeight=528
-popupWidth=669
+popupHeight=391
+popupWidth=300
 
-[Containments][2][Applets][3][Configuration][ConfigDialog]
+[Containments][2][Applets][30][Configuration][ConfigDialog]
 DialogHeight=540
 DialogWidth=720
 
-[Containments][2][Applets][3][Configuration][General]
+[Containments][2][Applets][30][Configuration][General]
 favoritesDisplay=1
 favoritesPortedToKAstats=true
 icon=start-here
@@ -209,19 +187,21 @@ hiddenItems=chrome_status_icon_1,org.kde.plasma.addons.katesessions,steam,Xwayla
 knownItems=org.kde.kdeconnect,org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.keyboardindicator,org.kde.plasma.keyboardlayout,org.kde.plasma.manage-inputmethod,org.kde.plasma.networkmanagement,org.kde.plasma.notifications,org.kde.plasma.printmanager,org.kde.plasma.vault,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.mediacontroller,org.kde.plasma.volume
 
 [Containments][2][General]
-AppletOrder=3;4;5;6;7;21;22
+AppletOrder=30;4;5;6;7;21;22
 
-[Containments][28]
-activityId=c6acbb6b-86cb-4e37-8da7-f989489a60d5
+[Containments][29]
+ItemGeometries-2560x1440=
+ItemGeometriesHorizontal=
+activityId=437daaab-f5d8-408f-93ac-ae2d44b4b742
 formfactor=0
 immutability=1
-lastScreen=1
+lastScreen=0
 location=0
 plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
-[Containments][28][General]
-positions={"3072x1728":[]}
+[Containments][29][General]
+positions={"2560x1440":[]}
 
 [ScreenMapping]
 itemsOnDisabledScreens=

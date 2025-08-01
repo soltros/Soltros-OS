@@ -1,4 +1,5 @@
 name: Build Soltros Installer ISO
+
 on:
   workflow_dispatch:
   push:
@@ -8,7 +9,7 @@ on:
 
 env:
   ARCH: x86_64
-  IMAGE_NAME: soltros-os
+  IMAGE_NAME: soltros-os-desktop
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
   VERSION: 42
@@ -19,11 +20,20 @@ jobs:
     name: Build Installer ISO
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write 
       packages: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Set build date and ISO name
+        id: name
+        run: |
+          DATE=$(date +%F)
+          ISO_NAME="soltros-os-desktop-$DATE.iso"
+          echo "date=$DATE" >> "$GITHUB_OUTPUT"
+          echo "iso_name=$ISO_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Build Soltros ISO
         uses: jasonn3/build-container-installer@main
@@ -35,15 +45,15 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ env.VERSION }}
           variant: ${{ env.VARIANT }}
-          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}.iso
+          iso_name: ${{ steps.name.outputs.iso_name }}
 
-      - name: Upload ISO as artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload ISO to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: ${{ steps.build.outputs.iso_name }}
-          path: |
+          tag_name: v${{ env.VERSION }}
+          name: "SoltrOS Installer - ${{ steps.name.outputs.date }}"
+          files: |
             ${{ steps.build.outputs.iso_path }}
             ${{ steps.build.outputs.iso_path }}-CHECKSUM
-          if-no-files-found: error
-          retention-days: 0
-          compression-level: 0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

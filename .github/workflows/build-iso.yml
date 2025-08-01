@@ -9,7 +9,7 @@ on:
 
 env:
   ARCH: x86_64
-  IMAGE_NAME: soltros-os-desktop
+  IMAGE_NAME: soltros-os
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
   VERSION: 42

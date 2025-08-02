@@ -294,6 +294,10 @@ change_to_bash() {
     print_header "Changing shell to Bash"
     if chsh -s /usr/bin/bash; then
         print_success "Changed shell to Bash."
+    else
+        print_error "Failed to change to Bash."
+        exit 1
+    fi
 }
 
 install_gaming() {

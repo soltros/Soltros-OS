@@ -54,7 +54,7 @@ INSTALL COMMANDS:
   change-to-fish          Swap shell to Fish
   change-to-bash          Swap shell to Bash
   apply-soltros-look      Apply the SoltrOS theme to Plasma
-  helper-off              Turn off the helper prompt in Zsh (delete ~/.helper-off to re-enable)
+  helper-off              Turn off the helper prompt in Zsh (delete ~/.no-helper-reminder to re-enable)
   download-iso            Download the latest Desktop ISO directly to ~/Downloads
 
 SETUP COMMANDS:

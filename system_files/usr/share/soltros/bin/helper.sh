@@ -430,6 +430,7 @@ setup_distrobox() {
 unblock_docker(){
     print_header "Unblocking Docker container registry in policy.json"
     if sudo sed -i 's/"type": "reject"/"type": "insecureAcceptAnything"/g' /etc/containers/policy.json; then
+        touch ~/.unblock-docker
         print_info "Successfully unblocked Docker container registry in /etc/containers/policy.json"
     else
         print_error "Failed to change container policy."
@@ -483,8 +484,19 @@ toggle_session() {
 ublue_update() {
     print_header "Updating the system"
     
+    # Check if unblock-docker file exists (user is in insecure mode)
+    local docker_unblocked=false
+    local config_file="/etc/containers/policy.json"  # Adjust path as needed
+    
+    if [[ -f ~/.unblock-docker ]]; then
+        docker_unblocked=true
+        print_info "Docker unblock detected, temporarily enabling secure mode for updates..."
+        # Switch from insecureAcceptAnything to reject
+        sudo sed -i 's/"type": "insecureAcceptAnything"/"type": "reject"/g' "$config_file"
+    fi
+    
     print_info "Updating SoltrOS with Bootc..."
-    sudo sudo bootc upgrade || true
+    sudo bootc upgrade || true
     
     print_info "Updating Flatpaks..."
     flatpak update -y || true
@@ -499,6 +511,12 @@ ublue_update() {
         for container in $(toolbox list -c | tail -n +2 | awk '{print $2}'); do
             toolbox run -c "$container" sudo dnf update -y || true
         done
+    fi
+    
+    # Switch back to insecureAcceptAnything if we changed it
+    if [[ "$docker_unblocked" == true ]]; then
+        print_info "Restoring insecure mode..."
+        sudo sed -i 's/"type": "reject"/"type": "insecureAcceptAnything"/g' "$config_file"
     fi
     
     print_success "System update complete"

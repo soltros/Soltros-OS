@@ -33,7 +33,6 @@ LAYERED_PACKAGES=(
     pipewire-pulse
     wireplumber
     nebula
-    starship
     syslinux
     pipewire-alsa
     deja-dup

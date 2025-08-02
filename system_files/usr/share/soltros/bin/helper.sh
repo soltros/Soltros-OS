@@ -273,6 +273,8 @@ apply_soltros_look() {
 change_to_fish() {
     print_header "Changing to Fish"
     if chsh -s /usr/bin/fish;then
+        rm ~/.config/fish/config.fish
+        wget https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/system_files/etc/skel/.config/fish/config.fish -O ~/.config/fish/config.fish
         print_success "Changed shell to Fish"
     else
         print_error "Failed to change shell to Fish"
@@ -293,6 +295,8 @@ change_to_zsh() {
 change_to_bash() {
     print_header "Changing shell to Bash"
     if chsh -s /usr/bin/bash; then
+        rm ~/.bashrc
+        wget https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/system_files/etc/skel/.bashrc -O ~/.bashrc
         print_success "Changed shell to Bash."
     else
         print_error "Failed to change to Bash."

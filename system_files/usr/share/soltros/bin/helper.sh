@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# SoltrOS Setup Script
+# SoltrOS Helper Tool
 
 set -euo pipefail
 
@@ -34,7 +34,7 @@ print_info() {
 
 show_help() {
     cat << 'EOF'
-SoltrOS Setup Script
+SoltrOS Helper Tool
 
 Usage: helper [COMMAND]
 
@@ -64,7 +64,7 @@ SETUP COMMANDS:
 CONFIGURE COMMANDS:
   enable-amdgpu-oc       Enable AMD GPU overclocking support
   toggle-session         Toggle between X11 and Wayland sessions
-  unblock-docker         Change /etc/policy.json to allow containers from unapproved registries (Like Dockerhub)
+  unblock-docker         Change /etc/containers/policy.json to allow containers from unapproved registries (Like Dockerhub)
 
 OTHER COMMANDS:
   update                 Update the system (rpm-ostree, flatpaks, etc.)

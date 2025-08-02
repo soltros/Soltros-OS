@@ -18,7 +18,7 @@ immutability=1
 plugin=org.kde.plasma.digitalclock
 
 [Containments][2][Applets][21][Configuration]
-PreloadWeight=75
+PreloadWeight=80
 popupHeight=450
 popupWidth=560
 
@@ -29,20 +29,20 @@ fontWeight=400
 immutability=1
 plugin=org.kde.plasma.showdesktop
 
-[Containments][2][Applets][30]
+[Containments][2][Applets][31]
 immutability=1
-plugin=org.kde.plasma.kicker
+plugin=org.kde.plasma.kickoff
 
-[Containments][2][Applets][30][Configuration]
+[Containments][2][Applets][31][Configuration]
 PreloadWeight=100
-popupHeight=391
-popupWidth=300
+popupHeight=508
+popupWidth=655
 
-[Containments][2][Applets][30][Configuration][ConfigDialog]
+[Containments][2][Applets][31][Configuration][ConfigDialog]
 DialogHeight=540
 DialogWidth=720
 
-[Containments][2][Applets][30][Configuration][General]
+[Containments][2][Applets][31][Configuration][General]
 favoritesDisplay=1
 favoritesPortedToKAstats=true
 icon=start-here
@@ -127,6 +127,9 @@ plugin=org.kde.kscreen
 immutability=1
 plugin=org.kde.plasma.volume
 
+[Containments][2][Applets][7][Applets][20][Configuration]
+PreloadWeight=65
+
 [Containments][2][Applets][7][Applets][20][Configuration][General]
 migrated=true
 
@@ -149,7 +152,7 @@ immutability=1
 plugin=org.kde.plasma.battery
 
 [Containments][2][Applets][7][Applets][25][Configuration]
-PreloadWeight=49
+PreloadWeight=22
 
 [Containments][2][Applets][7][Applets][26]
 immutability=1
@@ -167,7 +170,7 @@ immutability=1
 plugin=org.kde.plasma.mediacontroller
 
 [Containments][2][Applets][7][Applets][28][Configuration]
-PreloadWeight=2
+PreloadWeight=0
 
 [Containments][2][Applets][7][Applets][8]
 immutability=1
@@ -187,7 +190,7 @@ hiddenItems=chrome_status_icon_1,org.kde.plasma.addons.katesessions,steam,Xwayla
 knownItems=org.kde.kdeconnect,org.kde.plasma.battery,org.kde.plasma.bluetooth,org.kde.plasma.brightness,org.kde.plasma.cameraindicator,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.keyboardindicator,org.kde.plasma.keyboardlayout,org.kde.plasma.manage-inputmethod,org.kde.plasma.networkmanagement,org.kde.plasma.notifications,org.kde.plasma.printmanager,org.kde.plasma.vault,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.mediacontroller,org.kde.plasma.volume
 
 [Containments][2][General]
-AppletOrder=30;4;5;6;7;21;22
+AppletOrder=31;4;5;6;7;21;22
 
 [Containments][29]
 ItemGeometries-2560x1440=
@@ -200,8 +203,16 @@ location=0
 plugin=org.kde.plasma.folder
 wallpaperplugin=org.kde.image
 
+[Containments][29][ConfigDialog]
+DialogHeight=540
+DialogWidth=720
+
 [Containments][29][General]
 positions={"2560x1440":[]}
+
+[Containments][29][Wallpaper][org.kde.image][General]
+Image=/var/home/soltros/wallpaper_collection/90 - OqsoGra.jpg
+SlidePaths=/usr/share/wallpapers/
 
 [ScreenMapping]
 itemsOnDisabledScreens=

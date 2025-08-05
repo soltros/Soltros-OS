@@ -9,7 +9,7 @@ A gaming-optimized immutable Linux distribution based on Fedora Kinoite's image,
 ### Installation
 There are a few ways you can install SoltrosOS. The recomended way is to download the official ISO, flash it to a USB device, and install it to your computer.
 
-You can get the latest ISO [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso), and the checksum [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso-CHECKSUM). To verify the checksum, do the following:
+You can get the latest ISO [here](http://bit.ly/4ojbxdf), and the checksum [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso-CHECKSUM). To verify the checksum, do the following:
 
 #### Verifying the ISO Checksum
 ```bash

@@ -17,7 +17,7 @@ env:
   IMAGE_DESC: "Gaming-optimized immutable Linux distribution based on Fedora with MacBook support, gaming enhancements, and CachyOS kernel performance"
   IMAGE_KEYWORDS: "bootc,ublue,universal-blue,gaming,cachyos,macbook,fedora,immutable"
   IMAGE_LOGO_URL: "https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
-  IMAGE_NAME: "soltros-os"
+  IMAGE_NAME: "soltros-os_gnome"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   DEFAULT_TAG: "latest"
 

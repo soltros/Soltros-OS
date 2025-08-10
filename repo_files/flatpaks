@@ -22,7 +22,6 @@ io.podman_desktop.PodmanDesktop
 org.filezillaproject.Filezilla
 dev.zed.Zed
 io.github.shiftey.Desktop
-org.gtk.Gtk3theme.Breeze
 org.gtk.Gtk3theme.adw-gtk3
 org.gtk.Gtk3theme.adw-gtk3-dark
 org.gustavoperedo.FontDownloader
@@ -32,14 +31,14 @@ org.prismlauncher.PrismLauncher
 org.blender.Blender
 org.audacityteam.Audacity
 org.inkscape.Inkscape
-org.kde.kdenlive
+org.pitivi.Pitivi
 com.github.hugolabe.Wike
-org.kde.kcalc
+org.gnome.Calculator
 com.slack.Slack
 com.github.johnfactotum.Foliate
-org.kde.filelight
-org.kde.ark
-org.kde.okular
+org.gnome.baobab
+org.gnome.FileRoller
+org.gnome.Evince
 org.mozilla.Thunderbird
 org.nicotine_plus.Nicotine
 com.vscodium.codium

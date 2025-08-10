@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora/fedora-kinoite
+ARG BASE_IMAGE=quay.io/fedora/fedora-silverblue
 ARG TAG_VERSION=latest
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
@@ -19,7 +19,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/kde-desktop.sh \
+    /ctx/gnome-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/nix-package-manager.sh \
     /ctx/desktop-defaults.sh

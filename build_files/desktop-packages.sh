@@ -68,6 +68,8 @@ LAYERED_PACKAGES=(
     fwupd-plugin-modem-manager
     fwupd-plugin-uefi-capsule-data
     libvirtd
+    konsole
+    konsole-part
     
     # Display manager
     sddm
@@ -153,7 +155,3 @@ fi
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"
 dnf5 remove -y firefox firefox-* || true
-
-# Remove Konsole in favor of Ptyxis
-log "Removing Konsole in favor of Ptyxis"
-dnf5 remove -y konsole* || true

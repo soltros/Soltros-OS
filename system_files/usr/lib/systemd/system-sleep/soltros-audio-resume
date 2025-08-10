@@ -46,9 +46,35 @@ case "$1" in
         # Wait for hardware to stabilize
         sleep 3
         
-        # Read saved state
-        session_type=$(cat /tmp/soltros-suspend/session_type 2>/dev/null || echo "wayland")
+        # Read saved state with better detection
+        session_type=$(cat /tmp/soltros-suspend/session_type 2>/dev/null || echo "unknown")
         display_manager=$(cat /tmp/soltros-suspend/display_manager 2>/dev/null || echo "sddm")
+        
+        # If session type is unknown, try to detect it
+        if [ "$session_type" = "unknown" ]; then
+            # Check if any user is running Wayland
+            for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+                user_name=$(id -nu "$user_id" 2>/dev/null)
+                if [ -n "$user_name" ]; then
+                    user_session=$(loginctl show-user "$user_name" -p Display 2>/dev/null | cut -d= -f2)
+                    if echo "$user_session" | grep -q "wayland"; then
+                        session_type="wayland"
+                        break
+                    elif pgrep -f "kwin_wayland" >/dev/null 2>&1; then
+                        session_type="wayland"
+                        break
+                    elif pgrep -f "kwin_x11\|kwin -" >/dev/null 2>&1; then
+                        session_type="x11"
+                        break
+                    fi
+                fi
+            done
+            
+            # Final fallback - assume Wayland since that's where the blank screen issue occurs
+            if [ "$session_type" = "unknown" ]; then
+                session_type="wayland"
+            fi
+        fi
         
         log "Detected session: $session_type, display manager: $display_manager"
         
@@ -104,17 +130,21 @@ case "$1" in
             done
         fi
         
-        # GPU-specific fixes for common issues
+        # GPU-specific fixes for common issues (suppress errors for missing hardware)
         log "Applying GPU fixes"
         
-        # AMD GPU reset if available
+        # AMD GPU reset if available (suppress error output)
         echo 1 > /sys/class/drm/card0/device/reset 2>/dev/null || true
         echo 1 > /sys/class/drm/card1/device/reset 2>/dev/null || true
         
-        # Intel panel power cycle
-        echo 1 > /sys/class/backlight/*/bl_power 2>/dev/null || true
-        sleep 1
-        echo 0 > /sys/class/backlight/*/bl_power 2>/dev/null || true
+        # Intel panel power cycle (suppress error output)
+        for backlight in /sys/class/backlight/*/bl_power; do
+            if [ -f "$backlight" ]; then
+                echo 1 > "$backlight" 2>/dev/null || true
+                sleep 1
+                echo 0 > "$backlight" 2>/dev/null || true
+            fi
+        done
         
         # Restart other services that commonly cause issues
         systemctl restart bluetooth.service 2>/dev/null || true

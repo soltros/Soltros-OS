@@ -68,8 +68,6 @@ LAYERED_PACKAGES=(
     fwupd-plugin-modem-manager
     fwupd-plugin-uefi-capsule-data
     libvirtd
-    konsole
-    konsole-part
     
     # Display manager
     sddm

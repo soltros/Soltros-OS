@@ -1,159 +1,95 @@
 #!/bin/bash
-# SoltrOS: Fix DisplayPort/HDMI audio and display issues after suspend/resume
-# This script restarts WirePlumber for all users and fixes display problems
-
-# Logging function
-log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [SoltrOS Resume] $*"
-}
-
-# Get all logged-in users with active sessions
-get_logged_users() {
-    loginctl list-users --no-legend | awk '{print $1}' | while read -r user_id; do
-        user_name=$(id -nu "$user_id" 2>/dev/null)
-        if [ -n "$user_name" ]; then
-            echo "$user_id:$user_name"
-        fi
-    done
-}
+# SoltrOS: Community-proven KDE Plasma Wayland suspend/resume fix
+# Based on established solutions from Arch Linux and KDE communities
 
 case "$1" in
     pre)
-        # Before suspend - save state and prepare
-        log "Preparing for suspend"
+        # Before suspend - minimal preparation
+        echo "SoltrOS: Preparing for suspend"
         
-        # Create state directory
+        # Save session info for resume
         mkdir -p /tmp/soltros-suspend
-        
-        # Save current session type and display manager
-        echo "${XDG_SESSION_TYPE:-unknown}" > /tmp/soltros-suspend/session_type
-        
-        if systemctl is-active --quiet sddm.service; then
-            echo "sddm" > /tmp/soltros-suspend/display_manager
-        elif systemctl is-active --quiet gdm.service; then
-            echo "gdm" > /tmp/soltros-suspend/display_manager
-        else
-            echo "sddm" > /tmp/soltros-suspend/display_manager  # fallback
-        fi
-        
-        # Sync and prepare system
-        sync
+        echo "${XDG_SESSION_TYPE:-wayland}" > /tmp/soltros-suspend/session_type
         ;;
     post)
-        # After resume from suspend
-        log "Starting post-resume fixes"
+        # After resume - apply community-proven fixes
+        echo "SoltrOS: Applying community-proven resume fixes"
         
         # Wait for hardware to stabilize
         sleep 3
         
-        # Read saved state with better detection
-        session_type=$(cat /tmp/soltros-suspend/session_type 2>/dev/null || echo "unknown")
-        display_manager=$(cat /tmp/soltros-suspend/display_manager 2>/dev/null || echo "sddm")
+        # Get session type
+        session_type=$(cat /tmp/soltros-suspend/session_type 2>/dev/null || echo "wayland")
         
-        # If session type is unknown, try to detect it
-        if [ "$session_type" = "unknown" ]; then
-            # Check if any user is running Wayland
-            for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
-                user_name=$(id -nu "$user_id" 2>/dev/null)
-                if [ -n "$user_name" ]; then
-                    user_session=$(loginctl show-user "$user_name" -p Display 2>/dev/null | cut -d= -f2)
-                    if echo "$user_session" | grep -q "wayland"; then
-                        session_type="wayland"
-                        break
-                    elif pgrep -f "kwin_wayland" >/dev/null 2>&1; then
-                        session_type="wayland"
-                        break
-                    elif pgrep -f "kwin_x11\|kwin -" >/dev/null 2>&1; then
-                        session_type="x11"
-                        break
-                    fi
-                fi
-            done
-            
-            # Final fallback - assume Wayland since that's where the blank screen issue occurs
-            if [ "$session_type" = "unknown" ]; then
-                session_type="wayland"
-            fi
-        fi
-        
-        log "Detected session: $session_type, display manager: $display_manager"
-        
-        # Fix audio (original functionality)
-        log "Restarting WirePlumber after resume to fix DisplayPort audio detection"
-        get_logged_users | while IFS=: read -r user_id user_name; do
+        # Original audio fix (keep existing functionality)
+        echo "SoltrOS: Fixing audio after resume"
+        for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+            user_name=$(id -nu "$user_id" 2>/dev/null)
             if [ -n "$user_name" ]; then
-                log "Restarting WirePlumber for user: $user_name"
-                # Restart WirePlumber for this user
+                echo "Restarting WirePlumber for user: $user_name"
                 sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
                     systemctl --user restart wireplumber.service || true
-                
-                # Also restart PipeWire services if they exist
-                sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
-                    systemctl --user restart pipewire.service 2>/dev/null || true
-                sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
-                    systemctl --user restart pipewire-pulse.service 2>/dev/null || true
             fi
         done
         
-        # Fix display issues (new functionality for blank screen problem)
+        # Community-proven Plasma Wayland fixes
         if [ "$session_type" = "wayland" ]; then
-            log "Applying Wayland display fixes"
+            echo "SoltrOS: Applying community Plasma Wayland fixes"
             
-            # First try gentle approach - restart window manager only
-            display_fixed=false
-            get_logged_users | while IFS=: read -r user_id user_name; do
+            for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+                user_name=$(id -nu "$user_id" 2>/dev/null)
                 if [ -n "$user_name" ]; then
-                    log "Restarting KWin Wayland for user: $user_name"
+                    echo "Applying systemd Plasma restart for user: $user_name"
+                    
+                    # Method 1: Modern systemd approach (preferred by KDE community)
+                    sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
+                        systemctl --user restart plasma-plasmashell.service 2>/dev/null || true
+                    
+                    # Method 2: Restart kwin_wayland specifically 
                     sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
                         systemctl --user restart plasma-kwin_wayland.service 2>/dev/null || true
                 fi
             done
             
-            # Wait to see if gentle approach worked
+            # Wait to see if systemd restart worked
             sleep 5
             
-            # If KWin didn't start properly, restart display manager
+            # Fallback: Manual plasma restart (community backup method)
             if ! pgrep -f "kwin_wayland" >/dev/null 2>&1; then
-                log "Gentle restart failed, restarting display manager: $display_manager"
-                systemctl restart "$display_manager.service" || true
-            else
-                log "Display fixed with gentle restart"
+                echo "SoltrOS: Systemd restart failed, trying manual method"
+                
+                for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+                    user_name=$(id -nu "$user_id" 2>/dev/null)
+                    if [ -n "$user_name" ]; then
+                        # Community method: killall + restart with delays
+                        sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
+                            bash -c "killall plasmashell 2>/dev/null || true; sleep 3; plasmashell &" 2>/dev/null || true
+                    fi
+                done
             fi
+            
+            # Final fallback: SDDM restart if nothing else worked
+            sleep 3
+            if ! pgrep -f "plasmashell" >/dev/null 2>&1; then
+                echo "SoltrOS: All gentle methods failed, restarting display manager"
+                systemctl restart sddm.service || true
+            fi
+            
         else
-            log "X11 session detected, applying minimal fixes"
+            echo "SoltrOS: X11 session detected, minimal intervention"
             # X11 usually handles resume better, just restart window manager if needed
-            get_logged_users | while IFS=: read -r user_id user_name; do
+            for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+                user_name=$(id -nu "$user_id" 2>/dev/null)
                 if [ -n "$user_name" ]; then
-                    # Try to restart KWin X11 if it's not responding
                     sudo -u "$user_name" DISPLAY=:0 kwin_x11 --replace &>/dev/null &
                 fi
             done
         fi
         
-        # GPU-specific fixes for common issues (suppress errors for missing hardware)
-        log "Applying GPU fixes"
-        
-        # AMD GPU reset if available (suppress error output)
-        echo 1 > /sys/class/drm/card0/device/reset 2>/dev/null || true
-        echo 1 > /sys/class/drm/card1/device/reset 2>/dev/null || true
-        
-        # Intel panel power cycle (suppress error output)
-        for backlight in /sys/class/backlight/*/bl_power; do
-            if [ -f "$backlight" ]; then
-                echo 1 > "$backlight" 2>/dev/null || true
-                sleep 1
-                echo 0 > "$backlight" 2>/dev/null || true
-            fi
-        done
-        
-        # Restart other services that commonly cause issues
-        systemctl restart bluetooth.service 2>/dev/null || true
-        systemctl restart NetworkManager.service 2>/dev/null || true
-        
         # Cleanup
         rm -rf /tmp/soltros-suspend 2>/dev/null || true
         
-        log "Post-resume fixes completed"
+        echo "SoltrOS: Community resume fixes completed"
         ;;
     *)
         # Do nothing for other arguments

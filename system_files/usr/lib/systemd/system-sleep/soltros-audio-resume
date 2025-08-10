@@ -1,24 +1,131 @@
 #!/bin/bash
-# SoltrOS: Fix DisplayPort/HDMI audio after suspend/resume
-# This script restarts WirePlumber for all users after resume to re-detect audio devices
+# SoltrOS: Fix DisplayPort/HDMI audio and display issues after suspend/resume
+# This script restarts WirePlumber for all users and fixes display problems
+
+# Logging function
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [SoltrOS Resume] $*"
+}
+
+# Get all logged-in users with active sessions
+get_logged_users() {
+    loginctl list-users --no-legend | awk '{print $1}' | while read -r user_id; do
+        user_name=$(id -nu "$user_id" 2>/dev/null)
+        if [ -n "$user_name" ]; then
+            echo "$user_id:$user_name"
+        fi
+    done
+}
 
 case "$1" in
+    pre)
+        # Before suspend - save state and prepare
+        log "Preparing for suspend"
+        
+        # Create state directory
+        mkdir -p /tmp/soltros-suspend
+        
+        # Save current session type and display manager
+        echo "${XDG_SESSION_TYPE:-unknown}" > /tmp/soltros-suspend/session_type
+        
+        if systemctl is-active --quiet sddm.service; then
+            echo "sddm" > /tmp/soltros-suspend/display_manager
+        elif systemctl is-active --quiet gdm.service; then
+            echo "gdm" > /tmp/soltros-suspend/display_manager
+        else
+            echo "sddm" > /tmp/soltros-suspend/display_manager  # fallback
+        fi
+        
+        # Sync and prepare system
+        sync
+        ;;
     post)
         # After resume from suspend
-        echo "SoltrOS: Restarting WirePlumber after resume to fix DisplayPort audio detection"
+        log "Starting post-resume fixes"
         
-        # Get all logged-in users with active sessions
-        for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
-            user_name=$(id -nu "$user_id" 2>/dev/null)
+        # Wait for hardware to stabilize
+        sleep 3
+        
+        # Read saved state
+        session_type=$(cat /tmp/soltros-suspend/session_type 2>/dev/null || echo "wayland")
+        display_manager=$(cat /tmp/soltros-suspend/display_manager 2>/dev/null || echo "sddm")
+        
+        log "Detected session: $session_type, display manager: $display_manager"
+        
+        # Fix audio (original functionality)
+        log "Restarting WirePlumber after resume to fix DisplayPort audio detection"
+        get_logged_users | while IFS=: read -r user_id user_name; do
             if [ -n "$user_name" ]; then
-                echo "Restarting WirePlumber for user: $user_name"
+                log "Restarting WirePlumber for user: $user_name"
                 # Restart WirePlumber for this user
                 sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
                     systemctl --user restart wireplumber.service || true
+                
+                # Also restart PipeWire services if they exist
+                sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
+                    systemctl --user restart pipewire.service 2>/dev/null || true
+                sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
+                    systemctl --user restart pipewire-pulse.service 2>/dev/null || true
             fi
         done
+        
+        # Fix display issues (new functionality for blank screen problem)
+        if [ "$session_type" = "wayland" ]; then
+            log "Applying Wayland display fixes"
+            
+            # First try gentle approach - restart window manager only
+            display_fixed=false
+            get_logged_users | while IFS=: read -r user_id user_name; do
+                if [ -n "$user_name" ]; then
+                    log "Restarting KWin Wayland for user: $user_name"
+                    sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
+                        systemctl --user restart plasma-kwin_wayland.service 2>/dev/null || true
+                fi
+            done
+            
+            # Wait to see if gentle approach worked
+            sleep 5
+            
+            # If KWin didn't start properly, restart display manager
+            if ! pgrep -f "kwin_wayland" >/dev/null 2>&1; then
+                log "Gentle restart failed, restarting display manager: $display_manager"
+                systemctl restart "$display_manager.service" || true
+            else
+                log "Display fixed with gentle restart"
+            fi
+        else
+            log "X11 session detected, applying minimal fixes"
+            # X11 usually handles resume better, just restart window manager if needed
+            get_logged_users | while IFS=: read -r user_id user_name; do
+                if [ -n "$user_name" ]; then
+                    # Try to restart KWin X11 if it's not responding
+                    sudo -u "$user_name" DISPLAY=:0 kwin_x11 --replace &>/dev/null &
+                fi
+            done
+        fi
+        
+        # GPU-specific fixes for common issues
+        log "Applying GPU fixes"
+        
+        # AMD GPU reset if available
+        echo 1 > /sys/class/drm/card0/device/reset 2>/dev/null || true
+        echo 1 > /sys/class/drm/card1/device/reset 2>/dev/null || true
+        
+        # Intel panel power cycle
+        echo 1 > /sys/class/backlight/*/bl_power 2>/dev/null || true
+        sleep 1
+        echo 0 > /sys/class/backlight/*/bl_power 2>/dev/null || true
+        
+        # Restart other services that commonly cause issues
+        systemctl restart bluetooth.service 2>/dev/null || true
+        systemctl restart NetworkManager.service 2>/dev/null || true
+        
+        # Cleanup
+        rm -rf /tmp/soltros-suspend 2>/dev/null || true
+        
+        log "Post-resume fixes completed"
         ;;
     *)
-        # Do nothing for pre-suspend
+        # Do nothing for other arguments
         ;;
 esac

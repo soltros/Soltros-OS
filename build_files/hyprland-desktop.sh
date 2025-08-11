@@ -26,8 +26,6 @@ echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth
 log "Installing Hyprland and core Wayland components"
 dnf5 install -y \
     hyprland \
-    hyprland-devel \
-    hyprland-protocols-devel \
     xdg-desktop-portal-hyprland \
     nwg-dock-hyprland
 

@@ -1,4 +1,4 @@
-name: Build Soltros Installer ISO
+name: Build Soltros Hyprland Installer ISO
 on:
   workflow_dispatch:
   push:
@@ -8,7 +8,7 @@ on:
 
 env:
   ARCH: x86_64
-  IMAGE_NAME: soltros-os
+  IMAGE_NAME: soltros-os-hyprland
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
   VERSION: 42

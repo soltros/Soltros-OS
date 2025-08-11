@@ -37,8 +37,8 @@ echo_group /ctx/nix-package-manager.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Install KDE Plasma Desktop"
-echo_group /ctx/kde-desktop.sh
+log "Install Hyprland Desktop"
+echo_group /ctx/hyprland-desktop.sh
 
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh

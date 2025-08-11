@@ -1,14 +1,14 @@
 ---
-name: Build and Push SoltrOS Image
+name: Build and Push SoltrOS Hyprland Image
 on:
   pull_request:
     branches:
-      - main
+      - hyprland
   schedule:
     - cron: '0 6 * * 0'  # 6am UTC every Sunday
   push:
     branches:
-      - main
+      - hyprland
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -17,7 +17,7 @@ env:
   IMAGE_DESC: "Gaming-optimized immutable Linux distribution based on Fedora with MacBook support, gaming enhancements, and CachyOS kernel performance"
   IMAGE_KEYWORDS: "bootc,ublue,universal-blue,gaming,cachyos,macbook,fedora,immutable"
   IMAGE_LOGO_URL: "https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
-  IMAGE_NAME: "soltros-os"
+  IMAGE_NAME: "soltros-os-hyprland"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   DEFAULT_TAG: "latest"
 
@@ -27,7 +27,7 @@ concurrency:
 
 jobs:
   build_push:
-    name: Build and push SoltrOS image
+    name: Build and push SoltrOS Hyprland image
     runs-on: ubuntu-24.04
 
     permissions:
@@ -119,7 +119,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/hyprland'
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -127,7 +127,7 @@ jobs:
 
       - name: Push To GHCR
         uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/hyprland'
         id: push
         env:
           REGISTRY_USER: ${{ github.actor }}
@@ -141,10 +141,10 @@ jobs:
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@d58896d6a1865668819e1d91763c7751a165e159 # v3.9.2
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/hyprland'
 
       - name: Sign container image
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/hyprland'
         env:
           DIGEST: ${{ steps.push.outputs.digest }}
           COSIGN_EXPERIMENTAL: false

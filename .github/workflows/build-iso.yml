@@ -1,14 +1,14 @@
-name: Build Soltros Installer ISO
+name: Build Soltros Installer ISO (GNOME)
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ gnome-shell ]
     paths:
       - '.github/workflows/build-iso.yml'
 
 env:
   ARCH: x86_64
-  IMAGE_NAME: soltros-os_gnome
+  IMAGE_NAME: soltros-os-gnome
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
   VERSION: 42
@@ -16,7 +16,7 @@ env:
 
 jobs:
   build-iso:
-    name: Build Installer ISO (GNOME SHELL)
+    name: Build Installer ISO (GNOME)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Build Soltros ISO (GNOME SHELL)
+      - name: Build Soltros ISO (GNOME)
         uses: jasonn3/build-container-installer@main
         id: build
         with:

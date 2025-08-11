@@ -52,7 +52,6 @@ dnf5 install -y --skip-broken \
     pamixer \
     feh \
     swayidle \
-    polkit-gnome \
     pavucontrol \
     blueman
 

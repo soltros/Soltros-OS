@@ -31,7 +31,7 @@ dnf5 install -y --skip-broken \
 
 # Install Waybar and Mako (official Fedora packages)
 log "Installing Waybar status bar and Mako notification daemon"
-dnf5 install -y --skip-broken waybar mako
+dnf5 install -y --skip-broken mako
 
 # Install essential Wayland utilities and applications
 log "Installing Wayland utilities and applications"

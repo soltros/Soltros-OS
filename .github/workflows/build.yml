@@ -1,9 +1,9 @@
 ---
-name: Build and Push SoltrOS Image
+name: Build and Push SoltrOS Gnome Image
 on:
   pull_request:
     branches:
-      - main
+      - gnome-shell
   schedule:
     - cron: '0 6 * * 0'  # 6am UTC every Sunday
   push:

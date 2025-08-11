@@ -1,6 +1,6 @@
 # Set base image and tag
 ARG BASE_IMAGE=quay.io/ddimitrov/hyprland-atomic
-ARG TAG_VERSION=latest
+ARG TAG_VERSION=42-base
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)

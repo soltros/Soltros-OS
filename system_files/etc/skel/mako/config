@@ -1,0 +1,16 @@
+# Set the position of notifications
+anchor=top-right
+# Set the margin from the edge of the screen
+margin=10
+# Set the maximum number of notifications to show at once
+max-visible=5
+# Set the default timeout for notifications (5000 ms = 5 seconds)
+default-timeout=5000
+# Font and background styling
+font=Sans 10
+background-color=#1e1e1e
+text-color=#ffffff
+border-size=0
+border-color=#1e1e1e
+# On Notify
+makoctl menu wofi -d -p 'Choose Action: '

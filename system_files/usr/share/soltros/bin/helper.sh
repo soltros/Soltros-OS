@@ -53,7 +53,7 @@ INSTALL COMMANDS:
   change-to-zsh           Swap shell to Zsh
   change-to-fish          Swap shell to Fish
   change-to-bash          Swap shell to Bash
-  apply-soltros-look      Apply the SoltrOS theme to Plasma
+  apply-soltros-look      Apply the SoltrOS theme to Hyprland
   helper-off              Turn off the helper prompt in Zsh (delete ~/.no-helper-reminder to re-enable)
   download-iso            Download the latest Desktop ISO directly to ~/Downloads
 
@@ -209,17 +209,16 @@ add_nixmanager() {
 
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
+    local remote_url="https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/hyprland-settings.tar.gz"
+    local temp_archive="/tmp/hyprland-settings.tar.gz"
     
-    local remote_url="https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/kde-plasma-settings.tar.gz"
-    local temp_archive="/tmp/kde-plasma-settings.tar.gz"
-    
-    print_info "Downloading KDE settings from SoltrOS repository..."
+    print_info "Downloading Hyprland settings from SoltrOS repository..."
     if ! curl --retry 3 -sL "$remote_url" -o "$temp_archive"; then
         print_error "Failed to download settings archive"
         return 1
     fi
     
-    print_warning "This will overwrite your current KDE settings!"
+    print_warning "This will overwrite your current Hyprland settings!"
     read -p "Continue? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
@@ -228,46 +227,80 @@ apply_soltros_look() {
         return 0
     fi
     
-    print_info "Stopping Plasma shell..."
-    killall plasmashell 2>/dev/null || true
+    # Create ~/.config directory if it doesn't exist
+    mkdir -p ~/.config
     
-    print_info "Extracting KDE settings..."
-    if tar -xzf "$temp_archive" -C ~ --overwrite; then
-        print_success "Settings extracted successfully"
-        print_info "Restored files:"
-        print_info "  • Icon theme (kdeglobals, kdedefaults/kdeglobals)"
-        print_info "  • Panel & kickoff configuration (plasma-org.kde.plasma.desktop-appletsrc)"
-        print_info "  • Plasma shell settings (plasmashellrc, plasmarc)"
-        print_info "  • Window manager settings (kwinrc)"
-        print_info "  • Global shortcuts (kglobalshortcutsrc)"
-        print_info "  • Kvantum theme config (kvantum.kvconfig)"
+    print_info "Extracting Hyprland settings to ~/.config..."
+    if tar -xzf "$temp_archive" -C ~/.config --overwrite; then
+        print_success "Settings extracted successfully to ~/.config"
     else
         print_error "Failed to extract settings"
         rm -f "$temp_archive"
         return 1
     fi
-
+    
+    # Set GTK theme and icon theme (for applications running under Hyprland)
     print_info "Applying Papirus-Dark icon theme..."
-    kwriteconfig5 --file kdeglobals --group Icons --key Theme Papirus-Dark
-
-    print_info "Applying Materia Dark color scheme..."
-    kwriteconfig5 --file kdeglobals --group General --key ColorScheme "Materia Dark"
-
-    print_info "Setting SDDM login theme to 'breeze'..."
-    if grep -q "^\[Theme\]" /etc/sddm.conf.d/kde_settings.conf 2>/dev/null; then
-        sudo sed -i '/^\[Theme\]/,/^\[.*\]/ {/^Current=/d}; /^\[Theme\]/a Current=breeze' /etc/sddm.conf.d/kde_settings.conf
-    else
-        echo -e "\n[Theme]\nCurrent=breeze" | sudo tee -a /etc/sddm.conf.d/kde_settings.conf > /dev/null
+    gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' 2>/dev/null || true
+    
+    print_info "Applying dark GTK theme..."
+    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
+    
+    # Set cursor theme
+    print_info "Setting cursor theme..."
+    gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita' 2>/dev/null || true
+    
+    # Update GTK settings files directly as fallback
+    mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
+    
+    # GTK3 settings
+    cat > ~/.config/gtk-3.0/settings.ini << 'EOF'
+[Settings]
+gtk-theme-name=Adwaita-dark
+gtk-icon-theme-name=Papirus-Dark
+gtk-cursor-theme-name=Adwaita
+gtk-application-prefer-dark-theme=1
+EOF
+    
+    # GTK4 settings
+    cat > ~/.config/gtk-4.0/settings.ini << 'EOF'
+[Settings]
+gtk-theme-name=Adwaita-dark
+gtk-icon-theme-name=Papirus-Dark
+gtk-cursor-theme-name=Adwaita
+gtk-application-prefer-dark-theme=1
+EOF
+    
+    # Restart Hyprland components if they're running
+    print_info "Restarting Hyprland components..."
+    if pgrep -x "waybar" > /dev/null; then
+        print_info "Restarting Waybar..."
+        pkill waybar && sleep 1 && waybar &>/dev/null &
     fi
-
-    print_info "Restarting Plasma shell..."
-    nohup plasmashell &>/dev/null &
+    
+    if pgrep -x "mako" > /dev/null; then
+        print_info "Restarting Mako..."
+        pkill mako && sleep 1 && mako &>/dev/null &
+    fi
+    
+    if pgrep -x "nwg-dock-hyprland" > /dev/null; then
+        print_info "Restarting nwg-dock..."
+        pkill nwg-dock-hyprland && sleep 1 && nwg-dock-hyprland &>/dev/null &
+    fi
+    
+    # Reload Hyprland configuration if possible
+    if command -v hyprctl >/dev/null 2>&1 && hyprctl version &>/dev/null; then
+        print_info "Reloading Hyprland configuration..."
+        hyprctl reload || print_warning "Could not reload Hyprland config automatically"
+    fi
     
     # Cleanup
     rm -f "$temp_archive"
     
-    print_success "SoltrOS look applied!"
+    print_success "SoltrOS Hyprland look applied!"
     print_info "Some changes may require logging out and back in to take full effect"
+    print_info "You can also restart Hyprland with Super+Shift+Q (if configured) or logout/login"
 }
 
 change_to_fish() {

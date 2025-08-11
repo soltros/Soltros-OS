@@ -6,7 +6,7 @@ log() {
     echo "=== $* ==="
 }
 
-log "Installing Hyprland Wayland Compositor with GDM"
+log "Installing Hyprland"
 
 # Remove any existing Plymouth components first (as you were doing)
 log "Removing Plymouth boot splash (for clean boot)"
@@ -35,24 +35,27 @@ dnf5 install -y \
 log "Installing Waybar status bar and Mako notification daemon"
 dnf5 install -y waybar mako
 
-# Install display manager (GDM works well with Wayland)
-log "Installing GDM display manager"
-dnf5 install -y gdm
-
 # Install essential Wayland utilities and applications
 log "Installing Wayland utilities and applications"
 dnf5 install -y \
+    pcmanfm \
     wofi \
+    network-manager-applet \
     kitty \
-    thunar \
-    firefox \
+    swaybg \
+    swaylock \
     grim \
     slurp \
+    jq \
     wl-clipboard \
+    desktop-file-utils \
+    libnotify \
+    playerctl \
+    pamixer \
+    feh \
     swayidle \
     polkit-gnome \
     pavucontrol \
-    network-manager-applet \
     blueman
 
 # Install fonts and themes
@@ -74,8 +77,6 @@ systemctl enable gdm.service
 # Set default target to graphical
 log "Setting graphical target as default"
 systemctl set-default graphical.target
-
-
 
 # Update dconf database
 dconf update

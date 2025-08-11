@@ -55,16 +55,6 @@ dnf5 install -y --skip-broken \
     pavucontrol \
     blueman
 
-# Install fonts and themes
-log "Installing fonts and themes"
-dnf5 install -y --skip-broken \
-    fontawesome-fonts \
-    google-noto-fonts \
-    google-noto-color-emoji-fonts \
-    dejavu-fonts-all \
-    liberation-fonts \
-
-
 # Update dconf database
 dconf update
 

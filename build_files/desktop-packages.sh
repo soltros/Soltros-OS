@@ -8,7 +8,7 @@ log() {
   echo "=== $* ==="
 }
 
-log "Installing RPM packages"
+dnf5 remove -y ncurses-term
 
 log "Install layered applications"
 
@@ -68,8 +68,6 @@ LAYERED_PACKAGES=(
     fwupd-plugin-modem-manager
     fwupd-plugin-uefi-capsule-data
     libvirtd
-    konsole
-    konsole-part
     
     # Display manager
     sddm

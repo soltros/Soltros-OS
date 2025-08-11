@@ -24,18 +24,18 @@ echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth
 
 # Install Hyprland and essential Wayland components
 log "Installing Hyprland and core Wayland components"
-dnf5 install -y \
+dnf5 install -y --skip-broken \
     hyprland \
     xdg-desktop-portal-hyprland \
     nwg-dock-hyprland
 
 # Install Waybar and Mako (official Fedora packages)
 log "Installing Waybar status bar and Mako notification daemon"
-dnf5 install -y waybar mako
+dnf5 install -y --skip-broken waybar mako
 
 # Install essential Wayland utilities and applications
 log "Installing Wayland utilities and applications"
-dnf5 install -y \
+dnf5 install -y --skip-broken \
     pcmanfm \
     wofi \
     network-manager-applet \
@@ -58,7 +58,7 @@ dnf5 install -y \
 
 # Install fonts and themes
 log "Installing fonts and themes"
-dnf5 install -y \
+dnf5 install -y --skip-broken \
     fontawesome-fonts \
     google-noto-fonts \
     google-noto-color-emoji-fonts \
@@ -67,14 +67,6 @@ dnf5 install -y \
     adwaita-gtk2-theme \
     papirus-icon-theme \
     adwaita-icon-theme
-
-# Enable GDM service
-log "Enabling GDM display manager"
-systemctl enable gdm.service
-
-# Set default target to graphical
-log "Setting graphical target as default"
-systemctl set-default graphical.target
 
 # Update dconf database
 dconf update

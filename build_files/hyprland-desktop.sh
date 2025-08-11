@@ -22,6 +22,10 @@ sed -i 's/splash//' /etc/default/grub 2>/dev/null || true
 sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true
 echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf
 
+# Remove conflicting packages first (ADD IT HERE)
+log "Removing conflicting packages"
+dnf5 remove -y ghostty || true
+
 # Install Hyprland and essential Wayland components
 log "Installing Hyprland and core Wayland components"
 dnf5 install -y --skip-broken \

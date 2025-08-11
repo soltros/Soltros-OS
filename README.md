@@ -11,6 +11,8 @@ There are a few ways you can install SoltrosOS. The recomended way is to downloa
 
 You can get the latest ISO [here](http://bit.ly/4ojbxdf), and the checksum [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso-CHECKSUM). To verify the checksum, do the following:
 
+Alternatively, if you're not into KDE Plasma, SoltrOS has a Gnome varient. Get the checksum [here](https://publicweb.soltros.info/files/soltros-os-gnome-latest-42.iso-CHECKSUM), and the ISO [here](https://bit.ly/3UiP4zf).
+
 #### Verifying the ISO Checksum
 ```bash
 sha256sum -c soltros-os-latest-42.iso-CHECKSUM
@@ -26,6 +28,13 @@ the ISO is verified and safe to use.
 
 ```bash
 sudo bootc switch ghcr.io/soltros/soltros-os:latest
+sudo systemctl reboot
+```
+
+Or, for Gnome
+
+```bash
+sudo bootc switch ghcr.io/soltros/soltros-os-gnome:latest
 sudo systemctl reboot
 ```
 

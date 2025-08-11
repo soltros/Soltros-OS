@@ -63,9 +63,7 @@ dnf5 install -y --skip-broken \
     google-noto-color-emoji-fonts \
     dejavu-fonts-all \
     liberation-fonts \
-    adwaita-gtk2-theme \
-    papirus-icon-theme \
-    adwaita-icon-theme
+
 
 # Update dconf database
 dconf update

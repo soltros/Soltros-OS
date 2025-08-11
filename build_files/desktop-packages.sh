@@ -8,8 +8,6 @@ log() {
   echo "=== $* ==="
 }
 
-dnf5 remove -y ncurses-term
-
 log "Install layered applications"
 
 # Layered Applications

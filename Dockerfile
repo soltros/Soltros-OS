@@ -1,6 +1,6 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue/aurora-dx
-ARG TAG_VERSION=stable
+ARG BASE_IMAGE=ghcr.io/ublue-os/aurora-dx
+ARG TAG_VERSION=latest
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)

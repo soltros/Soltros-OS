@@ -209,98 +209,59 @@ add_nixmanager() {
 
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
-    local remote_url="https://github.com/soltros/Soltros-OS/blob/hyprland/resources/hyprland-settings.tar.gz"
-    local temp_archive="/tmp/hyprland-settings.tar.gz"
+    print_info "Downloading Hyprland settings from SoltrOS config repository..."
     
-    print_info "Downloading Hyprland settings from SoltrOS repository..."
-    if ! curl --retry 3 -sL "$remote_url" -o "$temp_archive"; then
-        print_error "Failed to download settings archive"
-        return 1
-    fi
-    
-    print_warning "This will overwrite your current Hyprland settings!"
-    read -p "Continue? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        print_info "Restore cancelled"
-        rm -f "$temp_archive"
-        return 0
-    fi
-    
-    # Create ~/.config directory if it doesn't exist
-    mkdir -p ~/.config
-    
-    print_info "Extracting Hyprland settings to ~/.config..."
-    if tar -xzf "$temp_archive" -C ~/.config --overwrite; then
-        print_success "Settings extracted successfully to ~/.config"
+    # Change to .config directory and check if successful
+    if cd ~/.config/; then
+        # Clone the repository
+        if git clone https://github.com/soltros/soltros-os-configurations/; then
+            print_info "Repository cloned successfully."
+            
+            # Backup existing hypr config if it exists
+            if [ -d ~/.config/hypr ]; then
+                print_info "Backing up existing Hyprland configuration..."
+                mv ~/.config/hypr ~/.config/hypr-backup
+            fi
+            
+            # Move configuration files
+            if [ -d ~/.config/soltros-os-configurations/hypr ]; then
+                mv ~/.config/soltros-os-configurations/hypr/ ~/.config/
+                print_info "Hyprland configuration applied."
+            else
+                print_error "Hyprland configuration not found in repository."
+            fi
+            
+            if [ -d ~/.config/soltros-os-configurations/mako ]; then
+                # Backup existing mako config if it exists
+                [ -d ~/.config/mako ] && mv ~/.config/mako ~/.config/mako-backup
+                mv ~/.config/soltros-os-configurations/mako/ ~/.config/
+                print_info "Mako configuration applied."
+            else
+                print_info "Mako configuration not found in repository (skipping)."
+            fi
+            
+            if [ -d ~/.config/soltros-os-configurations/wofi ]; then
+                # Backup existing wofi config if it exists
+                [ -d ~/.config/wofi ] && mv ~/.config/wofi ~/.config/wofi-backup
+                mv ~/.config/soltros-os-configurations/wofi/ ~/.config/
+                print_info "Wofi configuration applied."
+            else
+                print_info "Wofi configuration not found in repository (skipping)."
+            fi
+            
+            # Clean up the cloned repository
+            rm -rf ~/.config/soltros-os-configurations/
+            print_success "Successfully set up SoltrOS configuration files."
+            
+        else
+            print_error "Failed to clone the SoltrOS configuration repository."
+            print_error "Please check your internet connection and repository URL."
+            return 1
+        fi
     else
-        print_error "Failed to extract settings"
-        rm -f "$temp_archive"
+        print_error "Failed to change to ~/.config/ directory."
         return 1
     fi
-    
-    # Set GTK theme and icon theme (for applications running under Hyprland)
-    print_info "Applying Papirus-Dark icon theme..."
-    gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark' 2>/dev/null || true
-    
-    print_info "Applying dark GTK theme..."
-    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark' 2>/dev/null || true
-    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' 2>/dev/null || true
-    
-    # Set cursor theme
-    print_info "Setting cursor theme..."
-    gsettings set org.gnome.desktop.interface cursor-theme 'Adwaita' 2>/dev/null || true
-    
-    # Update GTK settings files directly as fallback
-    mkdir -p ~/.config/gtk-3.0 ~/.config/gtk-4.0
-    
-    # GTK3 settings
-    cat > ~/.config/gtk-3.0/settings.ini << 'EOF'
-[Settings]
-gtk-theme-name=Adwaita-dark
-gtk-icon-theme-name=Papirus-Dark
-gtk-cursor-theme-name=Adwaita
-gtk-application-prefer-dark-theme=1
-EOF
-    
-    # GTK4 settings
-    cat > ~/.config/gtk-4.0/settings.ini << 'EOF'
-[Settings]
-gtk-theme-name=Adwaita-dark
-gtk-icon-theme-name=Papirus-Dark
-gtk-cursor-theme-name=Adwaita
-gtk-application-prefer-dark-theme=1
-EOF
-    
-    # Restart Hyprland components if they're running
-    print_info "Restarting Hyprland components..."
-    if pgrep -x "waybar" > /dev/null; then
-        print_info "Restarting Waybar..."
-        pkill waybar && sleep 1 && waybar &>/dev/null &
-    fi
-    
-    if pgrep -x "mako" > /dev/null; then
-        print_info "Restarting Mako..."
-        pkill mako && sleep 1 && mako &>/dev/null &
-    fi
-    
-    if pgrep -x "nwg-dock-hyprland" > /dev/null; then
-        print_info "Restarting nwg-dock..."
-        pkill nwg-dock-hyprland && sleep 1 && nwg-dock-hyprland &>/dev/null &
-    fi
-    
-    # Reload Hyprland configuration if possible
-    if command -v hyprctl >/dev/null 2>&1 && hyprctl version &>/dev/null; then
-        print_info "Reloading Hyprland configuration..."
-        hyprctl reload || print_warning "Could not reload Hyprland config automatically"
-    fi
-    
-    # Cleanup
-    rm -f "$temp_archive"
-    
-    print_success "SoltrOS Hyprland look applied!"
-    print_info "Some changes may require logging out and back in to take full effect"
-    print_info "You can also restart Hyprland with Super+Shift+Q (if configured) or logout/login"
 }
 
 change_to_fish() {

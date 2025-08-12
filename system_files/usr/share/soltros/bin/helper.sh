@@ -209,7 +209,7 @@ add_nixmanager() {
 
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
-    local remote_url="https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/hyprland-settings.tar.gz"
+    local remote_url="https://github.com/soltros/Soltros-OS/blob/hyprland/resources/hyprland-settings.tar.gz"
     local temp_archive="/tmp/hyprland-settings.tar.gz"
     
     print_info "Downloading Hyprland settings from SoltrOS repository..."

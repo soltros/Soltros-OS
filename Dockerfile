@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=ghcr.io/ublue-os/aurora-dx
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
 ARG TAG_VERSION=latest
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
@@ -22,7 +22,6 @@ RUN chmod +x \
     /ctx/kde-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/nix-package-manager.sh \
-    /ctx/ublue-purge.sh \
     /ctx/desktop-defaults.sh
 
 # Stage 2: final image

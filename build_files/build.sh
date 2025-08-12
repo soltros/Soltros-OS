@@ -34,9 +34,6 @@ echo_group /ctx/nix-package-manager.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Purging Aurora DX/Ublue crap"
-echo_group /ctx/ublue-purge.sh
-
 log "Install KDE Desktop"
 echo_group /ctx/kde-desktop.sh
 

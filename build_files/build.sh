@@ -23,10 +23,7 @@ function echo_group() {
 
 log "Starting SoltrOS build process"
 
-# Base image for reference
-BASE_IMAGE="${BASE_IMAGE:ghcr.io/ublue-os/base-main}"
-
-log "Building for base image: $BASE_IMAGE"
+log "Building for base image: $BASE_IMAGE"\
 
 log "Enable container signing"
 echo_group /ctx/signing.sh
@@ -37,7 +34,10 @@ echo_group /ctx/nix-package-manager.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Install KDE Plasma Desktop"
+log "Purging Aurora DX/Ublue crap"
+echo_group /ctx/ublue-purge.sh
+
+log "Install KDE Desktop"
 echo_group /ctx/kde-desktop.sh
 
 log "Install desktop packages"

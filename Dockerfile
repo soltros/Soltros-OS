@@ -22,6 +22,7 @@ RUN chmod +x \
     /ctx/kde-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/nix-package-manager.sh \
+    /ctx/ublue-purge.sh \
     /ctx/desktop-defaults.sh
 
 # Stage 2: final image

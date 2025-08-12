@@ -19,7 +19,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/cosmic-desktop.sh \
+    /ctx/kde-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/nix-package-manager.sh \
     /ctx/desktop-defaults.sh

@@ -23,11 +23,6 @@ function echo_group() {
 
 log "Starting SoltrOS build process"
 
-# Remove Zen browser from image (ewwww)
-flatpak remove app.zen_browser.zen  -y
-
-log "Building for base image: $BASE_IMAGE"
-
 log "Enable container signing"
 echo_group /ctx/signing.sh
 

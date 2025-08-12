@@ -24,7 +24,7 @@ function echo_group() {
 log "Starting SoltrOS build process"
 
 # Remove Zen browser from image (ewwww)
-sudo flatpak remove app.zen_browser.zen  -y
+flatpak remove app.zen_browser.zen  -y
 
 log "Building for base image: $BASE_IMAGE"
 

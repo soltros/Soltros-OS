@@ -17,11 +17,12 @@ on:
           - '9'
           - '10'
   schedule:
-    # Run weekly to check for new kernel versions
     - cron: '0 6 * * 1'
   push:
+    branches:
+      - workstation
     paths:
-      - '.github/workflows/build-zen-kernel.yml'
+      - '.github/workflows/zen-kernel.yml'
       - 'kernel-specs/**'
 
 env:
@@ -34,66 +35,61 @@ jobs:
     strategy:
       matrix:
         alma_version: [9, 10]
-    
+
     permissions:
       contents: read
       packages: write
-      
+
     container:
       image: quay.io/almalinuxorg/almalinux:${{ matrix.alma_version }}
-      
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+      with:
+        ref: workstation
+
     - name: Setup build environment
       run: |
-        # Update system and install basic tools
         dnf -y update
         dnf -y install dnf-plugins-core epel-release
-        
-        # Install build dependencies
         dnf -y groupinstall "Development Tools"
         dnf -y install rpm-build rpmdevtools ncurses-devel openssl-devel \
           elfutils-libelf-devel python3 bc bison flex perl-devel \
           perl-generators grub2-tools-extra rsync wget tar gzip \
           createrepo_c git
-          
-        # Setup RPM build environment
         rpmdev-setuptree
-        
+
     - name: Get latest Zen kernel version
       id: get_version
       run: |
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           ZEN_VERSION="${{ inputs.zen_version }}"
         else
-          # Get latest release from GitHub API
           ZEN_VERSION=$(curl -s https://api.github.com/repos/zen-kernel/zen-kernel/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
         fi
         echo "zen_version=${ZEN_VERSION}" >> $GITHUB_OUTPUT
         echo "Using Zen Kernel version: ${ZEN_VERSION}"
-        
+
     - name: Download Zen kernel sources
       run: |
         ZEN_VERSION="${{ steps.get_version.outputs.zen_version }}"
         cd ~/rpmbuild/SOURCES
-        
+
         echo "Downloading Zen kernel ${ZEN_VERSION}..."
-        wget -O "linux-${ZEN_VERSION}.tar.gz" \
-          "https://github.com/zen-kernel/zen-kernel/archive/v${ZEN_VERSION}/zen-${ZEN_VERSION}.tar.gz"
-          
+        wget "https://github.com/zen-kernel/zen-kernel/archive/refs/tags/v${ZEN_VERSION}.tar.gz" -O "linux-${ZEN_VERSION}.tar.gz"
+
         # Also download the zen kernel patches/config if available
         if wget -O "zen-patches-${ZEN_VERSION}.tar.gz" \
           "https://github.com/zen-kernel/zen-kernel/releases/download/v${ZEN_VERSION}/zen-patches-${ZEN_VERSION}.tar.gz" 2>/dev/null; then
           echo "Downloaded additional zen patches"
         fi
-        
+
     - name: Create RPM spec file
       run: |
         ZEN_VERSION="${{ steps.get_version.outputs.zen_version }}"
         ALMA_VERSION="${{ matrix.alma_version }}"
-        
+
         cat > ~/rpmbuild/SPECS/kernel-zen.spec << EOF
         %define kernel_version ${ZEN_VERSION}
         %define zen_release 1
@@ -108,43 +104,41 @@ jobs:
         License: GPLv2
         URL: https://github.com/zen-kernel/zen-kernel
         Source0: linux-%{kernel_version}.tar.gz
-        
+
         BuildRequires: bc, bison, flex, openssl-devel, elfutils-libelf-devel
         BuildRequires: ncurses-devel, perl-devel, perl-generators, python3
         BuildRequires: gcc, make, rsync, kmod, dracut
-        
+
         Provides: kernel = %{kernel_version}
         Provides: kernel-zen = %{kernel_version}-%{rpm_release}
-        
+
         %description
         The Linux Zen kernel with desktop and gaming performance optimizations.
         This kernel includes patches for improved responsiveness, lower latency,
         and better desktop performance compared to the standard kernel.
-        
+
         Key features:
         - 1000Hz timer frequency for better responsiveness
         - BFQ I/O scheduler for improved desktop performance  
         - Preemptible kernel for lower latency
         - Zen-specific optimizations for desktop workloads
-        
+
         %package devel
         Summary: Development package for building kernel modules
         Group: System Environment/Kernel
         Requires: kernel-zen = %{kernel_version}-%{rpm_release}
         Provides: kernel-devel = %{kernel_version}
-        
+
         %description devel
         This package provides kernel headers and makefiles sufficient
         to build modules against the zen kernel package.
-        
+
         %prep
         %setup -q -n zen-kernel-%{kernel_version}
-        
+
         %build
-        # Start with a reasonable base config
         make defconfig
-        
-        # Apply Zen optimizations
+
         scripts/config --enable CONFIG_PREEMPT
         scripts/config --enable CONFIG_PREEMPT_COUNT  
         scripts/config --enable CONFIG_PREEMPTION
@@ -153,93 +147,65 @@ jobs:
         scripts/config --disable CONFIG_HZ_250
         scripts/config --enable CONFIG_BFQ_GROUP_IOSCHED
         scripts/config --set-str CONFIG_DEFAULT_IOSCHED "bfq"
-        
-        # Additional desktop optimizations
         scripts/config --enable CONFIG_SCHED_AUTOGROUP
         scripts/config --enable CONFIG_FAIR_GROUP_SCHED
         scripts/config --enable CONFIG_CFS_BANDWIDTH
-        
-        # Gaming optimizations
         scripts/config --enable CONFIG_FUTEX
         scripts/config --enable CONFIG_FUTEX_PI
-        
-        # Apply config changes
         make olddefconfig
-        
-        # Build kernel and modules
         make -j\$(nproc) all
-        
+
         %install
         KERNEL_VERSION="%{kernel_version}-zen"
-        
-        # Create directories
         mkdir -p %{buildroot}/boot
         mkdir -p %{buildroot}/lib/modules/\${KERNEL_VERSION}
         mkdir -p %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}
-        
-        # Install kernel image
         cp arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-\${KERNEL_VERSION}
         cp System.map %{buildroot}/boot/System.map-\${KERNEL_VERSION}
         cp .config %{buildroot}/boot/config-\${KERNEL_VERSION}
-        
-        # Install modules
         make INSTALL_MOD_PATH=%{buildroot} modules_install
-        
-        # Install development files
         cp -r include %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}/
         cp -r scripts %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}/
         cp Makefile %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}/
         cp Module.symvers %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}/
         cp .config %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}/
-        
-        # Create symlink for modules
         rm -f %{buildroot}/lib/modules/\${KERNEL_VERSION}/build
         ln -sf /usr/src/kernels/\${KERNEL_VERSION} %{buildroot}/lib/modules/\${KERNEL_VERSION}/build
-        
+
         %files
         /boot/vmlinuz-%{kernel_version}-zen
         /boot/System.map-%{kernel_version}-zen  
         /boot/config-%{kernel_version}-zen
         /lib/modules/%{kernel_version}-zen
-        
+
         %files devel
         /usr/src/kernels/%{kernel_version}-zen
-        
+
         %changelog
         * \$(date "+%a %b %d %Y") SoltrOS Builder <builder@soltros.com> - %{kernel_version}-%{rpm_release}
         - Zen kernel build for AlmaLinux ${ALMA_VERSION}
         - Optimized for desktop and gaming performance
         EOF
-        
+
     - name: Build RPMs
       run: |
         echo "Building Zen kernel RPMs..."
         cd ~/rpmbuild
-        
-        # Build the RPMs (this will take a while)
         rpmbuild -ba SPECS/kernel-zen.spec
-        
         echo "Build completed successfully!"
         echo "Built packages:"
         find RPMS SRPMS -name "*.rpm" -exec ls -lh {} \;
-        
+
     - name: Create repository
       run: |
         ZEN_VERSION="${{ steps.get_version.outputs.zen_version }}"
         ALMA_VERSION="${{ matrix.alma_version }}"
         REPO_DIR="/tmp/zen-kernel-repo-alma${ALMA_VERSION}"
-        
         mkdir -p "${REPO_DIR}"
-        
-        # Copy RPMs to repo directory
         find ~/rpmbuild/RPMS -name "*.rpm" -exec cp {} "${REPO_DIR}/" \;
         find ~/rpmbuild/SRPMS -name "*.rpm" -exec cp {} "${REPO_DIR}/" \;
-        
-        # Create repository metadata
         cd "${REPO_DIR}"
         createrepo_c .
-        
-        # Create repo file
         cat > zen-kernel.repo << EOF
         [zen-kernel]
         name=SoltrOS Zen Kernel Repository
@@ -247,16 +213,15 @@ jobs:
         enabled=1
         gpgcheck=0
         EOF
-        
         echo "Repository created with $(ls -1 *.rpm | wc -l) packages"
-        
+
     - name: Upload RPMs as artifacts
       uses: actions/upload-artifact@v4
       with:
         name: zen-kernel-rpms-alma${{ matrix.alma_version }}
         path: /tmp/zen-kernel-repo-alma${{ matrix.alma_version }}/
         retention-days: 30
-        
+
     - name: Create release
       if: github.event_name != 'schedule'
       uses: softprops/action-gh-release@v1
@@ -265,75 +230,78 @@ jobs:
         name: Zen Kernel ${{ steps.get_version.outputs.zen_version }} RPMs
         body: |
           ## Zen Kernel ${{ steps.get_version.outputs.zen_version }} RPMs for AlmaLinux
-          
+
           This release contains pre-built Zen kernel RPMs optimized for desktop and gaming performance.
-          
+
           ### Features:
           - 1000Hz timer frequency for better responsiveness  
           - BFQ I/O scheduler for improved desktop performance
           - Preemptible kernel for lower latency
           - Desktop and gaming optimizations
-          
+
           ### Installation:
-          
+
           **AlmaLinux ${{ matrix.alma_version }}:**
           ```bash
-          # Download and install the kernel RPM
           wget https://github.com/${{ github.repository }}/releases/download/zen-kernel-${{ steps.get_version.outputs.zen_version }}/kernel-zen-*.alma${{ matrix.alma_version }}.x86_64.rpm
           sudo dnf install ./kernel-zen-*.rpm
-          
-          # Reboot to use the new kernel
+
           sudo reboot
           ```
-          
+
           Built on: \$(date)
           Built from: zen-kernel v${{ steps.get_version.outputs.zen_version }}
         files: /tmp/zen-kernel-repo-alma${{ matrix.alma_version }}/*.rpm
         draft: false
         prerelease: false
-        
+
   build-container-repo:
     needs: build-zen-kernel
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-      
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+      with:
+        ref: workstation
+
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
         path: ./artifacts
-        
+
+    - name: Flatten RPM repo for container
+      run: |
+        mkdir flatrepo
+        find ./artifacts -name "*.rpm" -exec cp {} flatrepo/ \;
+        find ./artifacts -name "repodata" -type d -exec cp -r {} flatrepo/ \;
+        find ./artifacts -name "*.repo" -exec cp {} flatrepo/ \;
+
     - name: Log in to Container Registry
       uses: docker/login-action@v3
       with:
         registry: ${{ env.REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Build and push repository container
       run: |
-        # Create container with RPM repository
         cat > Dockerfile << 'EOF'
         FROM nginx:alpine
-        
-        # Copy RPMs and repository metadata
-        COPY artifacts/ /usr/share/nginx/html/
-        
-        # Create index page
+
+        COPY flatrepo/ /usr/share/nginx/html/
+
         RUN echo '<h1>SoltrOS Zen Kernel Repository</h1>' > /usr/share/nginx/html/index.html && \
             echo '<p>Pre-built Zen kernel RPMs for AlmaLinux</p>' >> /usr/share/nginx/html/index.html && \
             echo '<ul>' >> /usr/share/nginx/html/index.html && \
             find /usr/share/nginx/html -name "*.rpm" -exec basename {} \; | sort | sed 's/^/<li><a href="&">&<\/a><\/li>/' >> /usr/share/nginx/html/index.html && \
             echo '</ul>' >> /usr/share/nginx/html/index.html
-            
+
         EXPOSE 80
         EOF
-        
-        # Build and push
+
         docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest .
         docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest

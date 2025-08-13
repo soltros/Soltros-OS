@@ -68,8 +68,12 @@ jobs:
         else
           ZEN_VERSION=$(curl -s https://api.github.com/repos/zen-kernel/zen-kernel/releases/latest | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
         fi
+        # Extract just the numeric version for RPM Version field
+        NUMERIC_VERSION=$(echo "$ZEN_VERSION" | sed 's/-.*$//')
         echo "zen_version=${ZEN_VERSION}" >> $GITHUB_OUTPUT
+        echo "numeric_version=${NUMERIC_VERSION}" >> $GITHUB_OUTPUT
         echo "Using Zen Kernel version: ${ZEN_VERSION}"
+        echo "Using numeric version for RPM: ${NUMERIC_VERSION}"
 
     - name: Download Zen kernel sources
       run: |
@@ -88,16 +92,18 @@ jobs:
     - name: Create RPM spec file
       run: |
         ZEN_VERSION="${{ steps.get_version.outputs.zen_version }}"
+        NUMERIC_VERSION="${{ steps.get_version.outputs.numeric_version }}"
         ALMA_VERSION="${{ matrix.alma_version }}"
 
         cat > ~/rpmbuild/SPECS/kernel-zen.spec << EOF
         %define kernel_version ${ZEN_VERSION}
-        %define zen_release 1
+        %define numeric_version ${NUMERIC_VERSION}
+        %define zen_release 1.zen
         %define rpm_release %{zen_release}.alma${ALMA_VERSION}
         %define arch x86_64
 
         Name: kernel-zen
-        Version: %{kernel_version}
+        Version: %{numeric_version}
         Release: %{rpm_release}
         Summary: The Linux Zen kernel optimized for desktop performance
         Group: System Environment/Kernel
@@ -109,8 +115,8 @@ jobs:
         BuildRequires: ncurses-devel, perl-devel, perl-generators, python3
         BuildRequires: gcc, make, rsync, kmod, dracut
 
-        Provides: kernel = %{kernel_version}
-        Provides: kernel-zen = %{kernel_version}-%{rpm_release}
+        Provides: kernel = %{numeric_version}
+        Provides: kernel-zen = %{numeric_version}-%{rpm_release}
 
         %description
         The Linux Zen kernel with desktop and gaming performance optimizations.
@@ -126,8 +132,8 @@ jobs:
         %package devel
         Summary: Development package for building kernel modules
         Group: System Environment/Kernel
-        Requires: kernel-zen = %{kernel_version}-%{rpm_release}
-        Provides: kernel-devel = %{kernel_version}
+        Requires: kernel-zen = %{numeric_version}-%{rpm_release}
+        Provides: kernel-devel = %{numeric_version}
 
         %description devel
         This package provides kernel headers and makefiles sufficient
@@ -156,7 +162,7 @@ jobs:
         make -j\$(nproc) all
 
         %install
-        KERNEL_VERSION="%{kernel_version}-zen"
+        KERNEL_VERSION="%{numeric_version}-zen"
         mkdir -p %{buildroot}/boot
         mkdir -p %{buildroot}/lib/modules/\${KERNEL_VERSION}
         mkdir -p %{buildroot}/usr/src/kernels/\${KERNEL_VERSION}
@@ -173,16 +179,16 @@ jobs:
         ln -sf /usr/src/kernels/\${KERNEL_VERSION} %{buildroot}/lib/modules/\${KERNEL_VERSION}/build
 
         %files
-        /boot/vmlinuz-%{kernel_version}-zen
-        /boot/System.map-%{kernel_version}-zen  
-        /boot/config-%{kernel_version}-zen
-        /lib/modules/%{kernel_version}-zen
+        /boot/vmlinuz-%{numeric_version}-zen
+        /boot/System.map-%{numeric_version}-zen  
+        /boot/config-%{numeric_version}-zen
+        /lib/modules/%{numeric_version}-zen
 
         %files devel
-        /usr/src/kernels/%{kernel_version}-zen
+        /usr/src/kernels/%{numeric_version}-zen
 
         %changelog
-        * \$(date "+%a %b %d %Y") SoltrOS Builder <builder@soltros.com> - %{kernel_version}-%{rpm_release}
+        * \$(date "+%a %b %d %Y") SoltrOS Builder <builder@soltros.com> - %{numeric_version}-%{rpm_release}
         - Zen kernel build for AlmaLinux ${ALMA_VERSION}
         - Optimized for desktop and gaming performance
         EOF

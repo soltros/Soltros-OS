@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/base-atomic
 ARG TAG_VERSION=main
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 

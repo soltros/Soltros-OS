@@ -1,6 +1,6 @@
 # Set base image and tag
 ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/base-atomic
-ARG TAG_VERSION=main
+ARG TAG_VERSION=42
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)

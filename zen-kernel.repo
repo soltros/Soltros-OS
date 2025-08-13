@@ -1,0 +1,6 @@
+[zen-kernel]
+name=SoltrOS Zen Kernel Repository
+baseurl=https://ghcr.io/v2/soltros/soltros-os/zen-kernel-rpms/manifests/latest
+enabled=1
+gpgcheck=0
+metadata_expire=7d

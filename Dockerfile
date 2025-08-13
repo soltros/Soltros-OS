@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora/fedora-kinoite
+ARG BASE_IMAGE=https://quay.io/repository/almalinuxorg/atomic-desktop-kde
 ARG TAG_VERSION=latest
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
@@ -56,29 +56,23 @@ RUN dnf5 install -y distrobox
 RUN dnf5 -y install dnf5-plugins
 RUN dnf5 -y config-manager setopt "*cachyos*".priority=1
 
-# Remove default kernel packages and install CachyOS kernel
+# Copy zen kernel repository configuration
+COPY zen-kernel.repo /etc/yum.repos.d/zen-kernel.repo
+
+# Remove default kernel packages and install Zen kernel  
 RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
-    echo "Installing CachyOS kernel..." && \
-    if dnf5 -y install kernel-cachyos; then \
-        echo "CachyOS kernel installed successfully"; \
-        echo "Installed CachyOS kernel packages:"; \
-        dnf5 list installed | grep cachyos || true; \
+    echo "Installing Zen kernel..." && \
+    if dnf5 -y install kernel-zen kernel-zen-devel; then \
+        echo "Zen kernel installed successfully"; \
+        echo "Installed Zen kernel packages:"; \
+        dnf5 list installed | grep kernel-zen || true; \
     else \
-        echo "Failed to install kernel-cachyos, trying LTS version..."; \
-        if dnf5 -y install kernel-cachyos-lts; then \
-            echo "CachyOS LTS kernel installed successfully"; \
-        else \
-            echo "All CachyOS kernel installation attempts failed"; \
-            echo "Available CachyOS packages:"; \
-            dnf5 search kernel-cachyos || true; \
-            echo "Falling back to default kernel installation"; \
-            dnf5 -y install kernel kernel-core kernel-modules || true; \
-        fi; \
-    fi && \
-    echo "Final kernel verification:" && \
-    dnf5 list installed | grep -E "(kernel|cachyos)" || true && \
-    echo "Available kernel modules:" && \
-    ls -la /usr/lib/modules/ || true
+        echo "Failed to install kernel-zen, falling back to ELRepo mainline..."; \
+        dnf5 -y install https://www.elrepo.org/elrepo-release-10.el10.elrepo.noarch.rpm && \
+        rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org && \
+        dnf5 --enablerepo=elrepo-kernel -y install kernel-ml kernel-ml-devel || \
+        dnf5 -y install kernel kernel-core kernel-modules; \
+    fi
 
 # Get rid of Plymouth
 RUN dnf5 remove plymouth* -y && \
@@ -95,15 +89,9 @@ RUN dnf5 remove plymouth* -y && \
     dnf5 autoremove -y && \
     dnf5 clean all
 
-# Add Terra repo separately with better error handling
-RUN for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
-    break || sleep 10; \
-    done
-
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
-ENV KERNEL_FLAVOR=cachyos
+ENV KERNEL_FLAVOR=zen
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh

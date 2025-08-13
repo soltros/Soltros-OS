@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=https://quay.io/repository/almalinuxorg/atomic-desktop-kde
+ARG BASE_IMAGE=quay.io/repository/almalinuxorg/atomic-desktop-kde
 ARG TAG_VERSION=10
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 

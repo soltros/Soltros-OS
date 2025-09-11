@@ -58,7 +58,6 @@ sudo chmod 644 /etc/containers/policy.json
 ## 🚀 Features
 
 ### 🎮 Gaming Ready
-- **CachyOS kernel** for up to 15% better gaming performance with optimized scheduler
 - **Gaming optimizations** with enhanced kernel parameters for performance
 - **Controller support** for PlayStation, Xbox, Nintendo Switch Pro, Steam, and 8BitDo controllers
 - **MangoHud** and **GameMode** integration for performance monitoring and optimization

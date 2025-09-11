@@ -1,97 +1,30 @@
 #!/bin/bash
-# SoltrOS: Community-proven KDE Plasma Wayland suspend/resume fix
-# Based on established solutions from Arch Linux and KDE communities
+# SoltrOS: Community-proven KDE Plasma Wayland suspend/resume audio fix
+# Simplified version to prevent desktop freezes
 
 case "$1" in
-    pre)
-        # Before suspend - minimal preparation
-        echo "SoltrOS: Preparing for suspend"
-        
-        # Save session info for resume
-        mkdir -p /tmp/soltros-suspend
-        echo "${XDG_SESSION_TYPE:-wayland}" > /tmp/soltros-suspend/session_type
-        ;;
     post)
-        # After resume - apply community-proven fixes
-        echo "SoltrOS: Applying community-proven resume fixes"
+        # After resume - apply community-proven audio fix
+        echo "SoltrOS: Applying community-proven resume audio fix"
         
         # Wait for hardware to stabilize
         sleep 3
         
-        # Get session type
-        session_type=$(cat /tmp/soltros-suspend/session_type 2>/dev/null || echo "wayland")
-        
-        # Original audio fix (keep existing functionality)
-        echo "SoltrOS: Fixing audio after resume"
-        for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
+        # Restart WirePlumber to fix audio devices
+        for user_id in $(loginctl list-users --no-legend | awk '{print $1}');
+        do
             user_name=$(id -nu "$user_id" 2>/dev/null)
-            if [ -n "$user_name" ]; then
+            if [ -n "$user_name" ];
+            then
                 echo "Restarting WirePlumber for user: $user_name"
                 sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
                     systemctl --user restart wireplumber.service || true
             fi
         done
         
-        # Community-proven Plasma Wayland fixes
-        if [ "$session_type" = "wayland" ]; then
-            echo "SoltrOS: Applying community Plasma Wayland fixes"
-            
-            for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
-                user_name=$(id -nu "$user_id" 2>/dev/null)
-                if [ -n "$user_name" ]; then
-                    echo "Applying systemd Plasma restart for user: $user_name"
-                    
-                    # Method 1: Modern systemd approach (preferred by KDE community)
-                    sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
-                        systemctl --user restart plasma-plasmashell.service 2>/dev/null || true
-                    
-                    # Method 2: Restart kwin_wayland specifically 
-                    sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
-                        systemctl --user restart plasma-kwin_wayland.service 2>/dev/null || true
-                fi
-            done
-            
-            # Wait to see if systemd restart worked
-            sleep 5
-            
-            # Fallback: Manual plasma restart (community backup method)
-            if ! pgrep -f "kwin_wayland" >/dev/null 2>&1; then
-                echo "SoltrOS: Systemd restart failed, trying manual method"
-                
-                for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
-                    user_name=$(id -nu "$user_id" 2>/dev/null)
-                    if [ -n "$user_name" ]; then
-                        # Community method: killall + restart with delays
-                        sudo -u "$user_name" XDG_RUNTIME_DIR="/run/user/$user_id" \
-                            bash -c "killall plasmashell 2>/dev/null || true; sleep 3; plasmashell &" 2>/dev/null || true
-                    fi
-                done
-            fi
-            
-            # Final fallback: SDDM restart if nothing else worked
-            sleep 3
-            if ! pgrep -f "plasmashell" >/dev/null 2>&1; then
-                echo "SoltrOS: All gentle methods failed, restarting display manager"
-                systemctl restart sddm.service || true
-            fi
-            
-        else
-            echo "SoltrOS: X11 session detected, minimal intervention"
-            # X11 usually handles resume better, just restart window manager if needed
-            for user_id in $(loginctl list-users --no-legend | awk '{print $1}'); do
-                user_name=$(id -nu "$user_id" 2>/dev/null)
-                if [ -n "$user_name" ]; then
-                    sudo -u "$user_name" DISPLAY=:0 kwin_x11 --replace &>/dev/null &
-                fi
-            done
-        fi
-        
-        # Cleanup
-        rm -rf /tmp/soltros-suspend 2>/dev/null || true
-        
-        echo "SoltrOS: Community resume fixes completed"
+        echo "SoltrOS: Audio resume fix completed"
         ;;
     *)
-        # Do nothing for other arguments
+        # Do nothing for other arguments like 'pre'
         ;;
 esac

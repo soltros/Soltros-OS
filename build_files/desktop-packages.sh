@@ -18,7 +18,6 @@ LAYERED_PACKAGES=(
     fish
     zsh
     tailscale
-    ptyxis
     papirus-icon-theme
     papirus-icon-theme-dark
     papirus-icon-theme-light
@@ -139,11 +138,6 @@ dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGE
 systemctl enable pipewire.service || true
 systemctl enable pipewire-pulse.service || true
 systemctl enable wireplumber.service || true
-
-log "Setting up DisplayPort audio suspend/resume fix"
-
-# Make the systemd-sleep script executable
-chmod +x /usr/lib/systemd/system-sleep/soltros-audio-resume
 
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"

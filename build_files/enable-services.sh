@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+
+set ${SET_X:+-x} -eou pipefail
+
+trap '[[ $BASH_COMMAND != echo* ]] && [[ $BASH_COMMAND != log* ]] && echo "+ $BASH_COMMAND"' DEBUG
+
+log() {
+  echo "=== $* ==="
+}
+
+
+log "Enabling soltros audio resume service"
+systemctl enable soltros-audio-resume.service
+
+log "Enabling Tailscale"
+systemctl enable tailscaled.service

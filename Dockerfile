@@ -21,6 +21,7 @@ RUN chmod +x \
     /ctx/waterfox-installer.sh \
     /ctx/kde-desktop.sh \
     /ctx/build-initramfs.sh \
+    /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
     /ctx/desktop-defaults.sh
 

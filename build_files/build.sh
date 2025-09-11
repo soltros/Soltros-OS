@@ -10,20 +10,20 @@ log() {
 trap '[[ $BASH_COMMAND != echo* ]] && [[ $BASH_COMMAND != log* ]] && echo "+ $BASH_COMMAND"' DEBUG
 
 function echo_group() {
-    local WHAT
-    WHAT="$(
-        basename "$1" .sh |
-            tr "-" " " |
-            tr "_" " "
-    )"
-    echo "::group:: == ${WHAT^^} =="
-    "$1"
-    echo "::endgroup::"
+  local WHAT
+  WHAT="$(
+    basename "$1" .sh |
+        tr "-" " " |
+        tr "_" " "
+  )"
+  echo "::group:: == ${WHAT^^} =="
+  "$1"
+  echo "::endgroup::"
 }
 
 log "Starting SoltrOS build process"
 
-log "Building for base image: $BASE_IMAGE"\
+log "Building for base image: $BASE_IMAGE"
 
 log "Enable container signing"
 echo_group /ctx/signing.sh
@@ -48,6 +48,9 @@ echo_group /ctx/gaming.sh
 
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
+
+log "Enabling systemd services"
+echo_group /ctx/enable-services.sh
 
 log "Build InitramFS"
 echo_group /ctx/build-initramfs.sh

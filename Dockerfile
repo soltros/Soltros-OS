@@ -52,33 +52,9 @@ RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 # Ensure Distrobox is installed
 RUN dnf5 install -y distrobox
 
-# Install dnf5 plugins and setup CachyOS kernel repo
+# Install dnf5 plugins
 RUN dnf5 -y install dnf5-plugins
-RUN dnf5 -y config-manager setopt "*cachyos*".priority=1
 
-# Remove default kernel packages and install CachyOS kernel
-RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
-    echo "Installing CachyOS kernel..." && \
-    if dnf5 -y install kernel-cachyos; then \
-        echo "CachyOS kernel installed successfully"; \
-        echo "Installed CachyOS kernel packages:"; \
-        dnf5 list installed | grep cachyos || true; \
-    else \
-        echo "Failed to install kernel-cachyos, trying LTS version..."; \
-        if dnf5 -y install kernel-cachyos-lts; then \
-            echo "CachyOS LTS kernel installed successfully"; \
-        else \
-            echo "All CachyOS kernel installation attempts failed"; \
-            echo "Available CachyOS packages:"; \
-            dnf5 search kernel-cachyos || true; \
-            echo "Falling back to default kernel installation"; \
-            dnf5 -y install kernel kernel-core kernel-modules || true; \
-        fi; \
-    fi && \
-    echo "Final kernel verification:" && \
-    dnf5 list installed | grep -E "(kernel|cachyos)" || true && \
-    echo "Available kernel modules:" && \
-    ls -la /usr/lib/modules/ || true
 
 # Get rid of Plymouth
 RUN dnf5 remove plymouth* -y && \
@@ -103,7 +79,6 @@ RUN for i in {1..3}; do \
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
-ENV KERNEL_FLAVOR=cachyos
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh

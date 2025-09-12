@@ -81,20 +81,9 @@ RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modu
     echo "Available kernel modules:" && \
     ls -la /usr/lib/modules/ || true
 
-# Get rid of Plymouth
-RUN dnf5 remove plymouth* -y && \
-    systemctl disable plymouth-start.service plymouth-read-write.service plymouth-quit.service plymouth-quit-wait.service plymouth-reboot.service plymouth-kexec.service plymouth-halt.service plymouth-poweroff.service 2>/dev/null || true && \
-    rm -rf /usr/share/plymouth /usr/lib/plymouth /etc/plymouth && \
-    rm -f /usr/lib/systemd/system/plymouth* /usr/lib/systemd/system/*/plymouth* && \
-    rm -f /usr/bin/plymouth /usr/sbin/plymouthd && \
-    sed -i 's/rhgb quiet//' /etc/default/grub 2>/dev/null || true && \
-    sed -i 's/splash//' /etc/default/grub 2>/dev/null || true && \
-    sed -i '/plymouth/d' /etc/dracut.conf.d/* 2>/dev/null || true && \
-    echo 'omit_dracutmodules+=" plymouth "' > /etc/dracut.conf.d/99-disable-plymouth.conf && \
-    grub2-mkconfig -o /boot/grub2/grub.cfg 2>/dev/null || true && \
-    dracut -f 2>/dev/null || true && \
-    dnf5 autoremove -y && \
-    dnf5 clean all
+# Enable custom Plymouth theme    
+RUN plymouth-set-default-theme -R linux-penguin \
+    && echo "Set 'linux-penguin' as default Plymouth theme and rebuilt initramfs"
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \

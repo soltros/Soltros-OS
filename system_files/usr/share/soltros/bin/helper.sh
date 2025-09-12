@@ -209,40 +209,10 @@ add_nixmanager() {
 
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
-    
-    local remote_url="https://raw.githubusercontent.com/soltros/Soltros-OS/refs/heads/main/resources/kde-plasma-settings.tar.gz"
-    local temp_archive="/tmp/kde-plasma-settings.tar.gz"
-    
-    print_info "Downloading KDE settings from SoltrOS repository..."
-    if ! curl --retry 3 -sL "$remote_url" -o "$temp_archive"; then
-        print_error "Failed to download settings archive"
-        return 1
-    fi
-    
-    print_warning "This will overwrite your current KDE settings!"
-    read -p "Continue? (y/N): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        print_info "Restore cancelled"
-        rm -f "$temp_archive"
-        return 0
-    fi
-    
-    print_info "Stopping Plasma shell..."
-    killall plasmashell 2>/dev/null || true
-    
-    print_info "Extracting KDE settings..."
-    if tar -xzf "$temp_archive" -C ~ --overwrite; then
-        print_success "Settings extracted successfully"
-        print_info "Restored files:"
-        print_info "  • Icon theme (kdeglobals, kdedefaults/kdeglobals)"
-        print_info "  • Panel & kickoff configuration (plasma-org.kde.plasma.desktop-appletsrc)"
-        print_info "  • Plasma shell settings (plasmashellrc, plasmarc)"
-        print_info "  • Window manager settings (kwinrc)"
-        print_info "  • Global shortcuts (kglobalshortcutsrc)"
-        print_info "  • Kvantum theme config (kvantum.kvconfig)"
+    sh /usr/share/soltros/bin/kde-settings-restore.sh; then
+        echo "✓ running theme restoration script." 
     else
-        print_error "Failed to extract settings"
+        print_error "Failed to run theme restoration script"
         rm -f "$temp_archive"
         return 1
     fi

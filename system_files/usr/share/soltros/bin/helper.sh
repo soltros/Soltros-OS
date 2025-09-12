@@ -209,13 +209,14 @@ add_nixmanager() {
 
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
-    sh /usr/share/soltros/bin/kde-settings-restore.sh; then
+    if sh /usr/share/soltros/bin/kde-settings-restore.sh; then
         echo "✓ running theme restoration script." 
     else
         print_error "Failed to run theme restoration script"
         rm -f "$temp_archive"
         return 1
     fi
+}
 
     print_info "Applying Papirus-Dark icon theme..."
     kwriteconfig5 --file kdeglobals --group Icons --key Theme Papirus-Dark

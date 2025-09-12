@@ -1,8 +1,10 @@
+# **NOTICE: Suspend/resume issue has been patched out. It is now fixed! No more freezing after resume!**
+
 # SoltrOS - Desktop Edition
 
 ![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)
 
-A gaming-optimized immutable Linux distribution based on Fedora Kinoite's image, featuring MacBook hardware support, gaming enhancements, the KDE Plasma desktop environment, and developer-friendly tools.
+A gaming-optimized immutable Linux distribution based on Fedora Kinoite's image, featuring MacBook hardware support, the CachyOS kernel, gaming performance enhancements, the KDE Plasma desktop environment, and developer-friendly tools.
 
 *Inspired by [VeneOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 
@@ -26,13 +28,6 @@ the ISO is verified and safe to use.
 
 ```bash
 sudo bootc switch ghcr.io/soltros/soltros-os:latest
-sudo systemctl reboot
-```
-
-Or, for Gnome
-
-```bash
-sudo bootc switch ghcr.io/soltros/soltros-os-gnome:latest
 sudo systemctl reboot
 ```
 

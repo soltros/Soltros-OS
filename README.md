@@ -1,5 +1,3 @@
-# **NOTICE: Suspend/resume issue has been patched out. It is now fixed! No more freezing after resume!**
-
 # SoltrOS - Desktop Edition
 
 ![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)

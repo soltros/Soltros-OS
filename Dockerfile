@@ -81,10 +81,6 @@ RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modu
     echo "Available kernel modules:" && \
     ls -la /usr/lib/modules/ || true
 
-# Enable custom Plymouth theme    
-RUN plymouth-set-default-theme -R linux-penguin \
-    && echo "Set 'linux-penguin' as default Plymouth theme and rebuilt initramfs"
-
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \
     curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \

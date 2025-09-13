@@ -1,10 +1,10 @@
 NAME="SoltrOS"
-VERSION="1 (Electric Blue)"
+VERSION="Rolling Rocket"
 ID=fedora
 ID_LIKE=fedora
-VERSION_ID=42
-PLATFORM_ID="platform:f42"
-PRETTY_NAME="SoltrOS 1 (Electric Blue)"
+VERSION_ID=Rawhide
+PLATFORM_ID="platform:f44"
+PRETTY_NAME="SoltrOS Rolling Rocket"
 ANSI_COLOR="0;36"
 CPE_NAME="cpe:/o:fedoraproject:fedora:42"
 HOME_URL="https://github.com/soltros/soltros-os"

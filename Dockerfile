@@ -1,6 +1,6 @@
 # Set base image and tag
 ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
-ARG TAG_VERSION=42
+ARG TAG_VERSION=rawhide
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)
@@ -31,13 +31,13 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 # EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
 # These override any conflicting labels and force correct distro detection
 LABEL ostree.linux="fedora" \
-    org.opencontainers.image.version="42" \
+    org.opencontainers.image.version="Rawhide" \
     distro.name="fedora" \
-    distro.version="42"
+    distro.version="Rawhide"
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready Atomic KDE image with MacBook support" \
+    org.opencontainers.image.description="Gaming-ready, rolling Atomic KDE image with MacBook support" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding

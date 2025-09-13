@@ -208,59 +208,11 @@ add_nixmanager() {
 }
 
 apply_soltros_look() {
-    print_header "Applying the official SoltrOS look."
-    
-    # Stop the Plasma shell before restoring to prevent conflicts
-    killall plasmashell 2>/dev/null || true
-
-    # Check if the backup directory exists
-    BACKUP_DIR="/usr/share/soltros/settings/soltros-look/"
-    if [ ! -d "${BACKUP_DIR}" ]; then
-        print_error "Error: Backup directory not found at ${BACKUP_DIR}"
-        return 1
-    fi
-
-    echo "Restoring KDE Plasma settings from: ${BACKUP_DIR}"
-
-    # --- Copy Configuration Files ---
-    if ! cp -a "${BACKUP_DIR}/configs/." "${HOME}/.config/"; then
-        print_error "Failed to copy configuration files."
-        return 1
-    fi
-
-    # --- Copy Theme and Resource Files ---
-    if ! cp -a "${BACKUP_DIR}/share/." "${HOME}/.local/share/"; then
-        print_error "Failed to copy theme and resource files."
-        return 1
-    fi
-       
-    # Restart the Plasma shell to apply changes
-    kstart5 plasmashell
-    echo "Restore complete! You may need to log out and back in to see all changes."
-    return 0
-}
-
-    print_info "Applying Papirus-Dark icon theme..."
-    kwriteconfig5 --file kdeglobals --group Icons --key Theme Papirus-Dark
-
-    print_info "Applying Materia Dark color scheme..."
-    kwriteconfig5 --file kdeglobals --group General --key ColorScheme "Materia Dark"
-
-    print_info "Setting SDDM login theme to 'breeze'..."
-    if grep -q "^\[Theme\]" /etc/sddm.conf.d/kde_settings.conf 2>/dev/null; then
-        sudo sed -i '/^\[Theme\]/,/^\[.*\]/ {/^Current=/d}; /^\[Theme\]/a Current=breeze' /etc/sddm.conf.d/kde_settings.conf
+    if echo "To apply the theme, run the theme script."; then
+        echo "sh /usr/share/soltros/bin/soltros-os-theme.sh"
     else
-        echo -e "\n[Theme]\nCurrent=breeze" | sudo tee -a /etc/sddm.conf.d/kde_settings.conf > /dev/null
+        echo "Run helper to acess the help script."
     fi
-
-    print_info "Restarting Plasma shell..."
-    nohup plasmashell &>/dev/null &
-    
-    # Cleanup
-    rm -f "$temp_archive"
-    
-    print_success "SoltrOS look applied!"
-    print_info "Some changes may require logging out and back in to take full effect"
 }
 
 change_to_fish() {

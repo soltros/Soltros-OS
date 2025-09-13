@@ -209,13 +209,35 @@ add_nixmanager() {
 
 apply_soltros_look() {
     print_header "Applying the official SoltrOS look."
-    if sh /usr/share/soltros/bin/kde-settings-restore.sh; then
-        echo "✓ running theme restoration script." 
-    else
-        print_error "Failed to run theme restoration script"
-        rm -f "$temp_archive"
+    
+    # Stop the Plasma shell before restoring to prevent conflicts
+    killall plasmashell 2>/dev/null || true
+
+    # Check if the backup directory exists
+    BACKUP_DIR="/usr/share/soltros/settings/soltros-look/"
+    if [ ! -d "${BACKUP_DIR}" ]; then
+        print_error "Error: Backup directory not found at ${BACKUP_DIR}"
         return 1
     fi
+
+    echo "Restoring KDE Plasma settings from: ${BACKUP_DIR}"
+
+    # --- Copy Configuration Files ---
+    if ! cp -a "${BACKUP_DIR}/configs/." "${HOME}/.config/"; then
+        print_error "Failed to copy configuration files."
+        return 1
+    fi
+
+    # --- Copy Theme and Resource Files ---
+    if ! cp -a "${BACKUP_DIR}/share/." "${HOME}/.local/share/"; then
+        print_error "Failed to copy theme and resource files."
+        return 1
+    fi
+       
+    # Restart the Plasma shell to apply changes
+    kstart5 plasmashell
+    echo "Restore complete! You may need to log out and back in to see all changes."
+    return 0
 }
 
     print_info "Applying Papirus-Dark icon theme..."

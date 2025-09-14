@@ -2,7 +2,7 @@
 
 ![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)
 
-A gaming-optimized. rolling immutable Linux distribution based on Fedora Rawhide Kinoite's image, featuring MacBook hardware support, the latest kernel, gaming performance enhancements, the KDE Plasma desktop environment, and developer-friendly tools.
+A gaming-optimized, rolling immutable Linux distribution based on Fedora Rawhide Kinoite's image, featuring MacBook hardware support, the latest kernel, gaming performance enhancements, the KDE Plasma desktop environment, and developer-friendly tools.
 
 *Inspired by [VeneOS](https://github.com/Venefilyn/veneos) - bringing together the best of gaming and productivity.*
 

@@ -134,7 +134,7 @@ install_package() {
     
     echo -e "${BLUE}Installing package: $package${NC}"
     
-    if nix profile add "/var/home/soltros/.config/nixpkgs-soltros#$package"; then
+    if nix profile add "$HOME/.config/nixpkgs-soltros#$package"; then
         echo -e "${GREEN}✓ Successfully installed: $package${NC}"
         update_desktop_shortcuts
     else
@@ -157,7 +157,7 @@ remove_package() {
     echo -e "${BLUE}Removing package: $package${NC}"
 
     # Remove package by referencing local flake attribute path
-    if nix profile remove "/var/home/soltros/.config/nixpkgs-soltros#$package"; then
+    if nix profile remove "$HOME/.config/nixpkgs-soltros#$package"; then
         echo -e "${GREEN}✓ Successfully removed: $package${NC}"
         update_desktop_shortcuts
     else

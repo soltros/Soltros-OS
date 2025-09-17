@@ -1,6 +1,6 @@
 # Set base image and tag
 ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
-ARG TAG_VERSION=rawhide
+ARG TAG_VERSION=latest
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 
 # Stage 1: context for scripts (not included in final image)
@@ -58,28 +58,28 @@ RUN dnf5 -y install dnf5-plugins
 #RUN dnf5 -y config-manager setopt "*cachyos*".priority=1
 
 # Remove default kernel packages and install CachyOS kernel
-#RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
-#    echo "Installing CachyOS kernel..." && \
-#    if dnf5 -y install kernel-cachyos; then \
-#        echo "CachyOS kernel installed successfully"; \
-#        echo "Installed CachyOS kernel packages:"; \
-#        dnf5 list installed | grep cachyos || true; \
-#    else \
-#        echo "Failed to install kernel-cachyos, trying LTS version..."; \
-#        if dnf5 -y install kernel-cachyos-lts; then \
-#            echo "CachyOS LTS kernel installed successfully"; \
-#        else \
-#            echo "All CachyOS kernel installation attempts failed"; \
-#            echo "Available CachyOS packages:"; \
-#            dnf5 search kernel-cachyos || true; \
-#            echo "Falling back to default kernel installation"; \
-#            dnf5 -y install kernel kernel-core kernel-modules || true; \
-#        fi; \
-#    fi && \
-#    echo "Final kernel verification:" && \
-#    dnf5 list installed | grep -E "(kernel|cachyos)" || true && \
-#    echo "Available kernel modules:" && \
-#    ls -la /usr/lib/modules/ || true
+RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
+    echo "Installing CachyOS kernel..." && \
+    if dnf5 -y install kernel-cachyos; then \
+        echo "CachyOS kernel installed successfully"; \
+        echo "Installed CachyOS kernel packages:"; \
+        dnf5 list installed | grep cachyos || true; \
+    else \
+        echo "Failed to install kernel-cachyos, trying LTS version..."; \
+        if dnf5 -y install kernel-cachyos-lts; then \
+            echo "CachyOS LTS kernel installed successfully"; \
+        else \
+            echo "All CachyOS kernel installation attempts failed"; \
+            echo "Available CachyOS packages:"; \
+            dnf5 search kernel-cachyos || true; \
+            echo "Falling back to default kernel installation"; \
+            dnf5 -y install kernel kernel-core kernel-modules || true; \
+        fi; \
+    fi && \
+    echo "Final kernel verification:" && \
+    dnf5 list installed | grep -E "(kernel|cachyos)" || true && \
+    echo "Available kernel modules:" && \
+    ls -la /usr/lib/modules/ || true
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \

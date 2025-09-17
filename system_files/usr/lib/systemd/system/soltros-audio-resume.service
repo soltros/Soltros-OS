@@ -1,10 +1,10 @@
 [Unit]
-Description=Restart WirePlumber on resume from sleep
+Description=Restart Pipewire on resume from sleep
 After=suspend.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/systemctl --user restart wireplumber.service
+ExecStart=/usr/bin/systemctl --user restart pipewire.service
 
 [Install]
 WantedBy=suspend.target

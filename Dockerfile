@@ -27,7 +27,6 @@ RUN chmod +x \
     /ctx/build-initramfs.sh \
     /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
-    /ctx/pipewire-replace.sh \
     /ctx/desktop-defaults.sh
 
 # Stage 2: final image

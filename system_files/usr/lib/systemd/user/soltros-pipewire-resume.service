@@ -1,0 +1,6 @@
+[Unit]
+Description=Restart PipeWire after system resume for this user
+
+[Service]
+Type=oneshot
+ExecStart=systemctl --user restart pipewire.service

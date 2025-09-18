@@ -32,6 +32,8 @@ LAYERED_PACKAGES=(
     pipewire-pulse
     wireplumber
     nebula
+    dbus-tools
+    alsa-utils
     syslinux
     pipewire-alsa
     deja-dup

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch Soltros resume stamp and restart PipeWire on change
+
+[Path]
+PathChanged=/run/soltros/last_resume
+Unit=soltros-pipewire-resume.service
+
+[Install]
+WantedBy=default.target

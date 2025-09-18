@@ -1,0 +1,13 @@
+[Unit]
+Description=Soltros: fix audio enumeration after resume (udev trigger; no user restarts)
+After=multi-user.target
+Wants=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/soltros/soltros-resume-monitor.sh
+Restart=always
+RestartSec=2s
+
+[Install]
+WantedBy=multi-user.target

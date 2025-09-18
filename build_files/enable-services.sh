@@ -10,3 +10,6 @@ log() {
 
 log "Enabling Tailscale"
 systemctl enable tailscaled.service
+
+log "Enable SDDM failsafe"
+systemctl enable -f sddm.service

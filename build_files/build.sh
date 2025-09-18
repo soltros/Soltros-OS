@@ -49,6 +49,9 @@ echo_group /ctx/gaming.sh
 log "Apply system overrides"
 echo_group /ctx/overrides.sh
 
+log "Replace Pipewire with Pulseaudio"
+echo_group /ctx/pipewire-replace.sh
+
 log "Enabling systemd services"
 echo_group /ctx/enable-services.sh
 

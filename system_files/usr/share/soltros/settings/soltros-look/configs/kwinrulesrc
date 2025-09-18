@@ -1,0 +1,17 @@
+[42d7e1c7-f3a2-4c4a-9d96-0dcec0b3ad2e]
+desktopfilerule=4
+
+[536693cf-a701-4658-9cac-ae034db6a097]
+Description=Application settings for waterfox-default
+desktopfile=waterfox
+desktopfilerule=2
+wmclass=waterfox waterfox-default
+wmclasscomplete=true
+wmclassmatch=1
+
+[General]
+count=1
+rules=536693cf-a701-4658-9cac-ae034db6a097
+
+[c39c2a9c-22a4-4111-ab52-0123224dabaa]
+desktopfilerule=4

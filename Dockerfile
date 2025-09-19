@@ -27,7 +27,7 @@ RUN chmod +x \
     /ctx/build-initramfs.sh \
     /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
-    /ctx/audio-resume.sh \
+    /ctx/user-audio-resume.sh \
     /ctx/desktop-defaults.sh
 
 # Stage 2: final image

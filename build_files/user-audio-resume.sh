@@ -43,4 +43,7 @@ WantedBy=default.target
 EOF
 
 # 3) Enable for ALL users (present + future) without touching /etc/skel
-ln -sf /usr/lib/systemd/user/sol
+ln -sf /usr/lib/systemd/user/soltros-user-resume-watcher.service \
+       /etc/systemd/user/default.target.wants/soltros-user-resume-watcher.service
+
+log "[OK] Installed global per-user resume watcher (no root --user calls)."

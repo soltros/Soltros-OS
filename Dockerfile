@@ -1,6 +1,6 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
-ARG TAG_VERSION=43
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite-nightly
+ARG TAG_VERSION=42
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
 LABEL org.opencontainers.image.base.name="${BASE_IMAGE}" \
@@ -27,7 +27,6 @@ RUN chmod +x \
     /ctx/build-initramfs.sh \
     /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
-    /ctx/kde-audio-fixes.sh \
     /ctx/desktop-defaults.sh
 
 # Stage 2: final image
@@ -36,9 +35,9 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 # EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
 # These override any conflicting labels and force correct distro detection
 LABEL ostree.linux="fedora" \
-    org.opencontainers.image.version="43" \
+    org.opencontainers.image.version="42" \
     distro.name="fedora" \
-    distro.version="43"
+    distro.version="42"
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \

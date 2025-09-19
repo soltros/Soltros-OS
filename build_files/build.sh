@@ -40,9 +40,6 @@ echo_group /ctx/kde-desktop.sh
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh
 
-log "Run KDE audio fixes"
-echo_group /ctx/kde-audio-fixes.sh
-
 log "Setup desktop defaults"
 echo_group /ctx/desktop-defaults.sh
 

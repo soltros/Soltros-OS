@@ -40,6 +40,9 @@ echo_group /ctx/kde-desktop.sh
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh
 
+log "Install global PipeWire resume workaround"
+echo_group /ctx/user-audio-resume.sh
+
 log "Setup desktop defaults"
 echo_group /ctx/desktop-defaults.sh
 

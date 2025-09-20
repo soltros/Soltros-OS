@@ -6,9 +6,12 @@ FROM ${BASE_IMAGE}:${TAG_VERSION}
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
+COPY build_files/selinux/selinux-relabel.sh /usr/libexec/soltros/selinux-relabel.sh
+COPY build_files/selinux/soltros-selinux-autorelabel.service /usr/lib/systemd/system/soltros-selinux-autorelabel.service
 COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
 RUN chmod 644 /etc/pki/containers/soltros.pub
+
 
 # Change perms
 RUN chmod +x \
@@ -23,6 +26,7 @@ RUN chmod +x \
     /ctx/build-initramfs.sh \
     /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
+    /ctx/selinux-relabel.sh \
     /ctx/desktop-defaults.sh
 
 # Stage 2: final image
@@ -66,6 +70,22 @@ RUN set -eux; \
     dnf -y install tailscale && \
     dnf -y clean all
 
+# --- SELinux: make sure required tooling is present ---
+RUN dnf -y install \
+      selinux-policy \
+      selinux-policy-targeted \
+      policycoreutils \
+      policycoreutils-python-utils \
+      libselinux-utils \
+      checkpolicy \
+      setools-console \
+    && dnf -y clean all
+
+# --- One-shot unit to trigger autorelabel on first boot after rebase ---
+
+RUN chmod 0755 /usr/libexec/soltros/selinux-relabel.sh && \
+    systemctl enable soltros-selinux-autorelabel.service
+
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
@@ -73,6 +93,7 @@ RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
 
 # Ensure bootc compatibility
-LABEL ostree.bootable="1"
+LABEL containers.bootc="1" \
+      ostree.bootable="1"
 RUN ostree container commit
 

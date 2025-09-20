@@ -1,0 +1,13 @@
+[Unit]
+Description=Trigger SELinux autorelabel after cross-distro rebase (one-shot)
+ConditionSecurity=selinux
+ConditionPathExists=!/etc/soltros/.selinux_relabel_done
+After=ostree-finalize-staged.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/soltros/selinux-relabel.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

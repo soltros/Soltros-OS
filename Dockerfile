@@ -51,9 +51,6 @@ RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 # Ensure Distrobox is installed
 RUN dnf install -y distrobox
 
-# Install dnf plugins
-RUN dnf -y install dnf-plugins
-
 # EPEL + RPM Fusion for EL
 ARG EL_MAJOR=10
 RUN set -eux; \

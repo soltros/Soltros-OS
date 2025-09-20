@@ -78,11 +78,6 @@ RUN dnf -y install \
       setools-console \
     && dnf -y clean all
 
-# --- One-shot unit to trigger autorelabel on first boot after rebase ---
-
-RUN chmod 0755 /usr/libexec/soltros/selinux-relabel.sh && \
-    systemctl enable soltros-selinux-autorelabel.service
-
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \

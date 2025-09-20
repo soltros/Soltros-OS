@@ -58,7 +58,7 @@ jobs:
       ARCH: x86_64
       IMAGE_NAME: soltros-os_lts
       IMAGE_REPO: ghcr.io/soltros
-      IMAGE_TAG: alma-lts
+      IMAGE_TAG: latest
       VERSION: 10
       VARIANT: AlmaKDE
     steps:

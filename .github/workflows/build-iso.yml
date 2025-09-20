@@ -59,8 +59,8 @@ jobs:
       IMAGE_NAME: soltros-os_lts
       IMAGE_REPO: ghcr.io/soltros
       IMAGE_TAG: latest
-      VERSION: 10
-      VARIANT: AlmaKDE
+      VERSION: 42
+      VARIANT: Kinoite
     steps:
       - name: Checkout Repository (LTS branch)
         uses: actions/checkout@v5

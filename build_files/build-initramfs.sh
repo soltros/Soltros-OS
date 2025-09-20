@@ -7,7 +7,7 @@ trap 'echo "::endgroup::"' EXIT
 
 # Debug: List all installed kernel packages
 echo "Debug: Listing all installed kernel packages:"
-dnf5 list installed | grep -E "(kernel|cachyos)" || true
+dnf list installed | grep -E "(kernel|cachyos)" || true
 
 # Debug: List available modules
 echo "Debug: Available kernel modules:"
@@ -28,7 +28,7 @@ if [[ "${KERNEL_FLAVOR:-}" == "cachyos" ]]; then
     # Try different CachyOS kernel package names
     for pkg in "kernel-cachyos" "kernel-cachyos-lts" "kernel-cachyos-rt" "kernel-cachyos-server" "kernel"; do
         echo "Trying package: $pkg"
-        QUALIFIED_KERNEL="$(dnf5 repoquery --installed --queryformat='%{evr}.%{arch}' "$pkg" 2>/dev/null | head -1 || echo "")"
+        QUALIFIED_KERNEL="$(dnf repoquery --installed --queryformat='%{evr}.%{arch}' "$pkg" 2>/dev/null | head -1 || echo "")"
         if [[ -n "${QUALIFIED_KERNEL}" ]]; then
             echo "Found kernel via package $pkg: ${QUALIFIED_KERNEL}"
             break
@@ -38,7 +38,7 @@ fi
 
 # Method 2: If still not found, try to detect from modules directory
 if [[ -z "${QUALIFIED_KERNEL}" ]]; then
-    echo "Kernel not found via dnf5, attempting to detect from modules directory..."
+    echo "Kernel not found via dnf, attempting to detect from modules directory..."
     
     # Look for kernel directories in /usr/lib/modules/
     if [[ -d "/usr/lib/modules" ]]; then
@@ -61,14 +61,14 @@ fi
 # Method 3: If still not found, try to find any kernel
 if [[ -z "${QUALIFIED_KERNEL}" ]]; then
     echo "Still no kernel found, trying broader search..."
-    QUALIFIED_KERNEL="$(dnf5 repoquery --installed --queryformat='%{evr}.%{arch}' "*kernel*" | head -1 || echo "")"
+    QUALIFIED_KERNEL="$(dnf repoquery --installed --queryformat='%{evr}.%{arch}' "*kernel*" | head -1 || echo "")"
 fi
 
 # Validate we found a kernel
 if [[ -z "${QUALIFIED_KERNEL}" ]]; then
     echo "ERROR: No installed kernel found!"
     echo "Available kernel packages:"
-    dnf5 list installed | grep -E "(kernel|cachyos)" || true
+    dnf list installed | grep -E "(kernel|cachyos)" || true
     echo "Available module directories:"
     ls -la /usr/lib/modules/ || true
     

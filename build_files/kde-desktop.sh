@@ -11,9 +11,9 @@ log "Installing KDE Desktop Environment with LightDM"
 
 # Install KDE desktop groups
 log "Installing KDE Desktop Environment"
-dnf5 group install --skip-broken "kde-apps" -y
-dnf5 group install --skip-broken "kde-media" -y
-dnf5 group install --skip-broken "kde-desktop" -y
+dnf group install --skip-broken "kde-apps" -y
+dnf group install --skip-broken "kde-media" -y
+dnf group install --skip-broken "kde-desktop" -y
 
 # Enabling Flatpak
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
@@ -32,8 +32,8 @@ grub2-mkconfig -o /boot/grub2/grub.cfg 2>/dev/null || true
 
 # Perform final cleanup
 log "Performing final cleanup"
-dnf5 autoremove -y
-dnf5 clean all
+dnf autoremove -y
+dnf clean all
 
 log "KDE Desktop Environment with SDDM installation complete"
 log "System will boot to SDDM login screen with KDE desktop"

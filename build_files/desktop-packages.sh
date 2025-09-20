@@ -134,7 +134,7 @@ LAYERED_PACKAGES=(
     wireplumber
 )
 
-dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
+dnf install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
 
 #Enabling various services
 systemctl enable pipewire.service || true
@@ -143,4 +143,4 @@ systemctl enable wireplumber.service || true
 
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"
-dnf5 remove -y firefox firefox-* || true
+dnf remove -y firefox firefox-* || true

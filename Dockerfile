@@ -49,10 +49,10 @@ COPY repo_files/ /etc/yum.repos.d/
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 # Ensure Distrobox is installed
-RUN dnf5 install -y distrobox
+RUN dnf install -y distrobox
 
-# Install dnf5 plugins
-RUN dnf5 -y install dnf5-plugins
+# Install dnf plugins
+RUN dnf -y install dnf-plugins
 
 # EPEL + RPM Fusion for EL
 ARG EL_MAJOR=10

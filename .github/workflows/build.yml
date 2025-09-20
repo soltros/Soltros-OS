@@ -1,4 +1,4 @@
-name: Build and Push Soltros Images
+name: Build and Push SoltrOS Images
 
 on:
   pull_request:
@@ -26,9 +26,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Soltros OS
-  # ─────────────────────────────────────────────────────────────────────────────
   build_push:
     name: Build and push SoltrOS image
     runs-on: ubuntu-24.04
@@ -40,10 +37,10 @@ jobs:
 
     steps:
       - name: Prepare environment
+        shell: bash
         run: |
-          # Lowercase the image uri
-          echo "IMAGE_REGISTRY=${IMAGE_REGISTRY,,}" >> ${GITHUB_ENV}
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+          echo "IMAGE_REGISTRY=$(echo "${IMAGE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
       - name: Checkout source
         uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4
@@ -138,9 +135,6 @@ jobs:
           IMAGE_FULL="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
           cosign sign -y --key env://COSIGN_PRIVATE_KEY $IMAGE_FULL@${{ env.DIGEST }}
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Soltros OS LTS
-  # ─────────────────────────────────────────────────────────────────────────────
   build_push_alma:
     name: Build and push SoltrOS LTS (Alma) image
     runs-on: ubuntu-24.04
@@ -152,13 +146,11 @@ jobs:
 
     steps:
       - name: Prepare environment
+        shell: bash
         run: |
-          echo "IMAGE_REGISTRY=${{ env.IMAGE_REGISTRY,, }}" >> ${GITHUB_ENV}
-          echo "IMAGE_NAME=soltros-os_lts" >> ${GITHUB_ENV}
-          echo "DEFAULT_TAG=alma-lts" >> ${GITHUB_ENV}
-          echo "EL_MAJOR=10" >> ${GITHUB_ENV}
+          echo "IMAGE_REGISTRY=$(echo "${IMAGE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=soltros-os_lts" >> "$GITHUB_ENV"
 
-      # Checkout the Alma LTS branch contents while the workflow runs on 'main'
       - name: Checkout Alma branch
         uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4
         with:
@@ -177,24 +169,23 @@ jobs:
         run: |
           echo "date=$(date -u +%Y\-%m\-%d\T%H\:%M\:%S\Z)" >> $GITHUB_OUTPUT
 
-      - name: Image Metadata (Alma LTS)
-        id: metadata_alma
+      - name: Image Metadata (Alma)
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
+        id: metadata_alma
         with:
           images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ env.DEFAULT_TAG }}
             type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
-            type=raw,value=alma-kde-el${{ env.EL_MAJOR }}
             type=raw,value={{date 'YYYYMMDD'}}
             type=sha,enable=${{ github.event_name == 'pull_request' }}
             type=ref,event=pr
           labels: |
             org.opencontainers.image.created=${{ steps.date_alma.outputs.date }}
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.description=SoltrOS LTS based on AlmaLinux Atomic KDE
-            org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/soltros-os
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/soltros-os
             org.opencontainers.image.vendor=${{ github.repository_owner }}
             org.opencontainers.image.version=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
             containers.bootc=1
@@ -209,7 +200,7 @@ jobs:
             ./images/alma-kde/Containerfile
           build-args: |
             BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
-            TAG_VERSION=${{ env.EL_MAJOR }}
+            TAG_VERSION=10
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ steps.metadata_alma.outputs.tags }}
           labels: ${{ steps.metadata_alma.outputs.labels }}
@@ -223,10 +214,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push To GHCR (Alma LTS)
-        id: push_alma
+      - name: Push To GHCR (Alma)
         uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        id: push_alma
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
@@ -241,7 +232,7 @@ jobs:
         uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
-      - name: Sign Alma LTS image
+      - name: Sign Alma image
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
           DIGEST: ${{ steps.push_alma.outputs.digest }}

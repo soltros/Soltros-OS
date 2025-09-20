@@ -1,35 +1,6 @@
----
-name: Build and Push SoltrOS Image
-on:
-  pull_request:
-    branches:
-      - main
-  schedule:
-    - cron: '0 6 * * 0'  # 6am UTC every Sunday
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**/README.md'
-  workflow_dispatch:
-
-env:
-  IMAGE_DESC: "Gaming-optimized immutable Linux distribution based on Fedora with MacBook support, gaming enhancements, and CachyOS kernel performance"
-  IMAGE_KEYWORDS: "bootc,ublue,universal-blue,gaming,cachyos,macbook,fedora,immutable"
-  IMAGE_LOGO_URL: "https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
-  IMAGE_NAME: "soltros-os"
-  IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
-  DEFAULT_TAG: "latest"
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
-
-jobs:
-  build_push:
-    name: Build and push SoltrOS image
+  build_push_alma:
+    name: Build and push SoltrOS LTS (Alma) image
     runs-on: ubuntu-24.04
-
     permissions:
       contents: read
       packages: write
@@ -38,12 +9,16 @@ jobs:
     steps:
       - name: Prepare environment
         run: |
-          # Lowercase the image uri
-          echo "IMAGE_REGISTRY=${IMAGE_REGISTRY,,}" >> ${GITHUB_ENV}
-          echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+          echo "IMAGE_REGISTRY=${{ env.IMAGE_REGISTRY,, }}" >> ${GITHUB_ENV}
+          echo "IMAGE_NAME=soltros-os_lts" >> ${GITHUB_ENV}
+          echo "DEFAULT_TAG=alma-lts" >> ${GITHUB_ENV}
+          echo "EL_MAJOR=10" >> ${GITHUB_ENV}
 
-      - name: Checkout source
-        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4
+      # ✅ Use your renamed LTS branch
+      - name: Checkout Alma branch
+        uses: actions/checkout@v4
+        with:
+          ref: soltros-os-lts
 
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@517622d6452028f266b7ba4cc9a123b5f58a6b53 # v7
@@ -55,80 +30,58 @@ jobs:
 
       - name: Get current date
         id: date
-        run: |
-          echo "date=$(date -u +%Y\-%m\-%d\T%H\:%M\:%S\Z)" >> $GITHUB_OUTPUT
+        run: echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_OUTPUT
 
-      - name: Image Metadata
-        uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
+      - name: Image Metadata (Alma LTS)
         id: metadata
+        uses: docker/metadata-action@v5
         with:
+          images: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ env.DEFAULT_TAG }}
             type=raw,value=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
+            type=raw,value=alma-kde-el${{ env.EL_MAJOR }}
             type=raw,value={{date 'YYYYMMDD'}}
             type=sha,enable=${{ github.event_name == 'pull_request' }}
             type=ref,event=pr
           labels: |
-            io.artifacthub.package.readme-url=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/refs/heads/main/README.md
             org.opencontainers.image.created=${{ steps.date.outputs.date }}
-            org.opencontainers.image.description=${{ env.IMAGE_DESC }}
-            org.opencontainers.image.documentation=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/refs/heads/main/README.md
-            org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/blob/main/Dockerfile
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=SoltrOS LTS based on AlmaLinux Atomic KDE
+            org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/soltros-os
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.vendor=${{ github.repository_owner }}
             org.opencontainers.image.version=${{ env.DEFAULT_TAG }}.{{date 'YYYYMMDD'}}
-            io.artifacthub.package.deprecated=false
-            io.artifacthub.package.keywords=${{ env.IMAGE_KEYWORDS }}
-            io.artifacthub.package.license=GPL-3.0
-            io.artifacthub.package.logo-url=${{ env.IMAGE_LOGO_URL }}
-            io.artifacthub.package.prerelease=false
             containers.bootc=1
           sep-tags: " "
           sep-annotations: " "
 
-      - name: Build SoltrOS Image
+      - name: Build SoltrOS LTS (Alma) Image
         id: build_image
-        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
+        uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
-            ./Dockerfile
+            ./images/alma-kde/Containerfile
+          build-args: |
+            BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
+            TAG_VERSION=${{ env.EL_MAJOR }}
           image: ${{ env.IMAGE_NAME }}
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           oci: false
 
-      # Rechunker disabled temporarily due to image reference issues
-      # - name: Run Rechunker
-      #   id: rechunk
-      #   uses: hhd-dev/rechunk@f153348d8100c1f504dec435460a0d7baf11a9d2 # v1.1.1
-      #   with:
-      #     rechunk: 'ghcr.io/hhd-dev/rechunk:v1.0.1'
-      #     ref: "${{ steps.build_image.outputs.image }}:${{ env.DEFAULT_TAG }}"
-      #     prev-ref: "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}"
-      #     skip_compression: true
-      #     labels: ${{ steps.metadata.outputs.labels }}
-
-      # - name: Load rechunked image in podman and tag
-      #   run: |
-      #     IMAGE=$(podman pull ${{ steps.rechunk.outputs.ref }})
-      #     sudo rm -rf ${{ steps.rechunk.outputs.output }}
-      #     for tag in ${{ steps.metadata.outputs.tags }}; do
-      #       podman tag $IMAGE ${{ env.IMAGE_NAME }}:$tag
-      #     done
-
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3
+        uses: docker/login-action@v3
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
-        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+      - name: Push To GHCR (Alma LTS)
         id: push
+        uses: redhat-actions/push-to-registry@v2
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
           REGISTRY_USER: ${{ github.actor }}
           REGISTRY_PASSWORD: ${{ github.token }}
@@ -140,10 +93,10 @@ jobs:
           password: ${{ env.REGISTRY_PASSWORD }}
 
       - name: Install Cosign
-        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
+        uses: sigstore/cosign-installer@v3.10.0
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
 
-      - name: Sign container image
+      - name: Sign Alma LTS image
         if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         env:
           DIGEST: ${{ steps.push.outputs.digest }}

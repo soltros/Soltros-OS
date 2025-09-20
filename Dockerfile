@@ -1,11 +1,7 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
-ARG TAG_VERSION=42
+ARG BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
+ARG TAG_VERSION=10
 FROM ${BASE_IMAGE}:${TAG_VERSION}
-RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
-LABEL org.opencontainers.image.base.name="${BASE_IMAGE}" \
-      org.opencontainers.image.version="${TAG_VERSION}" \
-      ostree.linux="fedora"
 
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
@@ -34,14 +30,14 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
 # EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
 # These override any conflicting labels and force correct distro detection
-LABEL ostree.linux="fedora" \
-    org.opencontainers.image.version="42" \
-    distro.name="fedora" \
-    distro.version="42"
+LABEL ostree.linux="alma" \
+    org.opencontainers.image.version="10" \
+    distro.name="alma" \
+    distro.version="10"
 
 # Your custom branding (these won't interfere)
-LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready, rolling Atomic KDE image with MacBook support" \
+LABEL org.opencontainers.image.title="SoltrOS Desktop LTS" \
+    org.opencontainers.image.description="Gaming-ready, stable Atomic KDE image with MacBook support" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding
@@ -60,12 +56,20 @@ RUN dnf5 install -y distrobox
 # Install dnf5 plugins
 RUN dnf5 -y install dnf5-plugins
 
+# EPEL + RPM Fusion for EL
+ARG EL_MAJOR=10
+RUN set -eux; \
+    dnf -y install epel-release && \
+    dnf -y install "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y install "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y clean all
 
-# Add Terra repo separately with better error handling
-RUN for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
-    break || sleep 10; \
-    done
+# Tailscale repo + install (EL10)
+RUN set -eux; \
+    dnf -y install dnf-plugins-core && \
+    dnf config-manager --add-repo https://pkgs.tailscale.com/stable/rhel/10/tailscale.repo && \
+    dnf -y install tailscale && \
+    dnf -y clean all
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE

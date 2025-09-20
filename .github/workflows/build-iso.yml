@@ -1,33 +1,41 @@
-name: Build Soltros Installer ISO
+name: Build Soltros LTS (Alma) Installer ISO
+
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ lts/alma10 ]
     paths:
       - '.github/workflows/build-iso.yml'
 
 env:
   ARCH: x86_64
-  IMAGE_NAME: soltros-os
   IMAGE_REPO: ghcr.io/soltros
-  IMAGE_TAG: latest
-  VERSION: 42
-  VARIANT: Kinoite
+  IMAGE_NAME: soltros-os_lts 
+  IMAGE_TAG: alma-lts
+  VERSION: 10
+  VARIANT: AlmaKDE
 
 jobs:
   build-iso:
-    name: Build Installer ISO
+    name: Build Alma LTS Installer ISO
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Build Soltros ISO
-        uses: jasonn3/build-container-installer@main
+      - name: Verify image exists
+        uses: redhat-actions/skopeo-toolkit@v1
+      - name: skopeo inspect
+        run: |
+          skopeo inspect docker://${{ env.IMAGE_REPO }}/$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]'):${{ env.IMAGE_TAG }} >/dev/null
+
+      - name: Build Soltros LTS ISO
         id: build
+        uses: jasonn3/build-container-installer@main
         with:
           arch: ${{ env.ARCH }}
           image_name: ${{ env.IMAGE_NAME }}
@@ -35,7 +43,7 @@ jobs:
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ env.VERSION }}
           variant: ${{ env.VARIANT }}
-          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}.iso
+          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-el${{ env.VERSION }}.iso
 
       - name: Upload ISO as artifact
         uses: actions/upload-artifact@v4

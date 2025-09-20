@@ -73,5 +73,6 @@ RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
 
 # Ensure bootc compatibility
+LABEL ostree.bootable="1"
 RUN ostree container commit
 

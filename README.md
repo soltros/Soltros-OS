@@ -253,3 +253,9 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ---
 
 **SoltrOS** - Gaming meets productivity in an immutable, secure, and developer-friendly Linux distribution.
+
+### Alma LTS branch (soltros-lts/alma10)
+
+- Based on `quay.io/almalinuxorg/atomic-desktop-kde:10` (Atomic Desktop KDE).
+- Built by `.github/workflows/build-alma-lts.yml` when pushing to `soltros-lts/alma10`.
+- Tags: `alma-lts`, `alma-kde-el10`, plus short-sha variants.

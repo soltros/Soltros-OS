@@ -1,0 +1,67 @@
+name: Build & Push (Alma LTS)
+
+on:
+  push:
+    branches: [soltros-lts/alma10]
+    paths:
+      - 'images/alma-kde/**'
+      - '.github/workflows/build-alma-lts.yml'
+      - 'resources/**'
+      - 'build_files/**'
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: ghcr.io/soltros/soltros-os
+  ALMA_IMAGE: quay.io/almalinuxorg/atomic-desktop-kde
+  ALMA_MAJOR: "10"
+  FLAVOR_TAG: alma-kde
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Derive tags
+        id: tags
+        run: |
+          # Example tags: alma10, alma10-${GITHUB_SHA::7}, alma-lts, alma-kde
+          SHORT_SHA=${GITHUB_SHA::7}
+          echo "TAGS=${IMAGE_NAME}:${FLAVOR_TAG}-el${ALMA_MAJOR},${IMAGE_NAME}:${FLAVOR_TAG}-el${ALMA_MAJOR}-${SHORT_SHA},${IMAGE_NAME}:alma-lts,${IMAGE_NAME}:${FLAVOR_TAG}" >> $GITHUB_OUTPUT
+
+      - name: Build & Push (images/alma-kde/Containerfile)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: images/alma-kde/Containerfile
+          push: true
+          platforms: linux/amd64
+          build-args: |
+            BASE_IMAGE=${{ env.ALMA_IMAGE }}
+            TAG_VERSION=${{ env.ALMA_MAJOR }}
+          tags: ${{ steps.tags.outputs.TAGS }}
+
+      # Optional: Cosign sign if you already have OIDC signing wired
+      # - name: Cosign sign
+      #   uses: sigstore/cosign-installer@v3
+      # - run: cosign sign --yes $(echo ${{ steps.tags.outputs.TAGS }} | tr ',' ' ')
+      #   env:
+      #     COSIGN_EXPERIMENTAL: "true"

@@ -1,0 +1,51 @@
+# SoltrOS LTS on Alma Atomic KDE
+# Notes:
+# - EL "LTS" cadence; KDE base comes from Alma Atomic Desktop KDE image
+# - Use EL-appropriate repos (EPEL + RPM Fusion EL)
+# - Keep SoltrOS branding/scripts via /usr/libexec/soltros (adjust to your layout)
+
+ARG BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
+ARG TAG_VERSION=10
+FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
+
+# Bring in SoltrOS build context files if present in repo
+# (These COPYs are no-ops if sources are missing; adjust paths if yours differ)
+COPY build_files/ /ctx/build_files/
+COPY resources/build_files/ /ctx/build_files/
+COPY soltros.pub /ctx/soltros.pub
+COPY resources/soltros.pub /ctx/soltros.pub
+
+# Final stage
+FROM ${BASE_IMAGE}:${TAG_VERSION}
+
+LABEL org.opencontainers.image.title="SoltrOS LTS (Alma Atomic KDE)"
+LABEL org.opencontainers.image.description="SoltrOS LTS branch on AlmaLinux Atomic Desktop KDE"
+LABEL org.opencontainers.image.vendor="SoltrOS"
+LABEL org.opencontainers.image.source="https://github.com/soltros/soltros-os"
+
+# Ensure dnf is available/configured (EL uses dnf4)
+RUN sed -i 's/^tsflags=nodocs/# &/' /etc/dnf/dnf.conf || true
+
+# Enable EPEL + RPM Fusion for EL
+# Adjust EL major via TAG_VERSION build arg (9 or 10)
+ARG EL_MAJOR=${TAG_VERSION}
+RUN set -eux; \
+    dnf -y install epel-release && \
+    if [ "${EL_MAJOR}" = "9" ]; then dnf -y config-manager --set-enabled crb; fi; \
+    dnf -y install "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y install "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y clean all
+
+# Copy SoltrOS build assets/scripts if present
+# (Place your scripts under /usr/libexec/soltros or adjust pathing)
+COPY --from=ctx /ctx/build_files/ /usr/libexec/soltros/
+COPY --from=ctx /ctx/soltros.pub /etc/pki/containers/soltros.pub
+
+# Example: set os-release branding if you template it in your build_files
+# (Leave commented if your pipeline already handles branding)
+# COPY --from=ctx /ctx/build_files/os-release /usr/lib/os-release
+
+# Your image customizations here:
+# RUN dnf -y install <packages-you-need> && dnf -y clean all
+
+# Entrypoint/CMD provided by base image (KDE Atomic)

@@ -1,0 +1,14 @@
+[Unit]
+Description=SoltrOS: mark system for SELinux relabel then reboot (first boot after rebase/switch)
+Documentation=man:selinux(8)
+ConditionPathExists=/etc/soltros/relabel-required
+Wants=local-fs.target
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/soltros/mark-relabel.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

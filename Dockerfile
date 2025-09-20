@@ -6,8 +6,6 @@ FROM ${BASE_IMAGE}:${TAG_VERSION}
 # Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
-COPY build_files/selinux/selinux-relabel.sh /usr/libexec/soltros/selinux-relabel.sh
-COPY build_files/selinux/soltros-selinux-autorelabel.service /usr/lib/systemd/system/soltros-selinux-autorelabel.service
 COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
 RUN chmod 644 /etc/pki/containers/soltros.pub

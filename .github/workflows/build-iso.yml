@@ -47,3 +47,45 @@ jobs:
           if-no-files-found: error
           retention-days: 0
           compression-level: 0
+
+  build-iso-alma:
+    name: Build Installer ISO (Alma LTS)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      ARCH: x86_64
+      IMAGE_NAME: soltros-os_lts
+      IMAGE_REPO: ghcr.io/soltros
+      IMAGE_TAG: alma-lts
+      VERSION: 10
+      VARIANT: AlmaKDE
+    steps:
+      - name: Checkout Repository (LTS branch)
+        uses: actions/checkout@v5
+        with:
+          ref: soltros-os-lts
+
+      - name: Build Soltros ISO (Alma LTS)
+        uses: jasonn3/build-container-installer@main
+        id: build_alma
+        with:
+          arch: ${{ env.ARCH }}
+          image_name: ${{ env.IMAGE_NAME }}
+          image_repo: ${{ env.IMAGE_REPO }}
+          image_tag: ${{ env.IMAGE_TAG }}
+          version: ${{ env.VERSION }}
+          variant: ${{ env.VARIANT }}
+          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-el${{ env.VERSION }}.iso
+
+      - name: Upload ISO as artifact (Alma LTS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build_alma.outputs.iso_name }}
+          path: |
+            ${{ steps.build_alma.outputs.iso_path }}
+            ${{ steps.build_alma.outputs.iso_path }}-CHECKSUM
+          if-no-files-found: error
+          retention-days: 0
+          compression-level: 0

@@ -15,17 +15,30 @@ log "Install layered applications"
 # Layered Applications
 LAYERED_PACKAGES=(
     # Core system
+    fish
     zsh
     tailscale
+    papirus-icon-theme
+    papirus-icon-theme-dark
+    papirus-icon-theme-light
+    materia*
+    kvantum
     qt5-qtgraphicaleffects
     lm_sensors
     udisks2
+    udiskie
+    gimp
     pipewire
+    pipewire-pulse
     wireplumber
+    nebula
     dbus-tools
     alsa-utils
     syslinux
     pipewire-alsa
+    deja-dup
+    playerctl
+    guestmount
     libguestfs-tools
     linux-firmware*
     pipewire-alsa 
@@ -49,13 +62,38 @@ LAYERED_PACKAGES=(
     mesa-libEGL
     mesa-libGL
     mesa-libgbm
+    mesa-va-drivers
     mesa-vulkan-drivers
+    fwupd
+    fwupd-plugin-flashrom
+    fwupd-plugin-modem-manager
+    fwupd-plugin-uefi-capsule-data
+    libvirtd
     konsole
     konsole-part
+    
+    # Display manager
     sddm
+    
+    # Gaming & performance
+    gamemode
+    gamemode-devel
+    mangohud
+    goverlay
+    corectrl
+    steam-devices
+    # MacBook thermal management
+    mbpfan
     thermald
     
+    # Essential CLI tools
+    btop
+    ripgrep
+    fd-find
+    git-delta
+    
     # System monitoring & hardware
+    nvtop
     powertop
     smartmontools
     usbutils
@@ -64,7 +102,8 @@ LAYERED_PACKAGES=(
     # Development & container tools
     buildah
     skopeo
-
+    podman-compose
+    
     # Network tools
     iperf3
     nmap
@@ -72,6 +111,8 @@ LAYERED_PACKAGES=(
     
     # File system support
     exfatprogs
+    ntfs-3g
+    btrfs-progs
     
     # GVFS and network file system support
     gvfs
@@ -79,15 +120,21 @@ LAYERED_PACKAGES=(
     gvfs-fuse
     gvfs-mtp
     gvfs-gphoto2
+    gvfs-archive
+    gvfs-afp
+    gvfs-nfs
     samba-client
     cifs-utils
+    virt-manager
+    gnome-boxes
+    gnome-tweaks
     
     # Multimedia/audio
     pipewire-utils
     wireplumber
 )
 
-dnf install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
+dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
 
 #Enabling various services
 systemctl enable pipewire.service || true
@@ -96,4 +143,4 @@ systemctl enable wireplumber.service || true
 
 # Remove Firefox to replace with Waterfox
 log "Removing Firefox in favor of Waterfox"
-dnf remove -y firefox firefox-* || true
+dnf5 remove -y firefox firefox-* || true

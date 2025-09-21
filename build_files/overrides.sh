@@ -6,7 +6,7 @@ set ${SET_X:+-x} -eou pipefail
 case "$BASE_IMAGE" in
 *"/bazzite"*);;
 *"/ucore"*)
-  # NOTE: ucore refactored to dnf and incorrectly moved designated /etc files to root
+  # NOTE: ucore refactored to dnf5 and incorrectly moved designated /etc files to root
   # If sysctl.conf is detected at root the bug likely still exists
   # https://github.com/ublue-os/ucore/issues/258
   if [ -f "/sysctl.conf" ]; then

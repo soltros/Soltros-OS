@@ -10,7 +10,7 @@ log() {
 log "Starting system cleanup"
 
 # Clean package manager cache
-dnf clean all
+dnf5 clean all
 
 # Clean temporary files but preserve important directories
 rm -rf /tmp/*
@@ -18,8 +18,8 @@ rm -rf /var/tmp/*
 rm -rf /var/cache/*
 rm -rf /var/log/*
 
-# Clean dnf cache and repos that cause lint failures
-rm -rf /var/lib/dnf/repos/*
+# Clean dnf5 cache and repos that cause lint failures
+rm -rf /var/lib/dnf5/repos/*
 
 # Remove /usr/etc entirely as bootc doesn't support it
 # The signing script already copies to /etc/containers/policy.json

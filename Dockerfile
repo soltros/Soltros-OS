@@ -1,14 +1,21 @@
-# ---------- Build args ----------
-ARG BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
-ARG TAG_VERSION=10
+# Set base image and tag
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
+ARG TAG_VERSION=42
+FROM ${BASE_IMAGE}:${TAG_VERSION}
+RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
+LABEL org.opencontainers.image.base.name="${BASE_IMAGE}" \
+      org.opencontainers.image.version="${TAG_VERSION}" \
+      ostree.linux="fedora"
 
-# ---------- Stage: ctx (scripts only) ----------
+# Stage 1: context for scripts (not included in final image)
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
-RUN chmod 644 /etc/pki/containers/soltros.pub \
- && chmod +x \
+RUN chmod 644 /etc/pki/containers/soltros.pub
+
+# Change perms
+RUN chmod +x \
     /ctx/build.sh \
     /ctx/signing.sh \
     /ctx/overrides.sh \
@@ -22,91 +29,50 @@ RUN chmod 644 /etc/pki/containers/soltros.pub \
     /ctx/nix-package-manager.sh \
     /ctx/desktop-defaults.sh
 
-# ---------- Stage: final image ----------
+# Stage 2: final image
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
-# Force correct distro detection for bootc-image-builder
-LABEL ostree.linux="alma" \
-      org.opencontainers.image.version="10" \
-      distro.name="alma" \
-      distro.version="10"
+# EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
+# These override any conflicting labels and force correct distro detection
+LABEL ostree.linux="fedora" \
+    org.opencontainers.image.version="42" \
+    distro.name="fedora" \
+    distro.version="42"
 
-# Branding
-LABEL org.opencontainers.image.title="SoltrOS Desktop LTS" \
-      org.opencontainers.image.description="Gaming-ready, stable Atomic KDE image with MacBook support" \
-      org.opencontainers.image.vendor="Derrik"
+# Your custom branding (these won't interfere)
+LABEL org.opencontainers.image.title="SoltrOS Desktop" \
+    org.opencontainers.image.description="Gaming-ready, rolling Atomic KDE image with MacBook support" \
+    org.opencontainers.image.vendor="Derrik"
 
-# 1) Start clean: remove any repos shipped by the base image to avoid duplicates
-RUN rm -f /etc/yum.repos.d/*.repo
-
-# 2) Copy your system files (includes your repo *.repo files and os-release)
+# Copy static system configuration and branding
 COPY system_files/etc /etc
 COPY system_files/usr /usr
+COPY repo_files/ /etc/yum.repos.d/
+COPY resources/soltros-gdm.png /usr/share/pixmaps/fedora-gdm-logo.png
+COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermark.png
 
-
-# 4) Make DNF resilient and fast
-RUN printf '%s\n' \
-  'max_parallel_downloads=10' \
-  'retries=10' \
-  'timeout=60' \
-  'fastestmirror=True' \
-  'skip_if_unavailable=True' \
-  >> /etc/dnf/dnf.conf
-
-# 5) Sanity-check repos & warm cache early (helps fail fast if a key/url is wrong)
-RUN dnf -y makecache && dnf repolist -v
-
-# Shell config dirs (harmless if already present)
+# Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Enable EPEL
-RUN dnf -y install dnf-plugins-core && \
-    dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm && \
-    dnf -y install https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/e/epel-release-10-6.el10_0.noarch.rpm && \
-    dnf -y clean all
+# Ensure Distrobox is installed
+RUN dnf5 install -y distrobox
 
-# AlmaLinux + optional EPEL/RPM Fusion keys (filenames match gpgkey= in .repo files)
-ADD https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux \
-    /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
-    
-# (Optional) If you enable EPEL in-image
-ADD https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10 \
-    /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10
+# Install dnf5 plugins
+RUN dnf5 -y install dnf5-plugins
 
-RUN chmod 0644 /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux \
-               /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10 || true
 
-# Add RPM Fusion (free + nonfree) repos for EL
-RUN dnf --setopt=localpkg_gpgcheck=1 -y install \
-      https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm \
-      https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-$(rpm -E %rhel).noarch.rpm && \
-      "https://repos.fyralabs.com/terrael10/terra-release-0:10-3.noarch.rpm"; \
-    dnf -y clean all
+# Add Terra repo separately with better error handling
+RUN for i in {1..3}; do \
+    curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
+    break || sleep 10; \
+    done
 
-# Tailscale repo + install (EL10)
-RUN dnf -y install dnf-plugins-core \
- && dnf config-manager --add-repo https://pkgs.tailscale.com/stable/rhel/10/tailscale.repo \
- && dnf -y install tailscale \
- && dnf -y clean all
-
-# SELinux tooling (for relabel & policy utilities)
-RUN dnf -y install \
-      selinux-policy \
-      selinux-policy-targeted \
-      policycoreutils \
-      policycoreutils-python-utils \
-      libselinux-utils \
-      checkpolicy \
-      setools-console \
- && dnf -y clean all
-
-# Run your build script from ctx
+# Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
 
-# Bootable/bootc labels + ostree commit
-LABEL containers.bootc="1" \
-      ostree.bootable="1"
+# Ensure bootc compatibility
 RUN ostree container commit
+

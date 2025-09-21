@@ -65,6 +65,17 @@ RUN dnf -y install dnf-plugins-core && \
     dnf -y install https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/e/epel-release-10-6.el10_0.noarch.rpm && \
     dnf -y clean all
 
+# AlmaLinux + optional EPEL/RPM Fusion keys (filenames match gpgkey= in .repo files)
+ADD https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux \
+    /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+    
+# (Optional) If you enable EPEL in-image
+ADD https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10 \
+    /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10
+
+RUN chmod 0644 /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux \
+               /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10 || true
+
 # Add RPM Fusion (free + nonfree) repos for EL
 RUN dnf --setopt=localpkg_gpgcheck=1 -y install \
       https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-$(rpm -E %rhel).noarch.rpm \

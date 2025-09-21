@@ -65,10 +65,10 @@ RUN set -eux; \
     dnf -y install \
       "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${EL_MAJOR}.noarch.rpm" \
       "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" \
-      "https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" \
-      "https://repo.terralinux.org/terra/terra-release-latest-${EL_MAJOR}.noarch.rpm"; \
+      "https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm"; \
     dnf -y clean all
 
+RUN dnf config-manager --add-repo https://terra.fyralabs.com/terra.repo
 
 # Distrobox (EPEL provides it per your repos)
 RUN dnf -y install distrobox && dnf -y clean all

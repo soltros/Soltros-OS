@@ -45,6 +45,8 @@ LABEL org.opencontainers.image.title="SoltrOS Desktop LTS" \
 COPY system_files/etc /etc
 COPY system_files/usr /usr
 COPY repo_files/ /etc/yum.repos.d/
+ADD https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+
 
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d

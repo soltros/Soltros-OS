@@ -1,0 +1,24 @@
+[extras]
+name=AlmaLinux $releasever - Extras
+baseurl=https://repo.almalinux.org/almalinux/$releasever/extras/$basearch/os/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+
+# Optional: debuginfo & source (disabled)
+[extras-debuginfo]
+name=AlmaLinux $releasever - Extras - Debug
+baseurl=https://repo.almalinux.org/almalinux/$releasever/extras/$basearch/debug/tree/
+enabled=0
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+
+[extras-source]
+name=AlmaLinux $releasever - Extras - Source
+baseurl=https://repo.almalinux.org/almalinux/$releasever/extras/source/tree/
+enabled=0
+gpgcheck=1
+repo_gpgcheck=0
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux

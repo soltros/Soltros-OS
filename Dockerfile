@@ -77,9 +77,6 @@ RUN dnf -y install dnf-plugins-core \
  && dnf -y install tailscale \
  && dnf -y clean all
 
-# Distrobox
-RUN dnf -y install distrobox
-
 # SELinux tooling (for relabel & policy utilities)
 RUN dnf -y install \
       selinux-policy \

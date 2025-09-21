@@ -59,13 +59,16 @@ RUN dnf -y makecache && dnf repolist -v
 # Shell config dirs (harmless if already present)
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# EPEL + RPM Fusion for EL
+# EPEL + RPM Fusion + Terra repos
 ARG EL_MAJOR=10
 RUN set -eux; \
-    dnf -y install epel-release && \
-    dnf -y install "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" && \
-    dnf -y install "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y install \
+      "https://dl.fedoraproject.org/pub/epel/epel-release-latest-${EL_MAJOR}.noarch.rpm" \
+      "https://download1.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" \
+      "https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" \
+      "https://repo.terralinux.org/terra/terra-release-latest-${EL_MAJOR}.noarch.rpm"; \
     dnf -y clean all
+
 
 # Distrobox (EPEL provides it per your repos)
 RUN dnf -y install distrobox && dnf -y clean all

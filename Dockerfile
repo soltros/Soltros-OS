@@ -59,9 +59,10 @@ RUN dnf -y makecache && dnf repolist -v
 # Shell config dirs (harmless if already present)
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Enable CRB (CodeReady Builder) + add EPEL repo
+# Enable EPEL
 RUN dnf -y install dnf-plugins-core && \
     dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm && \
+    dnf -y install https://dl.fedoraproject.org/pub/epel/10/Everything/x86_64/Packages/e/epel-release-10-6.el10_0.noarch.rpm && \
     dnf -y clean all
 
 # Add RPM Fusion (free + nonfree) repos for EL
@@ -87,6 +88,9 @@ RUN dnf -y install \
       checkpolicy \
       setools-console \
  && dnf -y clean all
+
+# Distrobox
+RUN dnf -y install distrobox && dnf -y clean all
 
 # Run your build script from ctx
 ARG BASE_IMAGE

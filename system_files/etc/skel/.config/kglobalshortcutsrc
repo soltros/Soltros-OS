@@ -1,7 +1,7 @@
 [ActivityManager]
 _k_friendly_name=Activity Manager
-switch-to-activity-437daaab-f5d8-408f-93ac-ae2d44b4b742=none,none,Switch to activity "Default"
 switch-to-activity-c6acbb6b-86cb-4e37-8da7-f989489a60d5=none,none,Switch to activity "Default"
+switch-to-activity-cdf277b1-b52f-467f-b827-afc9942568e1=none,none,Switch to activity "Default"
 
 [KDE Keyboard Layout Switcher]
 Switch to Last-Used Keyboard Layout=Meta+Alt+L,Meta+Alt+L,
@@ -239,7 +239,6 @@ activate task manager entry 6=Meta+6,Meta+6,Activate Task Manager Entry 6
 activate task manager entry 7=Meta+7,Meta+7,Activate Task Manager Entry 7
 activate task manager entry 8=Meta+8,Meta+8,Activate Task Manager Entry 8
 activate task manager entry 9=Meta+9,Meta+9,Activate Task Manager Entry 9
-activate widget 31=,none,Activate Application Launcher Widget
 clear-history=none,,Clear Clipboard History
 clipboard_action=Meta+Ctrl+X,Meta+Ctrl+X,Automatic Action Popup Menu
 cycle-panels=Meta+Alt+P,Meta+Alt+P,Move keyboard focus between panels

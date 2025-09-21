@@ -1,6 +1,6 @@
 # Set base image and tag
 ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
-ARG TAG_VERSION=42
+ARG TAG_VERSION=rawhide
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
 LABEL org.opencontainers.image.base.name="${BASE_IMAGE}" \
@@ -35,9 +35,9 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 # EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
 # These override any conflicting labels and force correct distro detection
 LABEL ostree.linux="fedora" \
-    org.opencontainers.image.version="42" \
+    org.opencontainers.image.version="rawhide" \
     distro.name="fedora" \
-    distro.version="42"
+    distro.version="rawhide"
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \

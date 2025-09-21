@@ -53,6 +53,8 @@ INSTALL COMMANDS:
   change-to-zsh           Swap shell to Zsh
   change-to-fish          Swap shell to Fish
   change-to-bash          Swap shell to Bash
+  change-to-stable        Swap from Soltros OS unstable rolling to LTS rolling
+  change-to-unstable      Swap from Soltros OS LTS rolling to unstable rolling
   apply-soltros-look      Apply the SoltrOS theme to Plasma
   helper-off              Turn off the helper prompt in Zsh (delete ~/.no-helper-reminder to re-enable)
   download-iso            Download the latest Desktop ISO directly to ~/Downloads
@@ -112,6 +114,30 @@ soltros_install_flatpaks() {
         print_success "Flatpaks installation complete"
     else
         print_error "Failed to install flatpaks"
+        exit 1
+    fi
+}
+
+change_to_stable() {
+    print_header "Swapping from Unstable to LTS"
+
+    print_info "Swapping releases of SoltrOS"
+    if sudo bootc switch ghcr.io/soltros/soltros-os_lts:latest;then
+        print_success "Swapped releases successfully! Please reboot!"
+    else
+        print_error "Failed to swap releases."
+        exit 1
+    fi
+}
+
+change_to_unstable() {
+    print_header "Swapping from LTS to Unstable"
+
+    print_info "Swapping releases of SoltrOS"
+    if sudo bootc switch ghcr.io/soltros/soltros-os:latest;then
+        print_success "Swapped releases successfully! Please reboot!"
+    else
+        print_error "Failed to swap releases."
         exit 1
     fi
 }
@@ -560,6 +586,12 @@ main() {
             ;;
         "change-to-bash")
             change_to_bash
+            ;;
+        "change-to-unstable")
+            change_to_unstable
+            ;;
+        "change-to-stable")
+            change_to_stable
             ;;
         "download-appimages")
             download_appimages

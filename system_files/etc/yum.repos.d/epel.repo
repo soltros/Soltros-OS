@@ -1,7 +1,0 @@
-[epel]
-name=Extra Packages for Enterprise Linux $releasever - $basearch
-baseurl=https://dl.fedoraproject.org/pub/epel/$releasever/Everything/$basearch/
-enabled=1
-gpgcheck=1
-repo_gpgcheck=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10

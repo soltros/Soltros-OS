@@ -1,7 +1,0 @@
-[rpmfusion-free]
-name=RPM Fusion for EL $releasever - Free
-baseurl=https://download1.rpmfusion.org/free/el/$releasever/$basearch/
-enabled=1
-gpgcheck=1
-repo_gpgcheck=0
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-el-10

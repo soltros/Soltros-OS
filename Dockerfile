@@ -59,6 +59,14 @@ RUN dnf -y makecache && dnf repolist -v
 # Shell config dirs (harmless if already present)
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
+# EPEL + RPM Fusion for EL
+ARG EL_MAJOR=10
+RUN set -eux; \
+    dnf -y install epel-release && \
+    dnf -y install "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y install "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" && \
+    dnf -y clean all
+
 # Distrobox (EPEL provides it per your repos)
 RUN dnf -y install distrobox && dnf -y clean all
 

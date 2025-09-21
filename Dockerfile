@@ -1,18 +1,14 @@
-# Set base image and tag
+# ---------- Build args ----------
 ARG BASE_IMAGE=quay.io/almalinuxorg/atomic-desktop-kde
 ARG TAG_VERSION=10
-FROM ${BASE_IMAGE}:${TAG_VERSION}
 
-# Stage 1: context for scripts (not included in final image)
+# ---------- Stage: ctx (scripts only) ----------
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS ctx
 COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
-RUN chmod 644 /etc/pki/containers/soltros.pub
-
-
-# Change perms
-RUN chmod +x \
+RUN chmod 644 /etc/pki/containers/soltros.pub \
+ && chmod +x \
     /ctx/build.sh \
     /ctx/signing.sh \
     /ctx/overrides.sh \
@@ -26,50 +22,63 @@ RUN chmod +x \
     /ctx/nix-package-manager.sh \
     /ctx/desktop-defaults.sh
 
-# Stage 2: final image
+# ---------- Stage: final image ----------
 FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 
-# EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
-# These override any conflicting labels and force correct distro detection
+# Force correct distro detection for bootc-image-builder
 LABEL ostree.linux="alma" \
-    org.opencontainers.image.version="10" \
-    distro.name="alma" \
-    distro.version="10"
+      org.opencontainers.image.version="10" \
+      distro.name="alma" \
+      distro.version="10"
 
-# Your custom branding (these won't interfere)
+# Branding
 LABEL org.opencontainers.image.title="SoltrOS Desktop LTS" \
-    org.opencontainers.image.description="Gaming-ready, stable Atomic KDE image with MacBook support" \
-    org.opencontainers.image.vendor="Derrik"
+      org.opencontainers.image.description="Gaming-ready, stable Atomic KDE image with MacBook support" \
+      org.opencontainers.image.vendor="Derrik"
 
-# Copy static system configuration and branding
+# 1) Start clean: remove any repos shipped by the base image to avoid duplicates
+RUN rm -f /etc/yum.repos.d/*.repo
+
+# 2) Copy your system files (includes your repo *.repo files and os-release)
+#    You said everything in system_files/etc and system_files/usr is authoritative.
 COPY system_files/etc /etc
 COPY system_files/usr /usr
-COPY repo_files/ /etc/yum.repos.d/
-ADD https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
 
+# 3) Install CURRENT GPG keys used by your repos (verify path matches gpgkey= in your .repo files)
+ADD https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux \
+    /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
+ADD https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10 \
+    /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10
+ADD https://mirrors.rpmfusion.org/RPM-GPG-KEY-rpmfusion-free-el-10 \
+    /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-el-10
+ADD https://mirrors.rpmfusion.org/RPM-GPG-KEY-rpmfusion-nonfree-el-10 \
+    /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-el-10
 
-# Create necessary directories for shell configurations
+# 4) Make DNF resilient and fast
+RUN printf '%s\n' \
+  'max_parallel_downloads=10' \
+  'retries=10' \
+  'timeout=60' \
+  'fastestmirror=True' \
+  'skip_if_unavailable=True' \
+  >> /etc/dnf/dnf.conf
+
+# 5) Sanity-check repos & warm cache early (helps fail fast if a key/url is wrong)
+RUN dnf -y makecache && dnf repolist -v
+
+# Shell config dirs (harmless if already present)
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
-# Ensure Distrobox is installed
-RUN dnf install -y distrobox
-
-# EPEL + RPM Fusion for EL
-ARG EL_MAJOR=10
-RUN set -eux; \
-    dnf -y install epel-release && \
-    dnf -y install "https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-${EL_MAJOR}.noarch.rpm" && \
-    dnf -y install "https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm" && \
-    dnf -y clean all
+# Distrobox (EPEL provides it per your repos)
+RUN dnf -y install distrobox && dnf -y clean all
 
 # Tailscale repo + install (EL10)
-RUN set -eux; \
-    dnf -y install dnf-plugins-core && \
-    dnf config-manager --add-repo https://pkgs.tailscale.com/stable/rhel/10/tailscale.repo && \
-    dnf -y install tailscale && \
-    dnf -y clean all
+RUN dnf -y install dnf-plugins-core \
+ && dnf config-manager --add-repo https://pkgs.tailscale.com/stable/rhel/10/tailscale.repo \
+ && dnf -y install tailscale \
+ && dnf -y clean all
 
-# --- SELinux: make sure required tooling is present ---
+# SELinux tooling (for relabel & policy utilities)
 RUN dnf -y install \
       selinux-policy \
       selinux-policy-targeted \
@@ -78,16 +87,15 @@ RUN dnf -y install \
       libselinux-utils \
       checkpolicy \
       setools-console \
-    && dnf -y clean all
+ && dnf -y clean all
 
-# Mount and run build script from ctx stage
+# Run your build script from ctx
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \
     --mount=type=tmpfs,dst=/tmp \
     BASE_IMAGE=$BASE_IMAGE bash /ctx/build.sh
 
-# Ensure bootc compatibility
+# Bootable/bootc labels + ostree commit
 LABEL containers.bootc="1" \
       ostree.bootable="1"
 RUN ostree container commit
-

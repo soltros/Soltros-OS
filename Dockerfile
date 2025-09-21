@@ -61,7 +61,6 @@ RUN mkdir -p /etc/profile.d /etc/fish/conf.d
 
 # Enable CRB (CodeReady Builder) + add EPEL repo
 RUN dnf -y install dnf-plugins-core && \
-    dnf config-manager --set-enabled crb && \
     dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm && \
     dnf -y clean all
 

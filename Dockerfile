@@ -69,9 +69,6 @@ RUN set -eux; \
       "https://download1.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-${EL_MAJOR}.noarch.rpm"; \
     dnf -y clean all
 
-# Distrobox (EPEL provides it per your repos)
-RUN dnf -y install distrobox && dnf -y clean all
-
 # Tailscale repo + install (EL10)
 RUN dnf -y install dnf-plugins-core \
  && dnf config-manager --add-repo https://pkgs.tailscale.com/stable/rhel/10/tailscale.repo \

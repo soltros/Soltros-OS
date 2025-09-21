@@ -89,9 +89,6 @@ RUN dnf -y install \
       setools-console \
  && dnf -y clean all
 
-# Distrobox
-RUN dnf -y install distrobox && dnf -y clean all
-
 # Run your build script from ctx
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \

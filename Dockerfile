@@ -40,19 +40,9 @@ LABEL org.opencontainers.image.title="SoltrOS Desktop LTS" \
 RUN rm -f /etc/yum.repos.d/*.repo
 
 # 2) Copy your system files (includes your repo *.repo files and os-release)
-#    You said everything in system_files/etc and system_files/usr is authoritative.
 COPY system_files/etc /etc
 COPY system_files/usr /usr
 
-# 3) Install CURRENT GPG keys used by your repos (verify path matches gpgkey= in your .repo files)
-ADD https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux \
-    /etc/pki/rpm-gpg/RPM-GPG-KEY-AlmaLinux
-ADD https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-10 \
-    /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-10
-ADD https://mirrors.rpmfusion.org/RPM-GPG-KEY-rpmfusion-free-el-10 \
-    /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-free-el-10
-ADD https://mirrors.rpmfusion.org/RPM-GPG-KEY-rpmfusion-nonfree-el-10 \
-    /etc/pki/rpm-gpg/RPM-GPG-KEY-rpmfusion-nonfree-el-10
 
 # 4) Make DNF resilient and fast
 RUN printf '%s\n' \

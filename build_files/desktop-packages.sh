@@ -15,12 +15,8 @@ log "Install layered applications"
 # Layered Applications
 LAYERED_PACKAGES=(
     # Core system
-    fish
     zsh
     tailscale
-    papirus-icon-theme
-    papirus-icon-theme-dark
-    papirus-icon-theme-light
     qt5-qtgraphicaleffects
     lm_sensors
     udisks2
@@ -59,12 +55,7 @@ LAYERED_PACKAGES=(
     sddm
     thermald
     
-    # Essential CLI tools
-    btop
-    ripgrep
-    
     # System monitoring & hardware
-    nvtop
     powertop
     smartmontools
     usbutils
@@ -73,8 +64,7 @@ LAYERED_PACKAGES=(
     # Development & container tools
     buildah
     skopeo
-    podman-compose
-    
+
     # Network tools
     iperf3
     nmap
@@ -82,8 +72,6 @@ LAYERED_PACKAGES=(
     
     # File system support
     exfatprogs
-    ntfs-3g
-    btrfs-progs
     
     # GVFS and network file system support
     gvfs
@@ -93,8 +81,6 @@ LAYERED_PACKAGES=(
     gvfs-gphoto2
     samba-client
     cifs-utils
-    virt-manager
-    gnome-tweaks
     
     # Multimedia/audio
     pipewire-utils

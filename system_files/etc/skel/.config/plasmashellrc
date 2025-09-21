@@ -1,8 +1,5 @@
 [KFileDialog Settings]
-detailViewIconSize=64
-
-[PlasmaTransientsConfig]
-PreloadWeight=92
+detailViewIconSize=38
 
 [PlasmaViews][Panel 2]
 floating=1

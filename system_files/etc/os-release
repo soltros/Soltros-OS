@@ -1,10 +1,10 @@
 NAME="SoltrOS"
-VERSION="Rolling Rocket"
+VERSION="Rolling Rocket (Unstable)"
 ID=fedora
 ID_LIKE=fedora
 VERSION_ID=Rawhide
 PLATFORM_ID="platform:f43"
-PRETTY_NAME="SoltrOS Rolling Rocket"
+PRETTY_NAME="SoltrOS Rolling Rocket (Unstable)"
 ANSI_COLOR="0;36"
 CPE_NAME="cpe:/o:fedoraproject:fedora:43"
 HOME_URL="https://github.com/soltros/soltros-os"

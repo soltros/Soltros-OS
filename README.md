@@ -9,23 +9,19 @@ A gaming-optimized, rolling immutable Linux distribution based on Fedora release
 ### Installation
 There are a few ways you can install SoltrosOS. The recomended way is to download the official ISO, flash it to a USB device, and install it to your computer.
 
-You can get the latest ISO [here](http://bit.ly/4ojbxdf), and the checksum [here](https://publicweb.soltros.info/files/soltros-os-latest-42.iso-CHECKSUM). To verify the checksum, do the following:
+You can get the latest bleeding-edge edition ISO [here](https://bit.ly/soltros-os-unstable), and the stable edition ISO [here](https://bit.ly/soltros-os-stable). Once Soltros OS is installed, it rolls updates forever. No need to swap to new ISOs every 6 months. The bleeding-edge distribution is based upon the absolute newest packages available from Rawhide, and can be a bit rocky to use. The LTS version is pinned to the 6-month Fedora cycle.
 
-#### Verifying the ISO Checksum
-```bash
-sha256sum -c soltros-os-latest-42.iso-CHECKSUM
-```
-If the output shows:
-
-```
-soltros-os-latest-42.iso: OK
-```
-the ISO is verified and safe to use.
 
  However, you can also install it through Silverblue/Kinoite/Bazzite/Bluefin with Bootc Switch:
 
 ```bash
 sudo bootc switch ghcr.io/soltros/soltros-os:latest
+sudo systemctl reboot
+```
+Or
+
+```bash
+sudo bootc switch ghcr.io/soltros/soltros-os_lts:latest
 sudo systemctl reboot
 ```
 

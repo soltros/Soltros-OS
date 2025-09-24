@@ -122,25 +122,105 @@ change_to_stable() {
     print_header "Swapping from Unstable to LTS"
 
     print_info "Swapping releases of SoltrOS"
-    if sudo bootc switch ghcr.io/soltros/soltros-os_lts:latest;then
-        print_success "Swapped releases successfully! Please reboot!"
+    if sudo bootc switch ghcr.io/soltros/soltros-os_lts:latest; then
+        print_success "Swapped releases successfully! Updating /etc/os-release…"
+
+        # Prepare new os-release in a temp file
+        tmp_osrel="$(mktemp /tmp/os-release.XXXXXX)"
+        cat >"$tmp_osrel" <<'EOF'
+NAME="SoltrOS"
+VERSION="Long-Term Support (LTS)"
+ID=fedora
+ID_LIKE=fedora
+VERSION_ID=LTS
+PLATFORM_ID="platform:f42"
+PRETTY_NAME="SoltrOS Long-Term Support (LTS)"
+ANSI_COLOR="0;36"
+CPE_NAME="cpe:/o:fedoraproject:fedora:42"
+HOME_URL="https://github.com/soltros/soltros-os"
+SUPPORT_URL="https://github.com/soltros/soltros-os"
+BUG_REPORT_URL="https://github.com/soltros/soltros-os/issues"
+EOF
+
+        # If /etc/os-release is a symlink, replace it with a real file
+        if [ -L /etc/os-release ]; then
+            sudo rm -f /etc/os-release
+        fi
+
+        # Backup existing file once (best-effort)
+        if [ -e /etc/os-release ] && [ ! -e /etc/os-release.bak ]; then
+            sudo cp -p /etc/os-release /etc/os-release.bak || true
+        fi
+
+        # Install atomically with correct ownership/permissions
+        sudo install -o root -g root -m 0644 "$tmp_osrel" /etc/os-release
+        rm -f "$tmp_osrel"
+
+        # Restore SELinux context if available
+        if command -v restorecon >/dev/null 2>&1; then
+            sudo restorecon /etc/os-release
+        fi
+
+        echo
+        print_success "Updated /etc/os-release. Reboot recommended."
     else
         print_error "Failed to swap releases."
         exit 1
     fi
 }
+
 
 change_to_unstable() {
     print_header "Swapping from LTS to Unstable"
 
     print_info "Swapping releases of SoltrOS"
-    if sudo bootc switch ghcr.io/soltros/soltros-os:latest;then
-        print_success "Swapped releases successfully! Please reboot!"
+    if sudo bootc switch ghcr.io/soltros/soltros-os:latest; then
+        print_success "Swapped releases successfully! Updating /etc/os-release…"
+
+        # Prepare new os-release in a temp file (exact content preserved)
+        tmp_osrel="$(mktemp /tmp/os-release.XXXXXX)"
+        cat >"$tmp_osrel" <<'EOF'
+NAME="SoltrOS"
+VERSION="Rolling Rocket (Unstable)"
+ID=fedora
+ID_LIKE=fedora
+VERSION_ID=Unstable
+PLATFORM_ID="platform:f43"
+PRETTY_NAME="SoltrOS Rolling Rocket (Unstable)"
+ANSI_COLOR="0;36"
+CPE_NAME="cpe:/o:fedoraproject:fedora:43"
+HOME_URL="https://github.com/soltros/soltros-os"
+SUPPORT_URL="https://github.com/soltros/soltros-os"
+BUG_REPORT_URL="https://github.com/soltros/soltros-os/issues"
+EOF
+
+        # If /etc/os-release is a symlink, replace it with a real file
+        if [ -L /etc/os-release ]; then
+            sudo rm -f /etc/os-release
+        fi
+
+        # Backup existing file once (best-effort)
+        if [ -e /etc/os-release ] && [ ! -e /etc/os-release.bak ]; then
+            sudo cp -p /etc/os-release /etc/os-release.bak || true
+        fi
+
+        # Install atomically with correct ownership/permissions
+        sudo install -o root -g root -m 0644 "$tmp_osrel" /etc/os-release
+        rm -f "$tmp_osrel"
+
+        # Restore SELinux context if available
+        if command -v restorecon >/dev/null 2>&1; then
+            sudo restorecon /etc/os-release
+        fi
+
+        echo
+        print_success "Updated /etc/os-release. Reboot recommended."
     else
         print_error "Failed to swap releases."
         exit 1
     fi
 }
+
 
 install_dev_tools() {
     print_header "Installing development tools via Flatpak"

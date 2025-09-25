@@ -139,11 +139,27 @@ jobs:
         id: publish
         shell: bash
         run: |
+          echo "Current branch: ${{ github.ref }}"
+          echo "Matrix branch: refs/heads/${{ matrix.branch }}"
+          echo "Event name: ${{ github.event_name }}"
+          
           if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "Publishing due to schedule or manual trigger"
             echo "publish=true" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref }}" == "refs/heads/${{ matrix.branch }}" ]]; then
-            echo "publish=true" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event_name }}" == "push" ]]; then
+            # For push events, check if we're on one of the target branches
+            case "${{ github.ref }}" in
+              "refs/heads/main"|"refs/heads/soltros-os-lts"|"refs/heads/soltros-os-unstable_cosmic"|"refs/heads/soltros-os-lts_cosmic"|"refs/heads/soltros-os-unstable_gnome"|"refs/heads/soltros-os-lts_gnome")
+                echo "Publishing due to push to target branch"
+                echo "publish=true" >> "$GITHUB_OUTPUT"
+                ;;
+              *)
+                echo "Not publishing - push to non-target branch"
+                echo "publish=false" >> "$GITHUB_OUTPUT"
+                ;;
+            esac
           else
+            echo "Not publishing - event type does not qualify"
             echo "publish=false" >> "$GITHUB_OUTPUT"
           fi
 

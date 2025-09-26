@@ -9,6 +9,8 @@ on:
       - soltros-os-lts_cosmic
       - soltros-os-unstable_gnome
       - soltros-os-lts_gnome
+      - soltros-os-lts_hyprland
+      - soltros-os-unstable_hyprland
   schedule:
     - cron: '0 6 * * 0'  # 6am UTC every Sunday
   push:
@@ -19,6 +21,8 @@ on:
       - soltros-os-lts_cosmic
       - soltros-os-unstable_gnome
       - soltros-os-lts_gnome
+      - soltros-os-lts_hyprland
+      - soltros-os-unstable_hyprland
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:

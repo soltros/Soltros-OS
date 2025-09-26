@@ -66,6 +66,12 @@ jobs:
           # LTS GNOME
           - branch: soltros-os-lts_gnome
             image: soltros-os_lts_gnome
+          # Unstable Hyprland
+          - branch: soltros-os-unstable_hyprland
+            image: soltros-os_unstable_hyprland
+          #LTS Hyprland
+          - branch: soltros-os-lts_hyprland
+            image: soltros-os_lts_hyprland
 
     steps:
       - name: Prepare environment

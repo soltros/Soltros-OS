@@ -124,6 +124,7 @@ change_to_stable() {
     #   change_to_stable kde|plasma       # non-interactive
     #   change_to_stable cosmic
     #   change_to_stable gnome
+    #   change_to_stable hyprland
 
     # Normalize a string to lowercase alphanumerics/underscores
     _norm() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g'; }
@@ -136,14 +137,16 @@ change_to_stable() {
         echo "  1) KDE Plasma (default)"
         echo "  2) COSMIC"
         echo "  3) GNOME"
-        echo "  4) Cancel"
+        echo "  4) Hyprland"
+        echo "  5) Cancel"
         printf "Enter a number [1]: "
         read -r choice
         case "${choice:-1}" in
             1|'') norm="kde"   ; choice_label="KDE Plasma" ; image_suffix="soltros-os_lts"         ; variant="KDE Plasma" ; variant_id="kde"   ;;
             2)     norm="cosmic"; choice_label="COSMIC"     ; image_suffix="soltros-os_lts_cosmic" ; variant="COSMIC"     ; variant_id="cosmic";;
             3)     norm="gnome" ; choice_label="GNOME"      ; image_suffix="soltros-os_lts_gnome"  ; variant="GNOME"      ; variant_id="gnome" ;;
-            4)     echo "Canceled."; return 1 ;;
+            4)     norm="hyprland" ; choice_label="Hyprland"      ; image_suffix="soltros-os_lts_hyprland"  ; variant="Hyprland"      ; variant_id="hyprland" ;;
+            5)     echo "Canceled."; return 1 ;;
             *)     echo "Invalid selection."; return 2 ;;
         esac
     else
@@ -167,8 +170,14 @@ change_to_stable() {
                 variant="GNOME"
                 variant_id="gnome"
                 ;;
+            hyprland)
+                choice_label="Hyprland"
+                image_suffix="soltros-os_lts_hyprland"
+                variant="Hyprland"
+                variant_id="hyprland"
+                ;;
             *)
-                echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome."
+                echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome|hyprland."
                 return 2
                 ;;
         esac
@@ -236,6 +245,7 @@ change_to_unstable() {
     #   change_to_unstable kde|plasma       # non-interactive (default image: soltros-os)
     #   change_to_unstable cosmic
     #   change_to_unstable gnome
+    #   change_to_unstable hyprland
 
     # Normalize a string to lowercase alphanumerics/underscores
     _norm() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g'; }
@@ -248,14 +258,16 @@ change_to_unstable() {
         echo "  1) KDE Plasma (default)"
         echo "  2) COSMIC"
         echo "  3) GNOME"
-        echo "  4) Cancel"
+        echo "  4) Hyprland"
+        echo "  5) Cancel"
         printf "Enter a number [1]: "
         read -r choice
         case "${choice:-1}" in
             1|'') norm="kde"   ; choice_label="KDE Plasma" ; image_suffix="soltros-os"                    ; variant="KDE Plasma" ; variant_id="kde"   ;;
             2)     norm="cosmic"; choice_label="COSMIC"     ; image_suffix="soltros-os_unstable_cosmic"   ; variant="COSMIC"     ; variant_id="cosmic";;
             3)     norm="gnome" ; choice_label="GNOME"      ; image_suffix="soltros-os_unstable_gnome"    ; variant="GNOME"      ; variant_id="gnome" ;;
-            4)     echo "Canceled."; return 1 ;;
+            4)     norm="hyprland" ; choice_label="Hyprland"      ; image_suffix="soltros-os_unstable_hyprland"    ; variant="Hyprland"      ; variant_id="hyprland" ;;
+            5)     echo "Canceled."; return 1 ;;
             *)     echo "Invalid selection."; return 2 ;;
         esac
     else
@@ -279,8 +291,14 @@ change_to_unstable() {
                 variant="GNOME"
                 variant_id="gnome"
                 ;;
+            hyprland)
+                choice_label="Hyprland"
+                image_suffix="soltros-os_unstable_hyprland"
+                variant="Hyprland"
+                variant_id="hyprland"
+                ;;
             *)
-                echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome."
+                echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome|hyprland."
                 return 2
                 ;;
         esac

@@ -140,7 +140,9 @@ change_to_stable() {
         echo "  2) COSMIC"
         echo "  3) GNOME"
         echo "  4) Hyprland"
-        echo "  5) Cancel"
+        echo "  5) Xfce"
+        echo "  6) Sway"
+        echo "  7) Cancel"
         printf "Enter a number [1]: "
         read -r choice
         case "${choice:-1}" in
@@ -277,7 +279,9 @@ change_to_unstable() {
         echo "  2) COSMIC"
         echo "  3) GNOME"
         echo "  4) Hyprland"
-        echo "  5) Cancel"
+        echo "  5) Xfce"
+        echo "  6) Sway"
+        echo "  7) Cancel"
         printf "Enter a number [1]: "
         read -r choice
         case "${choice:-1}" in

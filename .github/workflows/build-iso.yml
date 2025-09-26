@@ -1,4 +1,5 @@
 name: Build Soltros Installer ISO
+
 on:
   workflow_dispatch:
   push:
@@ -8,7 +9,6 @@ on:
 
 env:
   ARCH: x86_64
-  IMAGE_NAME: soltros-os
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
   VERSION: 42
@@ -16,76 +16,103 @@ env:
 
 jobs:
   build-iso:
-    name: Build Installer ISO
+    name: Build ISO (${{ matrix.name }})
     runs-on: ubuntu-latest
+    
     permissions:
       contents: read
       packages: write
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Unstable/KDE (main)
+          - name: "Unstable KDE"
+            branch: main
+            image_name: soltros-os
+            iso_suffix: ""
+          # LTS/KDE (Alma)
+          - name: "LTS KDE"
+            branch: soltros-os-lts
+            image_name: soltros-os_lts
+            iso_suffix: "-el"
+          # Unstable COSMIC
+          - name: "Unstable COSMIC"
+            branch: soltros-os-unstable_cosmic
+            image_name: soltros-os_unstable_cosmic
+            iso_suffix: "-cosmic"
+          # LTS COSMIC
+          - name: "LTS COSMIC"
+            branch: soltros-os-lts_cosmic
+            image_name: soltros-os_lts_cosmic
+            iso_suffix: "-cosmic-el"
+          # Unstable GNOME
+          - name: "Unstable GNOME"
+            branch: soltros-os-unstable_gnome
+            image_name: soltros-os_unstable_gnome
+            iso_suffix: "-gnome"
+          # LTS GNOME
+          - name: "LTS GNOME"
+            branch: soltros-os-lts_gnome
+            image_name: soltros-os_lts_gnome
+            iso_suffix: "-gnome-el"
+          # LTS XFCE
+          - name: "LTS XFCE"
+            branch: soltros-os-lts_xfce
+            image_name: soltros-os-lts_xfce
+            iso_suffix: "-xfce-el"
+          # Unstable XFCE
+          - name: "Unstable XFCE"
+            branch: soltros-os_unstable_xfce
+            image_name: soltros-os_unstable_xfce
+            iso_suffix: "-xfce"
+          # LTS Hyprland
+          - name: "LTS Hyprland"
+            branch: soltros-os-lts_hyprland
+            image_name: soltros-os_lts_hyprland
+            iso_suffix: "-hyprland-el"
+          # Unstable Hyprland
+          - name: "Unstable Hyprland"
+            branch: soltros-os_unstable_hyprland
+            image_name: soltros-os_unstable_hyprland
+            iso_suffix: "-hyprland"
+          # Unstable Sway
+          - name: "Unstable Sway"
+            branch: soltros-os_unstable_sway
+            image_name: soltros-os_unstable_sway
+            iso_suffix: "-sway"
+          # LTS Sway
+          - name: "LTS Sway"
+            branch: soltros-os-lts_sway
+            image_name: soltros-os-lts_sway
+            iso_suffix: "-sway-el"
+    
     steps:
-      - name: Checkout Repository
+      - name: Checkout Repository (${{ matrix.branch }})
         uses: actions/checkout@v5
-
-      - name: Build Soltros ISO
+        with:
+          ref: ${{ matrix.branch }}
+      
+      - name: Build Soltros ISO (${{ matrix.name }})
         uses: jasonn3/build-container-installer@main
         id: build
         with:
           arch: ${{ env.ARCH }}
-          image_name: ${{ env.IMAGE_NAME }}
+          image_name: ${{ matrix.image_name }}
           image_repo: ${{ env.IMAGE_REPO }}
           image_tag: ${{ env.IMAGE_TAG }}
           version: ${{ env.VERSION }}
           variant: ${{ env.VARIANT }}
-          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}.iso
-
-      - name: Upload ISO as artifact
+          iso_name: ${{ matrix.image_name }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}${{ matrix.iso_suffix }}.iso
+      
+      - name: Upload ISO as artifact (${{ matrix.name }})
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.build.outputs.iso_name }}
           path: |
             ${{ steps.build.outputs.iso_path }}
             ${{ steps.build.outputs.iso_path }}-CHECKSUM
-          if-no-files-found: error
-          retention-days: 0
-          compression-level: 0
-
-  build-iso-alma:
-    name: Build Installer ISO (Alma LTS)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    env:
-      ARCH: x86_64
-      IMAGE_NAME: soltros-os_lts
-      IMAGE_REPO: ghcr.io/soltros
-      IMAGE_TAG: latest
-      VERSION: 42
-      VARIANT: Kinoite
-    steps:
-      - name: Checkout Repository (LTS branch)
-        uses: actions/checkout@v5
-        with:
-          ref: soltros-os-lts
-
-      - name: Build Soltros ISO (Alma LTS)
-        uses: jasonn3/build-container-installer@main
-        id: build_alma
-        with:
-          arch: ${{ env.ARCH }}
-          image_name: ${{ env.IMAGE_NAME }}
-          image_repo: ${{ env.IMAGE_REPO }}
-          image_tag: ${{ env.IMAGE_TAG }}
-          version: ${{ env.VERSION }}
-          variant: ${{ env.VARIANT }}
-          iso_name: ${{ env.IMAGE_NAME }}-${{ env.IMAGE_TAG }}-el${{ env.VERSION }}.iso
-
-      - name: Upload ISO as artifact (Alma LTS)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.build_alma.outputs.iso_name }}
-          path: |
-            ${{ steps.build_alma.outputs.iso_path }}
-            ${{ steps.build_alma.outputs.iso_path }}-CHECKSUM
           if-no-files-found: error
           retention-days: 0
           compression-level: 0

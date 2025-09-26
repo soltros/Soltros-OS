@@ -10,7 +10,7 @@ on:
       - soltros-os-unstable_gnome
       - soltros-os-lts_gnome
       - soltros-os-lts_hyprland
-      - soltros-os-unstable_hyprland
+      - soltros-os_unstable_hyprland
       - soltros-os-lts_xfce
       - soltros-os_unstable_xfce
       - soltros-os_unstable_sway
@@ -80,7 +80,7 @@ jobs:
           - branch: soltros-os-lts_gnome
             image: soltros-os_lts_gnome
           # Unstable Hyprland
-          - branch: soltros-os-unstable_hyprland
+          - branch: soltros-os_unstable_hyprland
             image: soltros-os_unstable_hyprland
           #LTS Hyprland
           - branch: soltros-os-lts_hyprland

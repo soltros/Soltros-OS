@@ -125,6 +125,8 @@ change_to_stable() {
     #   change_to_stable cosmic
     #   change_to_stable gnome
     #   change_to_stable hyprland
+    #   change_to_stable sway
+    #   change_to_stable xfce
 
     # Normalize a string to lowercase alphanumerics/underscores
     _norm() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/_/g'; }
@@ -146,7 +148,9 @@ change_to_stable() {
             2)     norm="cosmic"; choice_label="COSMIC"     ; image_suffix="soltros-os_lts_cosmic" ; variant="COSMIC"     ; variant_id="cosmic";;
             3)     norm="gnome" ; choice_label="GNOME"      ; image_suffix="soltros-os_lts_gnome"  ; variant="GNOME"      ; variant_id="gnome" ;;
             4)     norm="hyprland" ; choice_label="Hyprland"      ; image_suffix="soltros-os_lts_hyprland"  ; variant="Hyprland"      ; variant_id="hyprland" ;;
-            5)     echo "Canceled."; return 1 ;;
+            5)     norm="Xfce" ; choice_label="Xfce"      ; image_suffix="soltros-os_lts_xfce"  ; variant="Xfce"      ; variant_id="Xfce" ;;
+            6)     norm="Sway" ; choice_label="Sway"      ; image_suffix="soltros-os_lts_sway"  ; variant="Sway"      ; variant_id="Sway" ;;
+            7)     echo "Canceled."; return 1 ;;
             *)     echo "Invalid selection."; return 2 ;;
         esac
     else
@@ -176,8 +180,22 @@ change_to_stable() {
                 variant="Hyprland"
                 variant_id="hyprland"
                 ;;
+            xfce)
+                choice_label="Xfce"
+                image_suffix="soltros-os_lts_xfce"
+                variant="Xfce"
+                variant_id="Xfce"
+                ;;
+            sway)
+                choice_label="Sway"
+                image_suffix="soltros-os_lts_sway"
+                variant="Sway"
+                variant_id="Sway" 
+                ;;
+
+
             *)
-                echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome|hyprland."
+                echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome|hyprland|xfce|sway."
                 return 2
                 ;;
         esac
@@ -185,7 +203,7 @@ change_to_stable() {
 
     local target_ref="ghcr.io/soltros/${image_suffix}:latest"
 
-    print_header "Swapping from Unstable to LTS (${choice_label})"
+    print_header "Swapping to (${choice_label})"
     print_info  "Target image: ${target_ref}"
 
     if sudo bootc switch "${target_ref}"; then
@@ -267,7 +285,9 @@ change_to_unstable() {
             2)     norm="cosmic"; choice_label="COSMIC"     ; image_suffix="soltros-os_unstable_cosmic"   ; variant="COSMIC"     ; variant_id="cosmic";;
             3)     norm="gnome" ; choice_label="GNOME"      ; image_suffix="soltros-os_unstable_gnome"    ; variant="GNOME"      ; variant_id="gnome" ;;
             4)     norm="hyprland" ; choice_label="Hyprland"      ; image_suffix="soltros-os_unstable_hyprland"    ; variant="Hyprland"      ; variant_id="hyprland" ;;
-            5)     echo "Canceled."; return 1 ;;
+            5)     norm="Xfce" ; choice_label="Xfce"      ; image_suffix="soltros-os_unstable_xfce"  ; variant="Xfce"      ; variant_id="Xfce" ;;
+            6)     norm="Sway" ; choice_label="Sway"      ; image_suffix="soltros-os_unstable_sway"  ; variant="Sway"      ; variant_id="Sway" ;;
+            7)     echo "Canceled."; return 1 ;;
             *)     echo "Invalid selection."; return 2 ;;
         esac
     else
@@ -297,6 +317,20 @@ change_to_unstable() {
                 variant="Hyprland"
                 variant_id="hyprland"
                 ;;
+            xfce)
+                choice_label="Xfce"
+                image_suffix="soltros-os_unstable_xfce"
+                variant="Xfce"
+                variant_id="Xfce"
+                ;;
+            sway)
+                choice_label="Sway" 
+                image_suffix="soltros-os_unstable_sway"
+                variant="Sway"
+                variant_id="Sway"
+                ;;
+
+
             *)
                 echo "Unknown desktop '$choice_raw'. Use: kde|cosmic|gnome|hyprland."
                 return 2
@@ -306,7 +340,7 @@ change_to_unstable() {
 
     local target_ref="ghcr.io/soltros/${image_suffix}:latest"
 
-    print_header "Swapping from LTS to Unstable (${choice_label})"
+    print_header "Swapping swapping to (${choice_label})"
     print_info  "Target image: ${target_ref}"
 
     if sudo bootc switch "${target_ref}"; then

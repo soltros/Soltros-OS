@@ -11,8 +11,12 @@ on:
       - soltros-os-lts_gnome
       - soltros-os-lts_hyprland
       - soltros-os-unstable_hyprland
+      - soltros-os-lts_xfce
+      - soltros-os_unstable_xfce
+      - soltros-os_unstable_sway
+      - soltros-os-lts_sway
   schedule:
-    - cron: '0 6 * * 0'  # 6am UTC every Sunday
+    - cron: '0 6 * * 0,2,4'  # 6am UTC every Sunday (0), Tuesday (2), Thursday (4)
   push:
     branches:
       - main
@@ -23,6 +27,11 @@ on:
       - soltros-os-lts_gnome
       - soltros-os-lts_hyprland
       - soltros-os-unstable_hyprland
+      - soltros-os-lts_xfce
+      - soltros-os_unstable_xfce
+      - soltros-os_unstable_sway
+      - soltros-os-lts_sway
+
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -76,6 +85,18 @@ jobs:
           #LTS Hyprland
           - branch: soltros-os-lts_hyprland
             image: soltros-os_lts_hyprland
+          # Unstable XFCE
+          - branch: soltros-os_unstable_xfce
+            image: soltros-os_unstable_xfce
+          # Unstable Sway
+          - branch: soltros-os_unstable_sway
+            image: soltros-os_unstable_sway
+          # LTS XFCE
+          - branch: soltros-os-lts_xfce
+            image: soltros-os-lts_xfce
+          # LTS Sway
+          - branch: soltros-os-lts_sway
+            image: soltros-os-lts_sway 
 
     steps:
       - name: Prepare environment

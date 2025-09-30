@@ -1,7 +1,7 @@
 
 # /// This project has gone on hiatus ///
 
-# Working on Soltros OS was a huge learning experience for me. I learned a lot about RPM-Ostree and cloud-native distributions. However, I want to turn my interests back to NixOS. However, Soltros OS is fully automatic, and will auto-rebuild for LTS and Unstable every few days, and will always be updated to reach new upstreams.
+# Working on Soltros OS was a huge learning experience for me. I learned a lot about RPM-Ostree and cloud-native distributions. However, I want to turn my interests back to NixOS. Soltros OS is fully automatic, and will auto-rebuild for LTS and Unstable every few days, and will always be updated to reach new upstreams.
 
 # SoltrOS - Desktop Edition
 

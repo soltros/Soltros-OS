@@ -14,6 +14,12 @@ COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
 RUN chmod 644 /etc/pki/containers/soltros.pub
 
+# Install Soltros OS binary components
+RUN git clone --depth=1 https://github.com/soltros/Soltros-OS-Components.git /tmp/components && \
+    cp /tmp/components/*.sh /usr/share/soltros/bin/ 2>/dev/null || true && \
+    chmod +x /usr/share/soltros/bin/*.sh && \
+    rm -rf /tmp/components
+
 # Change perms
 RUN chmod +x \
     /ctx/build.sh \

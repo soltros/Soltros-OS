@@ -5,12 +5,14 @@ on:
     branches:
       - main
       - soltros-os-lts
+      - soltros-lts_pantheon
   schedule:
     - cron: '0 6 * * 0,2,4'  # 6am UTC every Sunday (0), Tuesday (2), Thursday (4)
   push:
     branches:
       - main
       - soltros-os-lts
+      - soltros-lts_pantheon
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -46,6 +48,9 @@ jobs:
           # LTS/KDE
           - branch: soltros-os-lts
             image: soltros-os_lts
+          # LTS/Pantheon
+          - branch: soltros-lts_pantheon
+            image: soltros-lts_pantheon
     steps:
       - name: Prepare environment
         shell: bash

@@ -1,0 +1,26 @@
+[Desktop Entry]
+Actions=QuickBackup;
+Categories=System;Settings;Utility;
+Comment[en_US]=Backup and restore your Cosmic desktop settings
+Comment=Backup and restore your Cosmic desktop settings
+Exec=/usr/share/soltros/bin/cosmic-settings-backup/cbackup
+GenericName[en_US]=Settings Backup Tool
+GenericName=Settings Backup Tool
+Icon=/usr/share/soltros/bin/cosmic-settings-backup/gear.svg
+Keywords=backup;restore;cosmic;settings;configuration;desktop;
+MimeType=
+Name[en_US]=Cosmic Settings Backup
+Name=Cosmic Settings Backup
+Path=
+StartupNotify=true
+Terminal=false
+TerminalOptions=
+Type=Application
+Version=1.0
+X-KDE-SubstituteUID=false
+X-KDE-Username=
+
+[Desktop Action QuickBackup]
+Exec=/usr/share/soltros/bin/cosmic-backup --quick-backup
+Icon=document-save
+Name=Create Quick Backup

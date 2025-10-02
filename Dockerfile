@@ -14,6 +14,17 @@ COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
 RUN chmod 644 /etc/pki/containers/soltros.pub
 
+# Grab components
+RUN git clone --depth=1 https://github.com/soltros/Soltros-OS-Components.git /tmp/components && \
+    cp /tmp/components/*.sh /usr/share/soltros/bin/ 2>/dev/null || true && \
+    chmod +x /usr/share/soltros/bin/*.sh && \
+    rm -rf /tmp/components
+
+    # Set up Cosmic Settings Backup
+RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cbackup
+RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop
+RUN mv /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop /usr/share/applications/
+
 # Change perms
 RUN chmod +x \
     /ctx/build.sh \
@@ -23,7 +34,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/pantheon-desktop.sh \
+    /ctx/cosmic-desktop.sh \
     /ctx/build-initramfs.sh \
     /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
@@ -41,7 +52,7 @@ LABEL ostree.linux="fedora" \
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready, rolling Atomic Pantheon image with MacBook support" \
+    org.opencontainers.image.description="Gaming-ready, rolling Atomic Cosmic image with MacBook support" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding

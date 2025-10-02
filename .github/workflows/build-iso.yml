@@ -39,54 +39,14 @@ jobs:
             iso_suffix: "-el"
           # Unstable COSMIC
           - name: "Unstable COSMIC"
-            branch: soltros-os-unstable_cosmic
-            image_name: soltros-os_unstable_cosmic
+            branch: soltros-unstable_cosmic
+            image_name: soltros-unstable_cosmic
             iso_suffix: "-cosmic"
           # LTS COSMIC
           - name: "LTS COSMIC"
-            branch: soltros-os-lts_cosmic
-            image_name: soltros-os_lts_cosmic
+            branch: soltros-lts_cosmic
+            image_name: soltros-lts_cosmic
             iso_suffix: "-cosmic-el"
-          # Unstable GNOME
-          - name: "Unstable GNOME"
-            branch: soltros-os-unstable_gnome
-            image_name: soltros-os_unstable_gnome
-            iso_suffix: "-gnome"
-          # LTS GNOME
-          - name: "LTS GNOME"
-            branch: soltros-os-lts_gnome
-            image_name: soltros-os_lts_gnome
-            iso_suffix: "-gnome-el"
-          # LTS XFCE
-          - name: "LTS XFCE"
-            branch: soltros-os-lts_xfce
-            image_name: soltros-os-lts_xfce
-            iso_suffix: "-xfce-el"
-          # Unstable XFCE
-          - name: "Unstable XFCE"
-            branch: soltros-os_unstable_xfce
-            image_name: soltros-os_unstable_xfce
-            iso_suffix: "-xfce"
-          # LTS Hyprland
-          - name: "LTS Hyprland"
-            branch: soltros-os-lts_hyprland
-            image_name: soltros-os_lts_hyprland
-            iso_suffix: "-hyprland-el"
-          # Unstable Hyprland
-          - name: "Unstable Hyprland"
-            branch: soltros-os_unstable_hyprland
-            image_name: soltros-os_unstable_hyprland
-            iso_suffix: "-hyprland"
-          # Unstable Sway
-          - name: "Unstable Sway"
-            branch: soltros-os_unstable_sway
-            image_name: soltros-os_unstable_sway
-            iso_suffix: "-sway"
-          # LTS Sway
-          - name: "LTS Sway"
-            branch: soltros-os-lts_sway
-            image_name: soltros-os-lts_sway
-            iso_suffix: "-sway-el"
     
     steps:
       - name: Checkout Repository (${{ matrix.branch }})

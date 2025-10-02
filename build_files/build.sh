@@ -34,8 +34,8 @@ echo_group /ctx/nix-package-manager.sh
 log "Install Waterfox browser BIN"
 echo_group /ctx/waterfox-installer.sh
 
-log "Install Pantheon"
-echo_group /ctx/pantheon-desktop.sh
+log "Install Cosmic"
+echo_group /ctx/cosmic-desktop.sh
 
 log "Install desktop packages"
 echo_group /ctx/desktop-packages.sh

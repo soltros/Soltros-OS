@@ -17,12 +17,6 @@ RUN
 # Install git first if not already in base image
 RUN dnf5 install -y git
 
-# Install Soltros OS binary components
-RUN git clone --depth=1 https://github.com/soltros/Soltros-OS-Components.git /tmp/components && \
-    cp /tmp/components/*.sh /usr/share/soltros/bin/ 2>/dev/null || true && \
-    chmod +x /usr/share/soltros/bin/*.sh && \
-    rm -rf /tmp/components
-
 # Change perms
 RUN chmod +x \
     /ctx/build.sh \

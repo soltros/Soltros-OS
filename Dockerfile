@@ -14,17 +14,6 @@ COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
 RUN chmod 644 /etc/pki/containers/soltros.pub
 
-# Grab components
-RUN git clone --depth=1 https://github.com/soltros/Soltros-OS-Components.git /tmp/components && \
-    cp /tmp/components/*.sh /usr/share/soltros/bin/ 2>/dev/null || true && \
-    chmod +x /usr/share/soltros/bin/*.sh && \
-    rm -rf /tmp/components
-
-    # Set up Cosmic Settings Backup
-RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cbackup
-RUN chmod +x /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop
-RUN mv /usr/share/soltros/bin/cosmic-settings-backup/cosmic-settings-backup.desktop /usr/share/applications/
-
 # Change perms
 RUN chmod +x \
     /ctx/build.sh \

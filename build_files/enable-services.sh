@@ -11,9 +11,6 @@ log() {
 log "Enabling Tailscale"
 systemctl enable tailscaled.service
 
-log "Enable Greetd failsafe"
-systemctl enable -f greetd.service
-
 log "Enable binaries"
 mkdir -p /usr/share/soltros/bin/
 git clone --depth=1 https://github.com/soltros/Soltros-OS-Components.git /tmp/components && \

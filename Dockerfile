@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/base-atomic
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/cosmic-atomic
 ARG TAG_VERSION=43
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release

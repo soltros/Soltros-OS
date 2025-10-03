@@ -13,7 +13,7 @@ COPY build_files/ /ctx/
 COPY soltros.pub /ctx/soltros.pub
 COPY soltros.pub /etc/pki/containers/soltros.pub
 RUN chmod 644 /etc/pki/containers/soltros.pub
-RUN 
+
 # Install git first if not already in base image
 RUN dnf5 install -y git
 

@@ -1,11 +1,9 @@
 #!/usr/bin/bash
-
 set ${SET_X:+-x} -euo pipefail
-
 trap '[[ $BASH_COMMAND != echo* ]] && [[ $BASH_COMMAND != log* ]] && echo "+ $BASH_COMMAND"' DEBUG
 
 log() {
-  echo "=== $* ==="
+    echo "=== $* ==="
 }
 
 log "Installing latest Waterfox browser"
@@ -26,13 +24,13 @@ WATERFOX_URL="https://cdn1.waterfox.net/waterfox/releases/${LATEST_VERSION}/Linu
 ARCHIVE="/tmp/waterfox-${LATEST_VERSION}.tar.bz2"
 INSTALL_DIR="/usr/share/soltros/waterfox"
 BIN_LINK="/usr/share/soltros/waterfox/waterfox"
-DESKTOP_FILE="/usr/share/applications/waterfox.desktop"
+DESKTOP_FILE="/usr/share/applications/waterfox-default.desktop"
 
 log "Downloading Waterfox ${LATEST_VERSION}"
 curl --retry 3 --retry-delay 5 \
-     --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" \
-     -L -o "$ARCHIVE" \
-     "$WATERFOX_URL"
+    --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" \
+    -L -o "$ARCHIVE" \
+    "$WATERFOX_URL"
 
 # Check if download was successful
 if [ ! -f "$ARCHIVE" ]; then
@@ -41,23 +39,22 @@ if [ ! -f "$ARCHIVE" ]; then
 fi
 
 log "Extracting Waterfox archive"
+mkdir -p "$INSTALL_DIR"
 tar -xf "$ARCHIVE" -C "$INSTALL_DIR" --strip-components=1
 
 log "Creating desktop launcher"
-cat > "$DESKTOP_FILE" <<EOF
+cat > "$DESKTOP_FILE" << 'EOF'
 [Desktop Entry]
 Name=Waterfox
 Comment=Privacy-focused web browser
-Exec=$BIN_LINK %u
-Icon=$INSTALL_DIR/browser/chrome/icons/default/default128.png
+Exec=/usr/share/soltros/waterfox/waterfox %u
+Icon=/usr/share/soltros/waterfox/browser/chrome/icons/default/default128.png
 Type=Application
 Categories=Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml+xml;application/xml;x-scheme-handler/http;x-scheme-handler/https;
 StartupNotify=true
-StartupWMClass=Waterfox
+StartupWMClass=waterfox-default
 EOF
-
-chmod +x "$DESKTOP_FILE"
 
 log "Cleaning up temporary files"
 rm -f "$ARCHIVE"

@@ -11,8 +11,8 @@ log() {
 log "Enabling Tailscale"
 systemctl enable tailscaled.service
 
-log "Enable SDDM failsafe"
-systemctl enable -f sddm.service
+log "Enable Greetd failsafe"
+systemctl enable -f greetd.service
 
 log "Enable binaries"
 mkdir -p /usr/share/soltros/bin/

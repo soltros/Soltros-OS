@@ -23,7 +23,7 @@ RUN chmod +x \
     /ctx/desktop-packages.sh \
     /ctx/gaming.sh \
     /ctx/waterfox-installer.sh \
-    /ctx/kde-desktop.sh \
+    /ctx/miracle-wm.sh \
     /ctx/build-initramfs.sh \
     /ctx/enable-services.sh \
     /ctx/nix-package-manager.sh \
@@ -41,7 +41,7 @@ LABEL ostree.linux="fedora" \
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready, rolling Atomic KDE image with MacBook support" \
+    org.opencontainers.image.description="Gaming-ready, rolling Atomic Miracle WM image with MacBook support" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding

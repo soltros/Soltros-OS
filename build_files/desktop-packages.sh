@@ -1617,7 +1617,7 @@ LAYERED_PACKAGES=(
     libvirtd
 )
 
-dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
+dnf5 install --setopt=install_weak_deps=False --allowerasing --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
 
 # Enabling various services
 log "Enabling services"

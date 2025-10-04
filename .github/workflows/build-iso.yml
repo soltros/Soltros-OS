@@ -47,6 +47,16 @@ jobs:
             branch: soltros-lts_cosmic
             image_name: soltros-lts_cosmic
             iso_suffix: "-cosmic-el"
+          # Miracle LTS
+          - name: "LTS Miracle"
+            branch: soltros-lts_miracle
+            image_name: soltros-lts_miracle
+            iso_suffix: "-miracle-el"
+          # Miracle Unstable
+          - name: "Unstable Miracle"
+            branch: soltros-unstable_miracle
+            image_name: soltros-unstable_miracle
+            iso_suffix: "-soltros-unstable_miracle"
     
     steps:
       - name: Checkout Repository (${{ matrix.branch }})

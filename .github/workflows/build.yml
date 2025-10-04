@@ -7,6 +7,8 @@ on:
       - soltros-os-lts
       - soltros-lts_cosmic
       - soltros-unstable_cosmic
+      - soltros-lts_miracle
+      - soltros-unstable_miracle
   schedule:
     - cron: '0 6 * * 0,2,4'  # 6am UTC every Sunday (0), Tuesday (2), Thursday (4)
   push:
@@ -15,6 +17,8 @@ on:
       - soltros-os-lts
       - soltros-lts_cosmic
       - soltros-unstable_cosmic
+      - soltros-lts_miracle
+      - soltros-unstable_miracle
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -56,6 +60,12 @@ jobs:
           # Unstable/Cosmic
           - branch: soltros-unstable_cosmic
             image: soltros-unstable_cosmic
+          # LTS/Miracle
+          - branch: soltros-lts_miracle
+            image: soltros-lts_miracle
+          # Unstable/Miracle
+          - branch: soltros-unstable_miracle
+            image: soltros-unstable_miracle
     steps:
       - name: Prepare environment
         shell: bash

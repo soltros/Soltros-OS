@@ -12,7 +12,7 @@ log "Installing Liri Desktop Environment with LightDM"
 # Install Liri packages
 log "Installing Liri"
 
-sudo dnf copr enable plfiorini/liri-nightly
+sudo dnf copr enable plfiorini/liri-nightly -chroot=fedora-rawhide-x86_64
 
 sudo dnf5 install -y \
     sddm \

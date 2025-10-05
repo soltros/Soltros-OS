@@ -41,7 +41,7 @@ LABEL ostree.linux="fedora" \
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready, rolling Atomic KDE image with MacBook support" \
+    org.opencontainers.image.description="Gaming-ready, rolling Atomic Liri image with MacBook support" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding

@@ -1,6 +1,6 @@
 # Set base image and tag
 ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/base-atomic
-ARG TAG_VERSION=42
+ARG TAG_VERSION=43
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
 LABEL org.opencontainers.image.base.name="${BASE_IMAGE}" \
@@ -41,7 +41,7 @@ LABEL ostree.linux="fedora" \
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
-    org.opencontainers.image.description="Gaming-ready, rolling Atomic KDE image with MacBook support" \
+    org.opencontainers.image.description="Gaming-ready, rolling Atomic Liri image with MacBook support" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding

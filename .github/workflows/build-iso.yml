@@ -47,16 +47,16 @@ jobs:
             branch: soltros-lts_cosmic
             image_name: soltros-lts_cosmic
             iso_suffix: "-cosmic-el"
-          # Liri LTS
-          - name: "LTS Liri"
-            branch: soltros-os-lts_liri
-            image_name: soltros-os-lts_liri
-            iso_suffix: "-liri-el"
-          # Liri Unstable
-          - name: "Unstable Liri"
-            branch: soltros-os-unstable_liri
-            image_name: soltros-os-unstable_liri
-            iso_suffix: "-soltros-unstable_liri"
+          # Gnome LTS
+          - name: "LTS Gnome"
+            branch: soltros-os-lts_gnome
+            image_name: soltros-os-lts_gnome
+            iso_suffix: "-gnome-el"
+          # Gnome Unstable
+          - name: "Unstable Gnome"
+            branch: soltros-os-unstable_gnome
+            image_name: soltros-os-unstable_gnome
+            iso_suffix: "-soltros-unstable_gnome"
     
     steps:
       - name: Checkout Repository (${{ matrix.branch }})

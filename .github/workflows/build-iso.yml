@@ -49,13 +49,13 @@ jobs:
             iso_suffix: "-cosmic-el"
           # Liri LTS
           - name: "LTS Liri"
-            branch: soltros-lts_liri
-            image_name: soltros-lts_liri
+            branch: soltros-os-lts_liri
+            image_name: soltros-os-lts_liri
             iso_suffix: "-liri-el"
           # Liri Unstable
           - name: "Unstable Liri"
-            branch: soltros-unstable_liri
-            image_name: soltros-unstable_liri
+            branch: soltros-os-unstable_liri
+            image_name: soltros-os-unstable_liri
             iso_suffix: "-soltros-unstable_liri"
     
     steps:

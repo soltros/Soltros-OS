@@ -17,8 +17,8 @@ on:
       - soltros-os-lts
       - soltros-lts_cosmic
       - soltros-unstable_cosmic
-      - soltros-lts_liri
-      - soltros-unstable_liri
+      - soltros-os-lts_liri
+      - soltros-os-unstable_liri
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -61,11 +61,11 @@ jobs:
           - branch: soltros-unstable_cosmic
             image: soltros-unstable_cosmic
           # LTS/Liri
-          - branch: soltros-lts_liri
-            image: soltros-lts_liri
+          - branch: soltros-os-lts_liri
+            image: soltros-os-lts_liri
           # Unstable/Liri
-          - branch: soltros-unstable_liri
-            image: soltros-unstable_liri
+          - branch: soltros-os-unstable_liri
+            image: soltros-os-unstable_liri
     steps:
       - name: Prepare environment
         shell: bash

@@ -1,8 +1,5 @@
-![SoltrOS Logo](https://raw.githubusercontent.com/soltros/soltros-os-website/refs/heads/master/soltros.svg)
-
 # SoltrOS - Desktop Edition
-
-![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)
+![SoltrOS Logo](https://raw.githubusercontent.com/soltros/soltros-os-website/refs/heads/master/soltros.svg)
 
 A gaming-optimized, rolling immutable Linux distribution based on Fedora releases, featuring MacBook hardware support, the latest kernel, gaming performance enhancements, the KDE Plasma desktop environment, and developer-friendly tools.
 
@@ -13,6 +10,7 @@ There are a few ways you can install SoltrosOS. The recomended way is to downloa
 
 You can get the latest bleeding-edge edition ISO [here](https://bit.ly/soltros-os-unstable), and the stable edition ISO [here](https://bit.ly/soltros-os-stable). Once Soltros OS is installed, it rolls updates forever. No need to swap to new ISOs every 6 months. The bleeding-edge distribution is based upon the absolute newest packages available from Rawhide, and can be a bit rocky to use. The LTS version is pinned to the 6-month Fedora cycle.
 
+![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)
 
  However, you can also install it through Silverblue/Kinoite/Bazzite/Bluefin with Bootc Switch:
 

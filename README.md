@@ -1,3 +1,4 @@
+![SoltrOS Logo](https://raw.githubusercontent.com/soltros/soltros-os-website/refs/heads/master/soltros.svg)
 
 # SoltrOS - Desktop Edition
 

@@ -15,8 +15,8 @@ ls -la /usr/lib/modules/ || true
 
 # Set the custom plymouth theme before rebuilding the initramfs
 echo "Configuring Plymouth theme..."
-plymouth-set-default-theme linux-penguin || true
-echo "Plymouth theme set to 'linux-penguin'."
+plymouth-set-default-theme soltros-boot || true
+echo "Plymouth theme set to 'soltros-boot'."
 
 # Try multiple methods to find the installed kernel
 QUALIFIED_KERNEL=""

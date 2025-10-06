@@ -24,15 +24,15 @@ MessageBelowAnimation=true
 
 [boot-up]
 UseEndAnimation=true
-UseFirmwareBackground=true
+UseFirmwareBackground=false
 
 [shutdown]
 UseEndAnimation=false
-UseFirmwareBackground=true
+UseFirmwareBackground=false
 
 [reboot]
 UseEndAnimation=false
-UseFirmwareBackground=true
+UseFirmwareBackground=false
 
 [updates]
 SuppressMessages=true

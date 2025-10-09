@@ -82,6 +82,9 @@ LAYERED_PACKAGES=(
     goverlay
     corectrl
     steam-devices
+    gamescope
+    gamescope-session-steam
+
     # MacBook thermal management
     mbpfan
     thermald

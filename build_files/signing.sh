@@ -2,14 +2,12 @@
 # SoltrOS: Container Signing Setup Script
 # Author: Derrik
 # Description: Configures sigstore signing trust for ghcr.io/soltros containers
-
 set ${SET_X:+-x} -eou pipefail
 
 # Variables
 NAMESPACE="soltros"
 PUBKEY="/etc/pki/containers/${NAMESPACE}.pub"
 POLICY="/etc/containers/policy.json"
-REGISTRY="ghcr.io/${NAMESPACE}"
 
 log() {
   echo "=== $* ==="
@@ -21,19 +19,64 @@ mkdir -p /etc/pki/containers
 mkdir -p /etc/containers/registries.d/
 
 log "Setting up secure policy.json"
-cat > "$POLICY" << EOF
+cat > "$POLICY" << 'EOF'
 {
     "default": [
         {
-            "type": "reject"
+            "type": "insecureAcceptAnything"
         }
     ],
     "transports": {
         "docker": {
-            "$REGISTRY": [
+            "ghcr.io/soltros/soltros-os": [
                 {
                     "type": "sigstoreSigned",
-                    "keyPath": "$PUBKEY",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "ghcr.io/soltros/soltros-os_lts": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "ghcr.io/soltros/soltros-lts_cosmic": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "ghcr.io/soltros/soltros-unstable_cosmic": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "ghcr.io/soltros/soltros-os-lts_gnome": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "ghcr.io/soltros/soltros-os-unstable_gnome": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
                     "signedIdentity": {
                         "type": "matchRepository"
                     }
@@ -53,10 +96,8 @@ EOF
 
 log "Installing cosign public key"
 if [ -f /ctx/soltros.pub ]; then
-    # Legacy path for backward compatibility
     cp /ctx/soltros.pub "$PUBKEY"
 else
-    # Preferred path - key should be copied via Dockerfile
     if [ ! -f "$PUBKEY" ]; then
         echo "ERROR: Public key not found at /ctx/soltros.pub or $PUBKEY" >&2
         exit 1
@@ -68,14 +109,25 @@ chmod 644 "$PUBKEY"
 chmod 644 "$POLICY"
 
 log "Creating registry policy YAML"
-cat > "/etc/containers/registries.d/${NAMESPACE}.yaml" << EOF
+cat > "/etc/containers/registries.d/soltros.yaml" << 'EOF'
 docker:
-  ${REGISTRY}:
+  ghcr.io/soltros/soltros-os:
+    use-sigstore-attachments: true
+  ghcr.io/soltros/soltros-os_lts:
+    use-sigstore-attachments: true
+  ghcr.io/soltros/soltros-lts_cosmic:
+    use-sigstore-attachments: true
+  ghcr.io/soltros/soltros-unstable_cosmic:
+    use-sigstore-attachments: true
+  ghcr.io/soltros/soltros-os-lts_gnome:
+    use-sigstore-attachments: true
+  ghcr.io/soltros/soltros-os-unstable_gnome:
     use-sigstore-attachments: true
 EOF
 
 log "Verifying policy configuration"
-# Basic syntax check
-jq empty "$POLICY"
+if command -v jq &> /dev/null; then
+    jq empty "$POLICY"
+fi
 
-log "Signing policy setup complete for $REGISTRY"
+log "Signing policy setup complete"

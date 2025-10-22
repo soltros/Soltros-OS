@@ -29,6 +29,7 @@ env:
   IMAGE_LOGO_URL: "https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   DEFAULT_TAG: "latest"
+  SIGNATURE_REGISTRY: "ghcr.io/${{ github.repository_owner }}/signatures"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -72,6 +73,7 @@ jobs:
         run: |
           echo "IMAGE_REGISTRY=$(echo "${IMAGE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
           echo "IMAGE_NAME=$(echo "${{ matrix.image }}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+          echo "SIGNATURE_REGISTRY=$(echo "${SIGNATURE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
       - name: Checkout ${{ matrix.branch }}
         uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4
@@ -170,47 +172,46 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push To GHCR
-        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
+      - name: Setup GPG
         if: steps.publish.outputs.publish == 'true'
-        id: push
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --import
+          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --quick-add-key $(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}') rsa4096 sign never
+
+      - name: Push and Sign Image
+        if: steps.publish.outputs.publish == 'true'
         env:
           REGISTRY_USER: ${{ github.actor }}
-          REGISTRY_PASSWORD: ${{ github.token }}
-        with:
-          registry: ${{ env.IMAGE_REGISTRY }}
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.metadata.outputs.tags }}
-          username: ${{ env.REGISTRY_USER }}
-          password: ${{ env.REGISTRY_PASSWORD }}
-
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
-        if: steps.publish.outputs.publish == 'true'
-
-      - name: Sign container image
-        if: steps.publish.outputs.publish == 'true'
-        env:
-          DIGEST: ${{ steps.push.outputs.digest }}
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-          COSIGN_PUBLIC_KEY: ${{ secrets.COSIGN_PUBLIC_KEY }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           IMAGE_FULL="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          SIGNATURE_DEST="${{ env.SIGNATURE_REGISTRY }}/${{ env.IMAGE_NAME }}"
           
-          # Login to registry for cosign
-          echo "$REGISTRY_TOKEN" | cosign login ghcr.io -u ${{ github.actor }} --password-stdin
+          # Get GPG key fingerprint
+          GPG_KEY=$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')
           
-          # Sign the image with explicit registry credentials
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
-            --registry-username=${{ github.actor }} \
-            --registry-password=$REGISTRY_TOKEN \
-            "$IMAGE_FULL@$DIGEST"
+          echo "Pushing and signing image..."
+          for tag in ${{ steps.metadata.outputs.tags }}; do
+            skopeo copy \
+              --sign-by="${GPG_KEY}" \
+              --sign-passphrase-file=<(echo "$GPG_PASSPHRASE") \
+              --dest-creds="${REGISTRY_USER}:${REGISTRY_PASSWORD}" \
+              "containers-storage:${tag}" \
+              "docker://${IMAGE_FULL}:$(echo ${tag} | cut -d: -f2)"
+            
+            # Upload signature to signature repository
+            skopeo copy \
+              --dest-creds="${REGISTRY_USER}:${REGISTRY_PASSWORD}" \
+              "containers-storage:${tag}" \
+              "docker://${SIGNATURE_DEST}:$(echo ${tag} | cut -d: -f2)"
+          done
           
-          # Verify the signature was successfully attached
-          echo "Verifying signature was attached..."
-          cosign verify --key env://COSIGN_PUBLIC_KEY "$IMAGE_FULL@$DIGEST"
-          
-          echo "✅ Image signed and verified successfully"
+          echo "✅ Images pushed and signed successfully"
+
+      - name: Export GPG Public Key
+        if: steps.publish.outputs.publish == 'true'
+        run: |
+          GPG_KEY=$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')
+          gpg --armor --export "${GPG_KEY}" > soltros-signing-key.asc
+          echo "Public key exported to soltros-signing-key.asc"

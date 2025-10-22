@@ -5,12 +5,20 @@ on:
     branches:
       - main
       - soltros-os-lts
+      - soltros-lts_cosmic
+      - soltros-unstable_cosmic
+      - soltros-os-lts_gnome
+      - soltros-os-unstable_gnome
   schedule:
     - cron: '0 6 * * 0,2,4'  # 6am UTC every Sunday (0), Tuesday (2), Thursday (4)
   push:
     branches:
       - main
       - soltros-os-lts
+      - soltros-lts_cosmic
+      - soltros-unstable_cosmic
+      - soltros-os-lts_gnome
+      - soltros-os-unstable_gnome
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -21,6 +29,7 @@ env:
   IMAGE_LOGO_URL: "https://avatars.githubusercontent.com/u/120078124?s=200&v=4"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   DEFAULT_TAG: "latest"
+  SIGNATURE_REGISTRY: "ghcr.io/${{ github.repository_owner }}/signatures"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
@@ -46,12 +55,25 @@ jobs:
           # LTS/KDE
           - branch: soltros-os-lts
             image: soltros-os_lts
+          # LTS/Cosmic
+          - branch: soltros-lts_cosmic
+            image: soltros-lts_cosmic
+          # Unstable/Cosmic
+          - branch: soltros-unstable_cosmic
+            image: soltros-unstable_cosmic
+          # LTS/Gnome
+          - branch: soltros-os-lts_gnome
+            image: soltros-os-lts_gnome
+          # Unstable/Gnome
+          - branch: soltros-os-unstable_gnome
+            image: soltros-os-unstable_gnome
     steps:
       - name: Prepare environment
         shell: bash
         run: |
           echo "IMAGE_REGISTRY=$(echo "${IMAGE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
           echo "IMAGE_NAME=$(echo "${{ matrix.image }}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
+          echo "SIGNATURE_REGISTRY=$(echo "${SIGNATURE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
       - name: Checkout ${{ matrix.branch }}
         uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4
@@ -128,7 +150,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "push" ]]; then
             # For push events, check if we're on one of the target branches
             case "${{ github.ref }}" in
-              "refs/heads/main"|"refs/heads/soltros-os-lts"|"refs/heads/soltros-os-unstable_cosmic"|"refs/heads/soltros-os-lts_cosmic"|"refs/heads/soltros-os-unstable_gnome"|"refs/heads/soltros-os-lts_gnome")
+              "refs/heads/main"|"refs/heads/soltros-os-lts"|"refs/heads/soltros-unstable_cosmic"|"refs/heads/soltros-lts_cosmic"|"refs/heads/soltros-unstable_gnome"|"refs/heads/soltros-os-lts_gnome")
                 echo "Publishing due to push to target branch"
                 echo "publish=true" >> "$GITHUB_OUTPUT"
                 ;;
@@ -164,17 +186,55 @@ jobs:
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
 
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@d7543c93d881b35a8faa02e8e3605f69b7a1ce62 # v3.10.0
+      - name: Setup GPG
         if: steps.publish.outputs.publish == 'true'
+        run: |
+          # Setup GPG agent
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          cat > ~/.gnupg/gpg-agent.conf << EOF
+          allow-loopback-pinentry
+          EOF
+          echo RELOADAGENT | gpg-connect-agent
+          
+          # Import private key
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import --pinentry-mode loopback
+          
+          # Set ultimate trust for the key
+          GPG_KEY=$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')
+          echo "${GPG_KEY}:6:" | gpg --import-ownertrust
+          
+          echo "GPG setup complete, key: ${GPG_KEY}"
 
-      - name: Sign container image
+      - name: Sign and Push with GPG
         if: steps.publish.outputs.publish == 'true'
         env:
-          DIGEST: ${{ steps.push.outputs.digest }}
-          COSIGN_EXPERIMENTAL: false
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           IMAGE_FULL="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY "$IMAGE_FULL@${{ env.DIGEST }}"
+          SIGNATURE_DEST="${{ env.SIGNATURE_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          
+          # Get GPG key fingerprint
+          GPG_KEY=$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')
+          
+          echo "Signing images with GPG key: ${GPG_KEY}"
+          
+          # Sign each tag
+          for tag in ${{ steps.metadata.outputs.tags }}; do
+            TAG_NAME=$(echo ${tag} | rev | cut -d: -f1 | rev)
+            echo "Processing tag: ${TAG_NAME}"
+            
+            # Push and sign the image
+            echo "$GPG_PASSPHRASE" | skopeo copy \
+              --sign-by="${GPG_KEY}" \
+              --sign-passphrase-file=/dev/stdin \
+              --dest-creds="${REGISTRY_USER}:${REGISTRY_PASSWORD}" \
+              "containers-storage:localhost/${IMAGE_NAME}:${TAG_NAME}" \
+              "docker://${IMAGE_FULL}:${TAG_NAME}"
+            
+            echo "✅ Signed and pushed: ${IMAGE_FULL}:${TAG_NAME}"
+          done
+          
+          echo "✅ All images pushed and signed successfully"

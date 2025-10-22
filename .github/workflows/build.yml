@@ -195,6 +195,21 @@ jobs:
           COSIGN_EXPERIMENTAL: false
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           IMAGE_FULL="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
-          cosign sign -y --key env://COSIGN_PRIVATE_KEY "$IMAGE_FULL@${{ env.DIGEST }}"
+          
+          # Login to registry for cosign
+          echo "$REGISTRY_TOKEN" | cosign login ghcr.io -u ${{ github.actor }} --password-stdin
+          
+          # Sign the image with explicit registry credentials
+          cosign sign -y --key env://COSIGN_PRIVATE_KEY \
+            --registry-username=${{ github.actor }} \
+            --registry-password=$REGISTRY_TOKEN \
+            "$IMAGE_FULL@$DIGEST"
+          
+          # Verify the signature was successfully attached
+          echo "Verifying signature was attached..."
+          cosign verify --key env://COSIGN_PRIVATE_KEY "$IMAGE_FULL@$DIGEST"
+          
+          echo "✅ Image signed and verified successfully"

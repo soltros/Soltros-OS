@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # SoltrOS: Container Signing Setup Script
 # Author: Derrik
-# Description: Configures sigstore signing trust for ghcr.io/soltros containers
+# Description: Configures GPG signing trust for ghcr.io/soltros containers
 set ${SET_X:+-x} -eou pipefail
 
 # Variables
@@ -30,56 +30,44 @@ cat > "$POLICY" << 'EOF'
         "docker": {
             "ghcr.io/soltros/soltros-os": [
                 {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/soltros.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "type": "signedBy",
+                    "keyType": "GPGKeys",
+                    "keyPath": "/etc/pki/containers/soltros.pub"
                 }
             ],
             "ghcr.io/soltros/soltros-os_lts": [
                 {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/soltros.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "type": "signedBy",
+                    "keyType": "GPGKeys",
+                    "keyPath": "/etc/pki/containers/soltros.pub"
                 }
             ],
             "ghcr.io/soltros/soltros-lts_cosmic": [
                 {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/soltros.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "type": "signedBy",
+                    "keyType": "GPGKeys",
+                    "keyPath": "/etc/pki/containers/soltros.pub"
                 }
             ],
             "ghcr.io/soltros/soltros-unstable_cosmic": [
                 {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/soltros.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "type": "signedBy",
+                    "keyType": "GPGKeys",
+                    "keyPath": "/etc/pki/containers/soltros.pub"
                 }
             ],
             "ghcr.io/soltros/soltros-os-lts_gnome": [
                 {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/soltros.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "type": "signedBy",
+                    "keyType": "GPGKeys",
+                    "keyPath": "/etc/pki/containers/soltros.pub"
                 }
             ],
             "ghcr.io/soltros/soltros-os-unstable_gnome": [
                 {
-                    "type": "sigstoreSigned",
-                    "keyPath": "/etc/pki/containers/soltros.pub",
-                    "signedIdentity": {
-                        "type": "matchRepository"
-                    }
+                    "type": "signedBy",
+                    "keyType": "GPGKeys",
+                    "keyPath": "/etc/pki/containers/soltros.pub"
                 }
             ]
         },
@@ -94,7 +82,7 @@ cat > "$POLICY" << 'EOF'
 }
 EOF
 
-log "Installing cosign public key"
+log "Installing GPG public key"
 if [ -f /ctx/soltros.pub ]; then
     cp /ctx/soltros.pub "$PUBKEY"
 else
@@ -108,21 +96,21 @@ log "Setting correct permissions"
 chmod 644 "$PUBKEY"
 chmod 644 "$POLICY"
 
-log "Creating registry policy YAML"
-cat > "/etc/containers/registries.d/soltros.yaml" << 'EOF'
+log "Creating registry signature configuration"
+cat > "/etc/containers/registries.d/soltros.yaml" << EOF
 docker:
   ghcr.io/soltros/soltros-os:
-    use-sigstore-attachments: true
+    sigstore: https://ghcr.io/soltros/signatures/soltros-os
   ghcr.io/soltros/soltros-os_lts:
-    use-sigstore-attachments: true
+    sigstore: https://ghcr.io/soltros/signatures/soltros-os_lts
   ghcr.io/soltros/soltros-lts_cosmic:
-    use-sigstore-attachments: true
+    sigstore: https://ghcr.io/soltros/signatures/soltros-lts_cosmic
   ghcr.io/soltros/soltros-unstable_cosmic:
-    use-sigstore-attachments: true
+    sigstore: https://ghcr.io/soltros/signatures/soltros-unstable_cosmic
   ghcr.io/soltros/soltros-os-lts_gnome:
-    use-sigstore-attachments: true
+    sigstore: https://ghcr.io/soltros/signatures/soltros-os-lts_gnome
   ghcr.io/soltros/soltros-os-unstable_gnome:
-    use-sigstore-attachments: true
+    sigstore: https://ghcr.io/soltros/signatures/soltros-os-unstable_gnome
 EOF
 
 log "Verifying policy configuration"

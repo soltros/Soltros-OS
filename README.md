@@ -1,3 +1,5 @@
+# LATEST BLOG PLEASE READ: https://soltros.dev/blog/posts/fixing-container-policy.html
+
 # SoltrOS - Desktop Edition
 ![SoltrOS Logo](https://raw.githubusercontent.com/soltros/soltros-os-website/refs/heads/master/soltros.svg)
 

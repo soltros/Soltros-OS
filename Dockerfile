@@ -45,6 +45,7 @@ LABEL org.opencontainers.image.title="SoltrOS Desktop" \
     org.opencontainers.image.vendor="Derrik"
 
 # Copy static system configuration and branding
+RUN rm -f /etc/containers/policy.json
 COPY system_files/etc /etc
 COPY system_files/usr /usr
 COPY repo_files/ /etc/yum.repos.d/

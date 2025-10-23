@@ -150,7 +150,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "push" ]]; then
             # For push events, check if we're on one of the target branches
             case "${{ github.ref }}" in
-              "refs/heads/main"|"refs/heads/soltros-os-lts"|"refs/heads/soltros-os-unstable_cosmic"|"refs/heads/soltros-os-lts_cosmic"|"refs/heads/soltros-os-unstable_gnome"|"refs/heads/soltros-os-lts_gnome")
+              "refs/heads/main"|"refs/heads/soltros-os-lts"|"refs/heads/soltros-unstable_cosmic"|"refs/heads/soltros-lts_cosmic"|"refs/heads/soltros-unstable_gnome"|"refs/heads/soltros-os-lts_gnome")
                 echo "Publishing due to push to target branch"
                 echo "publish=true" >> "$GITHUB_OUTPUT"
                 ;;
@@ -172,13 +172,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Push To GHCR
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
+        if: steps.publish.outputs.publish == 'true'
+        id: push
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
       - name: Setup GPG
         if: steps.publish.outputs.publish == 'true'
         run: |
-<<<<<<< Updated upstream
-          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --import
-          echo "${{ secrets.GPG_PASSPHRASE }}" | gpg --batch --yes --passphrase-fd 0 --quick-add-key $(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}') rsa4096 sign never
-=======
           # Setup GPG agent
           mkdir -p ~/.gnupg
           chmod 700 ~/.gnupg
@@ -203,9 +213,8 @@ jobs:
           GPG_KEY_ID=$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')
           echo "Key ID for signing: ${GPG_KEY_ID}"
           echo "GPG_KEY_ID=${GPG_KEY_ID}" >> $GITHUB_ENV
->>>>>>> Stashed changes
 
-      - name: Push and Sign Image
+      - name: Sign and Push with GPG
         if: steps.publish.outputs.publish == 'true'
         env:
           REGISTRY_USER: ${{ github.actor }}
@@ -216,16 +225,6 @@ jobs:
           
           echo "Signing images with GPG key: ${GPG_KEY_ID}"
           
-<<<<<<< Updated upstream
-          echo "Pushing and signing image..."
-          for tag in ${{ steps.metadata.outputs.tags }}; do
-            skopeo copy \
-              --sign-by="${GPG_KEY}" \
-              --sign-passphrase-file=<(echo "$GPG_PASSPHRASE") \
-              --dest-creds="${REGISTRY_USER}:${REGISTRY_PASSWORD}" \
-              "containers-storage:${tag}" \
-              "docker://${IMAGE_FULL}:$(echo ${tag} | cut -d: -f2)"
-=======
           # The image was already pushed, so pull and re-push with signature
           for tag in ${{ steps.metadata.outputs.tags }}; do
             TAG_NAME=$(echo ${tag} | rev | cut -d: -f1 | rev)
@@ -239,20 +238,8 @@ jobs:
               --dest-creds="${REGISTRY_USER}:${REGISTRY_PASSWORD}" \
               "docker://${IMAGE_FULL}:${TAG_NAME}" \
               "docker://${IMAGE_FULL}:${TAG_NAME}"
->>>>>>> Stashed changes
             
-            # Upload signature to signature repository
-            skopeo copy \
-              --dest-creds="${REGISTRY_USER}:${REGISTRY_PASSWORD}" \
-              "containers-storage:${tag}" \
-              "docker://${SIGNATURE_DEST}:$(echo ${tag} | cut -d: -f2)"
+            echo "✅ Signed and pushed: ${IMAGE_FULL}:${TAG_NAME}"
           done
           
-          echo "✅ Images pushed and signed successfully"
-
-      - name: Export GPG Public Key
-        if: steps.publish.outputs.publish == 'true'
-        run: |
-          GPG_KEY=$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')
-          gpg --armor --export "${GPG_KEY}" > soltros-signing-key.asc
-          echo "Public key exported to soltros-signing-key.asc"
+          echo "✅ All images pushed and signed successfully"

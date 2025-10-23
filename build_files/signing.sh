@@ -21,12 +21,27 @@ cat > "$POLICY" << 'EOF'
 {
     "default": [
         {
-            "type": "insecureAcceptAnything"
+            "type": "reject"
         }
     ],
     "transports": {
         "docker": {
-            "ghcr.io/soltros": [
+            "ghcr.io": [
+                {
+                    "type": "insecureAcceptAnything"
+                }
+            ],
+            "docker.io": [
+                {
+                    "type": "insecureAcceptAnything"
+                }
+            ],
+            "quay.io": [
+                {
+                    "type": "insecureAcceptAnything"
+                }
+            ],
+            "registry.fedoraproject.org": [
                 {
                     "type": "insecureAcceptAnything"
                 }

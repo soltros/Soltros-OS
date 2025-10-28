@@ -24,7 +24,7 @@ WATERFOX_URL="https://cdn1.waterfox.net/waterfox/releases/${LATEST_VERSION}/Linu
 ARCHIVE="/tmp/waterfox-${LATEST_VERSION}.tar.bz2"
 INSTALL_DIR="/usr/share/soltros/waterfox"
 BIN_LINK="/usr/share/soltros/waterfox/waterfox"
-DESKTOP_FILE="/usr/share/applications/waterfox-default.desktop"
+DESKTOP_FILE="/usr/share/applications/waterfox.desktop"
 
 log "Downloading Waterfox ${LATEST_VERSION}"
 curl --retry 3 --retry-delay 5 \
@@ -53,7 +53,7 @@ Type=Application
 Categories=Network;WebBrowser;
 MimeType=text/html;text/xml;application/xhtml+xml;application/xml;x-scheme-handler/http;x-scheme-handler/https;
 StartupNotify=true
-StartupWMClass=waterfox-default
+StartupWMClass=waterfox
 EOF
 
 log "Cleaning up temporary files"

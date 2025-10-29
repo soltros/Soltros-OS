@@ -77,7 +77,7 @@ jobs:
           iso_name: ${{ matrix.image_name }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}${{ matrix.iso_suffix }}.iso
       
       - name: Upload ISO as artifact (${{ matrix.name }})
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ steps.build.outputs.iso_name }}
           path: |

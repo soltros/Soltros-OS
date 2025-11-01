@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/base-atomic
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
 ARG TAG_VERSION=rawhide
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
@@ -51,8 +51,9 @@ LABEL org.opencontainers.image.title="SoltrOS Desktop" \
 COPY system_files/etc /etc
 COPY system_files/usr /usr
 COPY repo_files/ /etc/yum.repos.d/
-COPY resources/soltros-gdm.png /usr/share/pixmaps/fedora-gdm-logo.png
-COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermark.png
+COPY resources/soltros.svg /usr/share/pixmaps/fedora-logo-sprite.svg
+COPY resources/fedora-logo-sprite.png /usr/share/pixmaps/fedora-logo-sprite.png
+COPY resources/system-logo-white.png /usr/share/pixmaps/system-logo-white.png
 
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d

@@ -1,5 +1,5 @@
 # Set base image and tag
-ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/base-atomic
+ARG BASE_IMAGE=quay.io/fedora-ostree-desktops/kinoite
 ARG TAG_VERSION=43
 FROM ${BASE_IMAGE}:${TAG_VERSION}
 RUN awk -F= '/^NAME=|^VERSION_ID=/{gsub(/"/,"");print}' /etc/os-release
@@ -35,9 +35,9 @@ FROM ${BASE_IMAGE}:${TAG_VERSION} AS soltros
 # EXPLICIT DISTRO LABELS FOR BOOTC-IMAGE-BUILDER
 # These override any conflicting labels and force correct distro detection
 LABEL ostree.linux="fedora" \
-    org.opencontainers.image.version="42" \
+    org.opencontainers.image.version="43" \
     distro.name="fedora" \
-    distro.version="42"
+    distro.version="43"
 
 # Your custom branding (these won't interfere)
 LABEL org.opencontainers.image.title="SoltrOS Desktop" \
@@ -49,8 +49,9 @@ RUN rm -f /etc/containers/policy.json
 COPY system_files/etc /etc
 COPY system_files/usr /usr
 COPY repo_files/ /etc/yum.repos.d/
-COPY resources/soltros-gdm.png /usr/share/pixmaps/fedora-gdm-logo.png
-COPY resources/soltros-watermark.png /usr/share/plymouth/themes/spinner/watermark.png
+COPY resources/soltros.svg /usr/share/pixmaps/fedora-logo-sprite.svg
+COPY resources/fedora-logo-sprite.png /usr/share/pixmaps/fedora-logo-sprite.png
+COPY resources/system-logo-white.png /usr/share/pixmaps/system-logo-white.png
 
 # Create necessary directories for shell configurations
 RUN mkdir -p /etc/profile.d /etc/fish/conf.d

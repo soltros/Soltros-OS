@@ -87,7 +87,6 @@ LAYERED_PACKAGES=(
     gamescope-session-steam
     
     # MacBook thermal management
-    mbpfan
     thermald
     
     # Essential CLI tools

@@ -21,12 +21,32 @@ echo "Plymouth theme set to 'soltros-boot'."
 # Try multiple methods to find the installed kernel
 QUALIFIED_KERNEL=""
 
-# Method 1: Try CachyOS specific kernel package names
+# Method 1: Try different kernel package names based on KERNEL_FLAVOR
+echo "Attempting to find kernel package..."
+
 if [[ "${KERNEL_FLAVOR:-}" == "cachyos" ]]; then
-    echo "Attempting to find CachyOS kernel..."
-    
-    # Try different CachyOS kernel package names
+    # Try CachyOS kernel package names
     for pkg in "kernel-cachyos" "kernel-cachyos-lts" "kernel-cachyos-rt" "kernel-cachyos-server" "kernel"; do
+        echo "Trying package: $pkg"
+        QUALIFIED_KERNEL="$(dnf5 repoquery --installed --queryformat='%{evr}.%{arch}' "$pkg" 2>/dev/null | head -1 || echo "")"
+        if [[ -n "${QUALIFIED_KERNEL}" ]]; then
+            echo "Found kernel via package $pkg: ${QUALIFIED_KERNEL}"
+            break
+        fi
+    done
+elif [[ "${KERNEL_FLAVOR:-}" == "longterm" ]]; then
+    # Try longterm kernel package names
+    for pkg in "kernel-longterm" "kernel"; do
+        echo "Trying package: $pkg"
+        QUALIFIED_KERNEL="$(dnf5 repoquery --installed --queryformat='%{evr}.%{arch}' "$pkg" 2>/dev/null | head -1 || echo "")"
+        if [[ -n "${QUALIFIED_KERNEL}" ]]; then
+            echo "Found kernel via package $pkg: ${QUALIFIED_KERNEL}"
+            break
+        fi
+    done
+else
+    # Try standard kernel package names
+    for pkg in "kernel-longterm" "kernel"; do
         echo "Trying package: $pkg"
         QUALIFIED_KERNEL="$(dnf5 repoquery --installed --queryformat='%{evr}.%{arch}' "$pkg" 2>/dev/null | head -1 || echo "")"
         if [[ -n "${QUALIFIED_KERNEL}" ]]; then

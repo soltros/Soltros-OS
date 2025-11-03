@@ -61,6 +61,24 @@ RUN dnf5 install -y distrobox
 # Install dnf5 plugins
 RUN dnf5 -y install dnf5-plugins
 
+# Remove default kernel packages and install kernel-longterm
+RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra || true && \
+    echo "Installing kernel-longterm..." && \
+    if dnf5 -y install kernel-longterm kernel-longterm-core kernel-longterm-modules kernel-longterm-modules-extra; then \
+        echo "kernel-longterm installed successfully"; \
+        echo "Installed kernel-longterm packages:"; \
+        dnf5 list installed | grep kernel-longterm || true; \
+    else \
+        echo "Failed to install kernel-longterm"; \
+        echo "Available kernel-longterm packages:"; \
+        dnf5 search kernel-longterm || true; \
+        echo "Falling back to default kernel installation"; \
+        dnf5 -y install kernel kernel-core kernel-modules || true; \
+    fi && \
+    echo "Final kernel verification:" && \
+    dnf5 list installed | grep kernel || true && \
+    echo "Available kernel modules:" && \
+    ls -la /usr/lib/modules/ || true
 
 # Add Terra repo separately with better error handling
 RUN for i in {1..3}; do \

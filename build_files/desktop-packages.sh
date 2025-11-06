@@ -36,7 +36,7 @@ LAYERED_PACKAGES=(
     alsa-utils
     syslinux
     pipewire-alsa
-    deja-dup
+    #deja-dup - currently broken for Cosmic
     playerctl
     guestmount
     libguestfs-tools

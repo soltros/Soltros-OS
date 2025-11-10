@@ -69,9 +69,6 @@ LAYERED_PACKAGES=(
     fwupd-plugin-modem-manager
     fwupd-plugin-uefi-capsule-data
     libvirtd
-    
-    # Display manager
-    gdm
 
     #Hyprland/Hyprvibe components
     hyprland

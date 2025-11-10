@@ -1,0 +1,109 @@
+* {border: none;
+border-radius: 0;
+font-family: "JetBrainsMono Nerd Font", monospace;
+font-size: 13px;
+min-height: 0;
+}
+window#waybar {
+background: rgba(30, 30, 46, 0.75);
+color: #cdd6f4;
+}
+#workspaces {
+background: transparent;
+}
+#workspaces button {
+padding: 0 8px;
+background: rgba(49, 50, 68, 0.8);
+color: #cdd6f4;
+margin: 4px 2px;
+border-radius: 8px;
+min-width: 30px;
+}
+#workspaces button.active {
+background: rgba(137, 180, 250, 0.8);
+color: #1e1e2e;
+}
+#workspaces button:hover {
+background: rgba(116, 199, 236, 0.8);
+color: #1e1e2e;
+}
+#window {
+padding: 4px 12px;
+margin: 4px;
+background: rgba(49, 50, 68, 0.8);
+border-radius: 8px;
+color: #cdd6f4;
+}
+#clock,
+#cpu,
+#memory,
+#backlight,
+#network,
+#pulseaudio,
+#mpris,
+#idle_inhibitor,
+#gamemode,
+#tray,
+#custom-gpu,
+#custom-weather,
+#custom-btc,
+#custom-public_ip,
+#custom-brightness_menu,
+#custom-reboot {
+padding: 4px 12px;
+margin: 4px 2px;
+background: rgba(49, 50, 68, 0.8);
+border-radius: 8px;
+color: #cdd6f4;
+min-width: 2em;
+}
+#pulseaudio {
+color: #89b4fa;
+}
+#network {
+color: #94e2d5;
+}
+#cpu {color: #f9e2af;
+}
+#memory {
+color: #f5c2e7;
+}
+#backlight {
+color: #fab387;
+}
+#custom-gpu {
+color: #eba0ac;
+}
+#custom-weather {
+color: #89dceb;
+}
+#custom-btc {
+color: #f9e2af;
+}
+#custom-public_ip {
+color: #a6e3a1;
+}
+#clock {
+color: #f5e0dc;
+font-weight: bold;
+}
+#idle_inhibitor.activated {
+color: #f9e2af;
+}
+#idle_inhibitor.deactivated {
+color: #89b4fa;
+}
+#gamemode {
+color: #a6e3a1;
+}
+#tray {
+background: transparent;
+}
+tooltip {
+background: rgba(30, 30, 46, 0.95);
+border: 2px solid rgba(137, 180, 250, 0.8);
+border-radius: 8px;
+}
+tooltip label {
+color: #cdd6f4;
+}

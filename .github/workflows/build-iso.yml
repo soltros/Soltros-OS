@@ -57,6 +57,16 @@ jobs:
             branch: soltros-os-unstable_gnome
             image_name: soltros-os-unstable_gnome
             iso_suffix: "-soltros-unstable_gnome"
+          # Hyprvibe LTS
+          - name: "LTS Hyprvibe"
+            branch: soltros-os-lts_hyprvibe
+            image_name: soltros-os-lts_hyprvibe
+            iso_suffix: "-hyprvibe-el"
+          # Hyprvibe Unstable
+          - name: "Unstable Hyprvibe"
+            branch: soltros-os-unstable_hyprvibe"
+            image_name: soltros-os-lts_hyprvibe"
+            iso_suffix "-hyprvibe-unstable"
     
     steps:
       - name: Checkout Repository (${{ matrix.branch }})

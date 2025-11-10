@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Rofi brightness control menu
+# Supports both brightnessctl and ddcutil
+
+MENU_OPTIONS="10%
+20%
+30%
+50%
+75%
+100%"
+
+choice=$(echo "$MENU_OPTIONS" | rofi -dmenu -i -p "Brightness")
+
+if [ -n "$choice" ]; then
+    # Try brightnessctl first (for laptop displays)
+    if command -v brightnessctl &> /dev/null; then
+        brightnessctl set "$choice"
+    # Fall back to ddcutil for external monitors
+    elif command -v ddcutil &> /dev/null; then
+        percent="${choice%\%}"
+        ddcutil setvcp 10 "$percent"
+    else
+        notify-send "Brightness Control" "No brightness control tool found"
+    fi
+fi

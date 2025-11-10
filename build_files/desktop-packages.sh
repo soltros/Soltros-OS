@@ -69,11 +69,51 @@ LAYERED_PACKAGES=(
     fwupd-plugin-modem-manager
     fwupd-plugin-uefi-capsule-data
     libvirtd
-    konsole
-    konsole-part
     
     # Display manager
     sddm
+
+    #Hyprland/Hyprvibe components
+    hyprland
+    xdg-desktop-portal-hyprland
+    xdg-desktop-portal-gtk
+    polkit-kde
+    qt6ct
+    waybar
+    rofi-wayland
+    dunst
+    hyprpaper
+    hyprlock
+    hypridle
+    wl-clipboard
+    cliphist
+    grim
+    slurp
+    pipewire
+    wireplumber
+    pipewire-alsa
+    pipewire-pulseaudio
+    pipewire-jack-audio-connection-kit
+    pavucontrol
+    playerctl
+    brightnessctl
+    ddcutil
+    dolphin
+    kio-extras
+    kio-fuse
+    kio-admin
+    ark
+    udisks2
+    gvfs
+    glib-networking
+    NetworkManager
+    network-manager-applet
+    alacritty
+    jq
+    curl
+    lm_sensors
+    htop
+    jetbrains-mono-fonts
     
     # Gaming & performance
     gamemode

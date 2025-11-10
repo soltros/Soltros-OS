@@ -71,7 +71,7 @@ LAYERED_PACKAGES=(
     libvirtd
     
     # Display manager
-    lightdm
+    gdm
 
     #Hyprland/Hyprvibe components
     hyprland
@@ -127,7 +127,6 @@ LAYERED_PACKAGES=(
     gamescope-session-steam
     
     # MacBook thermal management
-    mbpfan
     thermald
     
     # Essential CLI tools

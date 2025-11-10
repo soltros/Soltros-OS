@@ -10,6 +10,7 @@ on:
       - soltros-os-lts_gnome
       - soltros-os-unstable_gnome
       - soltros-os-lts_hyprvibe
+      - soltros-os-unstable_hyprvibe
   schedule:
     - cron: '0 6 * * 0,2,4'  # 6am UTC every Sunday (0), Tuesday (2), Thursday (4)
   push:
@@ -20,7 +21,8 @@ on:
       - soltros-unstable_cosmic
       - soltros-os-lts_gnome
       - soltros-os-unstable_gnome
-      - soltros-os-lts_hyprvibe 
+      - soltros-os-lts_hyprvibe
+      - soltros-os-unstable_hyprvibe
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
@@ -69,9 +71,13 @@ jobs:
           # Unstable/Gnome
           - branch: soltros-os-unstable_gnome
             image: soltros-os-unstable_gnome
-          # Hyprvibe
+          # lTS/Hyprvibe
           - branch: soltros-os-lts_hyprvibe 
-            image: soltros-os-lts_hyprvibe 
+            image: soltros-os-lts_hyprvibe
+          # Unstable/Hyprvibe
+          - branch: soltros-os-unstable_hyprvibe
+            image: soltros-os-unstable_hyprvibe
+
     steps:
       - name: Prepare environment
         shell: bash

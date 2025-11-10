@@ -1,28 +1,23 @@
 name: Build Soltros Installer ISO
-
 on:
   workflow_dispatch:
   push:
     branches: [ main ]
     paths:
       - '.github/workflows/build-iso.yml'
-
 env:
   ARCH: x86_64
   IMAGE_REPO: ghcr.io/soltros
   IMAGE_TAG: latest
   VERSION: 42
   VARIANT: Kinoite
-
 jobs:
   build-iso:
     name: Build ISO (${{ matrix.name }})
     runs-on: ubuntu-latest
-    
     permissions:
       contents: read
       packages: write
-    
     strategy:
       fail-fast: false
       matrix:
@@ -64,16 +59,17 @@ jobs:
             iso_suffix: "-hyprvibe-el"
           # Hyprvibe Unstable
           - name: "Unstable Hyprvibe"
-            branch: soltros-os-unstable_hyprvibe"
-            image_name: soltros-os-lts_hyprvibe"
-            iso_suffix "-hyprvibe-unstable"
-    
+            # Removed trailing double quote
+            branch: soltros-os-unstable_hyprvibe
+            # Removed trailing double quote and corrected to unstable image name
+            image_name: soltros-os-unstable_hyprvibe
+            # Added colon
+            iso_suffix: "-hyprvibe-unstable"
     steps:
       - name: Checkout Repository (${{ matrix.branch }})
         uses: actions/checkout@v5
         with:
           ref: ${{ matrix.branch }}
-      
       - name: Build Soltros ISO (${{ matrix.name }})
         uses: jasonn3/build-container-installer@main
         id: build
@@ -85,7 +81,6 @@ jobs:
           version: ${{ env.VERSION }}
           variant: ${{ env.VARIANT }}
           iso_name: ${{ matrix.image_name }}-${{ env.IMAGE_TAG }}-${{ env.VERSION }}${{ matrix.iso_suffix }}.iso
-      
       - name: Upload ISO as artifact (${{ matrix.name }})
         uses: actions/upload-artifact@v5
         with:

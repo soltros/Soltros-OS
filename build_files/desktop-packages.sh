@@ -71,7 +71,7 @@ LAYERED_PACKAGES=(
     libvirtd
     
     # Display manager
-    lightdm
+    gdm
 
     #Hyprland/Hyprvibe components
     hyprland

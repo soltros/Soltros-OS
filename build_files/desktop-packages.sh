@@ -76,7 +76,7 @@ LAYERED_PACKAGES=(
     xdg-desktop-portal-gtk
     polkit-kde
     qt6ct
-    waybar
+    waybar-git
     rofi-wayland
     dunst
     hyprpaper

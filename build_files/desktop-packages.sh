@@ -71,8 +71,7 @@ LAYERED_PACKAGES=(
     libvirtd
 
     #DM
-    greetd
-    tuigreet
+    sddm
 
     #Hyprland/Hyprvibe components
     hyprland

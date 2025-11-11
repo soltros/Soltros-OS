@@ -1,6 +1,0 @@
-[terminal]
-vt = 1
-
-[default_session]
-command = "tuigreet --time --remember --remember-session --cmd Hyprland"
-user = "greeter"

@@ -11,8 +11,8 @@ log() {
 log "Enabling Tailscale"
 systemctl enable tailscaled.service
 
-log "Enable GDM"
-systemctl enable -f gdm.service
+log "Enabling Greetd"
+systemctl enable greetd.service -f
 
 log "Enable binaries"
 mkdir -p /usr/share/soltros/bin/

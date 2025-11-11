@@ -1,117 +1,109 @@
-/* -----------------------------------------------------------------------------
- * Catppuccin Macchiato Palette (Variables)
- * -------------------------------------------------------------------------- */
-@define-color base      #1e1e2e; /* Darkest Background */
-@define-color mantle    #2e3440; /* Used for the main Waybar background */
-@define-color surface1  #313244; /* Module/Workspaces Background */
-@define-color text      #cdd6f4; /* Primary Text Color */
-@define-color overlay   #74c3ec; /* Hover/Sky color */
-@define-color blue      #89b4fa; /* Blue (Pulseaudio, Active Workspace) */
-@define-color green     #a6e3a1; /* Green (Gamemode, Public IP) */
-@define-color teal      #94e2d5; /* Teal (Network) */
-@define-color yellow    #f9e2af; /* Yellow (CPU, BTC, Activated Idle Inhibitor) */
-@define-color pink      #f5c2e7; /* Pink (Memory) */
-@define-color peach     #fab387; /* Peach (Backlight) */
-@define-color red       #eba0ac; /* Red (Custom GPU) */
-@define-color lavender  #f5e0dc; /* Lavender (Clock) */
-
-
-/* -----------------------------------------------------------------------------
- * General Styling (Minimal Global Reset)
- * -------------------------------------------------------------------------- */
-* {
-    border: none;
-    border-radius: 0;
-    font-family: "JetBrainsMono Nerd Font", monospace;
-    font-size: 13px;
-    /* min-height: 0 removed as it's typically unnecessary for Waybar */
+can you generate a theme based on this waybar css?: * {border: none;
+border-radius: 0;
+font-family: "JetBrainsMono Nerd Font", monospace;
+font-size: 13px;
+min-height: 0;
 }
-
 window#waybar {
-    background: #2e3440BF;
-    color: @text;
+background: rgba(30, 30, 46, 0.75);
+color: #cdd6f4;
 }
-
-/* -----------------------------------------------------------------------------
- * Workspaces (Buttons)
- * -------------------------------------------------------------------------- */
 #workspaces {
-    background: transparent;
+background: transparent;
 }
-
 #workspaces button {
-    padding: 0 8px;
-    background: #313244CC;
-    color: @text;
-    margin: 4px 2px;
-    border-radius: 8px;
-    min-width: 30px;
+padding: 0 8px;
+background: rgba(49, 50, 68, 0.8);
+color: #cdd6f4;
+margin: 4px 2px;
+border-radius: 8px;
+min-width: 30px;
 }
-
 #workspaces button.active {
-    background: #89b4faCC;
-    color: @base;
+background: rgba(137, 180, 250, 0.8);
+color: #1e1e2e;
 }
-
 #workspaces button:hover {
-    background: #74c3ecCC;
-    color: @base;
+background: rgba(116, 199, 236, 0.8);
+color: #1e1e2e;
 }
-
-/* -----------------------------------------------------------------------------
- * Shared Module Styling (Combined for Efficiency)
- * -------------------------------------------------------------------------- */
-
-/* All modules, including #window, now share consistent padding and margin */
-#window,
-#clock, #cpu, #memory, #backlight, #network, #pulseaudio, #mpris, 
-#idle_inhibitor, #gamemode, 
-#custom-gpu, #custom-weather, #custom-btc, #custom-public_ip, 
-#custom-brightness_menu, #custom-reboot {
-    padding: 4px 12px;
-    margin: 4px 2px; /* Consistent margin applied to all */
-    background: #313244CC;
-    border-radius: 8px;
-    color: @text;
-    min-width: 2em;
+#window {
+padding: 4px 12px;
+margin: 4px;
+background: rgba(49, 50, 68, 0.8);
+border-radius: 8px;
+color: #cdd6f4;
 }
-
-#tray {
-    background: transparent;
+#clock,
+#cpu,
+#memory,
+#backlight,
+#network,
+#pulseaudio,
+#mpris,
+#idle_inhibitor,
+#gamemode,
+#tray,
+#custom-gpu,
+#custom-weather,
+#custom-btc,
+#custom-public_ip,
+#custom-brightness_menu,
+#custom-reboot {
+padding: 4px 12px;
+margin: 4px 2px;
+background: rgba(49, 50, 68, 0.8);
+border-radius: 8px;
+color: #cdd6f4;
+min-width: 2em;
 }
-
-
-/* -----------------------------------------------------------------------------
- * Per-Module Coloring
- * -------------------------------------------------------------------------- */
-#pulseaudio { color: @blue; }
-#network { color: @teal; }
-#cpu { color: @yellow; }
-#memory { color: @pink; }
-#backlight { color: @peach; }
-#custom-gpu { color: @red; }
-#custom-weather { color: @overlay; }
-#custom-btc { color: @yellow; }
-#custom-public_ip { color: @green; }
-#gamemode { color: @green; }
-
+#pulseaudio {
+color: #89b4fa;
+}
+#network {
+color: #94e2d5;
+}
+#cpu {color: #f9e2af;
+}
+#memory {
+color: #f5c2e7;
+}
+#backlight {
+color: #fab387;
+}
+#custom-gpu {
+color: #eba0ac;
+}
+#custom-weather {
+color: #89dceb;
+}
+#custom-btc {
+color: #f9e2af;
+}
+#custom-public_ip {
+color: #a6e3a1;
+}
 #clock {
-    color: @lavender;
-    font-weight: bold;
+color: #f5e0dc;
+font-weight: bold;
 }
-
-#idle_inhibitor.activated { color: @yellow; }
-#idle_inhibitor.deactivated { color: @blue; }
-
-/* -----------------------------------------------------------------------------
- * Tooltip Styling
- * -------------------------------------------------------------------------- */
+#idle_inhibitor.activated {
+color: #f9e2af;
+}
+#idle_inhibitor.deactivated {
+color: #89b4fa;
+}
+#gamemode {
+color: #a6e3a1;
+}
+#tray {
+background: transparent;
+}
 tooltip {
-    background: #1e1e2eF2;
-    border: 2px solid #89b4faCC;
-    border-radius: 8px;
+background: rgba(30, 30, 46, 0.95);
+border: 2px solid rgba(137, 180, 250, 0.8);
+border-radius: 8px;
 }
-
 tooltip label {
-    color: @text;
+color: #cdd6f4;
 }

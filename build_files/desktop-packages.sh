@@ -81,7 +81,7 @@ LAYERED_PACKAGES=(
     polkit-kde
     qt6ct
     waybar
-    rofi-wayland
+    wofi
     dunst
     hyprpaper
     hyprlock

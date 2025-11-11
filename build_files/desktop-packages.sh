@@ -72,6 +72,7 @@ LAYERED_PACKAGES=(
 
     #DM
     greetd
+    tuigreet
 
     #Hyprland/Hyprvibe components
     hyprland

@@ -28,7 +28,7 @@
 }
 
 window#waybar {
-    background: #2e3440BF; /* mantle @ 75% opacity */
+    background: #2e3440BF;
     color: @text;
 }
 
@@ -41,7 +41,7 @@ window#waybar {
 
 #workspaces button {
     padding: 0 8px;
-    background: #313244CC; /* surface1 @ 80% opacity */
+    background: #313244CC;
     color: @text;
     margin: 4px 2px;
     border-radius: 8px;
@@ -49,12 +49,12 @@ window#waybar {
 }
 
 #workspaces button.active {
-    background: #89b4faCC; /* blue @ 80% opacity */
+    background: #89b4faCC;
     color: @base;
 }
 
 #workspaces button:hover {
-    background: #74c3ecCC; /* overlay @ 80% opacity */
+    background: #74c3ecCC;
     color: @base;
 }
 
@@ -70,7 +70,7 @@ window#waybar {
 #custom-brightness_menu, #custom-reboot {
     padding: 4px 12px;
     margin: 4px 2px; /* Consistent margin applied to all */
-    background: #313244CC; /* surface1 @ 80% opacity */
+    background: #313244CC;
     border-radius: 8px;
     color: @text;
     min-width: 2em;
@@ -107,8 +107,8 @@ window#waybar {
  * Tooltip Styling
  * -------------------------------------------------------------------------- */
 tooltip {
-    background: #1e1e2eF2; /* base @ 95% opacity */
-    border: 2px solid #89b4faCC; /* blue @ 80% opacity */
+    background: #1e1e2eF2;
+    border: 2px solid #89b4faCC;
     border-radius: 8px;
 }
 

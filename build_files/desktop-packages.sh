@@ -70,13 +70,16 @@ LAYERED_PACKAGES=(
     fwupd-plugin-uefi-capsule-data
     libvirtd
 
+    #DM
+    greetd
+
     #Hyprland/Hyprvibe components
     hyprland
     xdg-desktop-portal-hyprland
     xdg-desktop-portal-gtk
     polkit-kde
     qt6ct
-    waybar-git
+    waybar
     rofi-wayland
     dunst
     hyprpaper

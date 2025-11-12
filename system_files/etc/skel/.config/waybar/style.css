@@ -123,6 +123,15 @@ window#waybar {
     background: transparent;
 }
 
+#custom-power {
+    padding: 4px 12px;
+    margin: 4px 2px;
+    background: rgba(49, 50, 68, 0.8);
+    border-radius: 8px;
+    color: #cba6f7;
+    min-width: 2em;
+}
+
 tooltip {
     background: rgba(30, 30, 46, 0.95);
     border: 2px solid rgba(137, 180, 250, 0.8);

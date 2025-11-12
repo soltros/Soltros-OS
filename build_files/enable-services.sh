@@ -20,3 +20,11 @@ git clone --depth=1 https://github.com/soltros/Soltros-OS-Components.git /tmp/co
     cp /tmp/components/*.sh /usr/share/soltros/bin/ 2>/dev/null || true && \
     chmod +x /usr/share/soltros/bin/*.sh && \
     rm -rf /tmp/components
+
+log "Setting permissions for Waybar scripts"
+if [ -d /etc/xdg/waybar/scripts ]; then
+    chmod +x /etc/xdg/waybar/scripts/*.sh 2>/dev/null || true
+fi
+if [ -d /etc/skel/waybar/scripts ]; then
+    chmod +x /etc/skel/waybar/scripts/*.sh 2>/dev/null || true
+fi

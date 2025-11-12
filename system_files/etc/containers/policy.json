@@ -59,6 +59,24 @@
                         "type": "matchRepository"
                     }
                 }
+            ],
+            "ghcr.io/soltros/soltros-os-lts_hyprvibe": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
+            ],
+            "ghcr.io/soltros/soltros-os-unstable_hyprvibe": [
+                {
+                    "type": "sigstoreSigned",
+                    "keyPath": "/etc/pki/containers/soltros.pub",
+                    "signedIdentity": {
+                        "type": "matchRepository"
+                    }
+                }
             ]
         },
         "docker-daemon": {

@@ -19,7 +19,7 @@
         "custom/btc",
         "custom/public_ip",
         "custom/brightness_menu",
-        "custom/reboot",
+        "custom/power",
         "tray"
     ],
 
@@ -149,11 +149,11 @@
         "tooltip-format": "Brightness Control"
     },
 
-    "custom/reboot": {
-        "format": "⏻",
-        "on-click": "rofi -dmenu -p 'Reboot?' | grep -q 'yes' && systemctl reboot",
+    "custom/power": {
+        "format": "⏏️",
         "tooltip": true,
-        "tooltip-format": "Reboot System"
+        "tooltip-format": "Power Menu",
+        "on-click": "wlogout &"
     },
 
     "clock": {

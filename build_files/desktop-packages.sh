@@ -71,7 +71,8 @@ LAYERED_PACKAGES=(
     libvirtd
 
     #DM
-    sddm
+    greetd
+    tuigreet
 
     #Hyprland/Hyprvibe components
     hyprland
@@ -80,7 +81,7 @@ LAYERED_PACKAGES=(
     polkit-kde
     qt6ct
     waybar
-    rofi-wayland
+    wofi
     dunst
     hyprpaper
     hyprlock
@@ -175,6 +176,48 @@ LAYERED_PACKAGES=(
     # Multimedia/audio
     pipewire-utils
     wireplumber
+
+    # Desktop utilities
+    wlogout
+    swayidle
+    swaylock
+    qt5-qtstyleplugins
+    qt6-qtwayland
+    qt5-qtwayland
+
+    # Archive support
+    p7zip
+    p7zip-plugins
+    unrar
+
+    # Modern CLI tools
+    fastfetch
+    eza
+    bat
+    tldr
+
+    # Multimedia applications
+    mpv
+    imv
+    easyeffects
+    ffmpeg
+    ffmpeg-libs
+
+    # Fonts
+    google-noto-emoji-fonts
+    liberation-fonts
+    fira-code-fonts
+
+    # Wayland utilities
+    wlsunset
+    wtype
+    kanshi
+
+    # Security & utilities
+    keepassxc
+
+    # Development
+    neovim
 )
 
 dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"

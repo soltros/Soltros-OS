@@ -220,7 +220,7 @@ LAYERED_PACKAGES=(
     neovim
 )
 
-dnf5 install --setopt=install_weak_deps=False --nogpgcheck -y "${LAYERED_PACKAGES[@]}"
+dnf5 install --setopt=install_weak_deps=False --nogpgcheck --allowerasing --skip-broken -y "${LAYERED_PACKAGES[@]}"
 
 #Enabling various services
 systemctl enable pipewire.service || true

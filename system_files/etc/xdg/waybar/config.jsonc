@@ -19,7 +19,7 @@
         "custom/btc",
         "custom/public_ip",
         "custom/brightness_menu",
-        "custom/reboot",
+        "custom/power",
         "tray"
     ],
 
@@ -150,9 +150,10 @@
     },
 
     "custom/power": {
-        "format": "⏻",
-        "tooltip": false,
-        "on-click": "wlogout"
+        "format": "⏏️",
+        "tooltip": true,
+        "tooltip-format": "Power Menu",
+        "on-click": "wlogout &"
     },
 
     "clock": {

@@ -1,18 +1,20 @@
 #!/usr/bin/bash
-
 set ${SET_X:+-x} -eou pipefail
-
 trap '[[ $BASH_COMMAND != echo* ]] && [[ $BASH_COMMAND != log* ]] && echo "+ $BASH_COMMAND"' DEBUG
-
 log() {
   echo "=== $* ==="
 }
-
 log "Enabling Tailscale"
 systemctl enable tailscaled.service
 
 log "Enable SDDM failsafe"
 systemctl enable -f sddm.service
+
+log "Enable hyprpolkitagent for all users"
+mkdir -p /etc/systemd/user-preset
+cat > /etc/systemd/user-preset/90-hyprpolkit.preset << 'EOF'
+enable hyprpolkitagent.service
+EOF
 
 log "Enable binaries"
 mkdir -p /usr/share/soltros/bin/

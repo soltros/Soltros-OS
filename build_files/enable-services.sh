@@ -10,11 +10,16 @@ systemctl enable tailscaled.service
 log "Enable SDDM failsafe"
 systemctl enable -f sddm.service
 
-log "Enable hyprpolkitagent for all users"
+log "Enable hyprpolkitagent for all users (preset for bootc switchers)"
 mkdir -p /etc/systemd/user-preset
 cat > /etc/systemd/user-preset/90-hyprpolkit.preset << 'EOF'
 enable hyprpolkitagent.service
 EOF
+
+log "Enable hyprpolkitagent in skel (for new users)"
+mkdir -p /etc/skel/.config/systemd/user/graphical-session.target.wants
+ln -sf /usr/lib/systemd/user/hyprpolkitagent.service \
+    /etc/skel/.config/systemd/user/graphical-session.target.wants/hyprpolkitagent.service
 
 log "Enable binaries"
 mkdir -p /usr/share/soltros/bin/

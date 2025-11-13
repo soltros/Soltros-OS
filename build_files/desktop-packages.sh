@@ -81,6 +81,7 @@ LAYERED_PACKAGES=(
     polkit-kde
     qt6ct
     waybar
+    hyprpolkitagent
     hyprland-qtutils
     wofi
     dunst

@@ -28,3 +28,23 @@ fi
 if [ -d /etc/skel/waybar/scripts ]; then
     chmod +x /etc/skel/waybar/scripts/*.sh 2>/dev/null || true
 fi
+
+log "Enable services for new users in /etc/skel"
+mkdir -p /etc/skel/.config/systemd/user/graphical-session.target.wants
+ln -sf /usr/lib/systemd/user/hyprpolkitagent.service \
+    /etc/skel/.config/systemd/user/graphical-session.target.wants/hyprpolkitagent.service
+
+log "Enable user services for existing users (bootc switch compatibility)"
+# Apply systemd user presets to all existing home directories
+for homedir in /home/* /var/home/*; do
+    if [ -d "$homedir" ] && [ "$(basename "$homedir")" != "lost+found" ]; then
+        username=$(basename "$homedir")
+        if id "$username" &>/dev/null; then
+            # Create systemd user directory if it doesn't exist
+            sudo -u "$username" mkdir -p "$homedir/.config/systemd/user/graphical-session.target.wants" 2>/dev/null || true
+            # Enable the service for this user
+            sudo -u "$username" ln -sf /usr/lib/systemd/user/hyprpolkitagent.service \
+                "$homedir/.config/systemd/user/graphical-session.target.wants/hyprpolkitagent.service" 2>/dev/null || true
+        fi
+    fi
+done

@@ -1,0 +1,5 @@
+# Soltros OS user service presets
+# Services enabled by default for all users
+
+# Hyprland Polkit Agent
+enable hyprpolkitagent.service

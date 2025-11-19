@@ -1,12 +1,14 @@
 NAME="SoltrOS"
-VERSION="Rolling Rocket (Stable)"
+VERSION="Long-Term Support (LTS)"
 ID=fedora
 ID_LIKE=fedora
 VERSION_ID=LTS
 PLATFORM_ID="platform:f42"
-PRETTY_NAME="SoltrOS Rolling Rocket (Stable)"
+PRETTY_NAME="SoltrOS Long-Term Support (LTS)"
 ANSI_COLOR="0;36"
 CPE_NAME="cpe:/o:fedoraproject:fedora:42"
 HOME_URL="https://github.com/soltros/soltros-os"
 SUPPORT_URL="https://github.com/soltros/soltros-os"
 BUG_REPORT_URL="https://github.com/soltros/soltros-os/issues"
+VARIANT="KDE Plasma"
+VARIANT_ID=kde

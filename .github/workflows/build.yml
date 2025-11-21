@@ -26,6 +26,8 @@ on:
     paths-ignore:
       - '**/README.md'
   workflow_dispatch:
+  repository_dispatch:
+    types: [component-update]  # Triggered when Components repo updates
 
 env:
   IMAGE_DESC: "Gaming-optimized immutable Linux distribution based on Fedora with MacBook support, gaming enhancements, and CachyOS kernel performance"
@@ -105,7 +107,7 @@ jobs:
           echo "date=$(date -u +%Y\-%m\-%d\T%H\:%M\:%S\Z)" >> $GITHUB_OUTPUT
 
       - name: Image Metadata
-        uses: docker/metadata-action@318604b99e75e41977312d83839a89be02ca4893 # v5
+        uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5
         id: metadata
         with:
           tags: |
@@ -154,9 +156,9 @@ jobs:
           echo "Current branch: ${{ github.ref }}"
           echo "Matrix branch: refs/heads/${{ matrix.branch }}"
           echo "Event name: ${{ github.event_name }}"
-          
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "Publishing due to schedule or manual trigger"
+
+          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event_name }}" == "workflow_dispatch" || "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            echo "Publishing due to schedule, manual trigger, or component update"
             echo "publish=true" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event_name }}" == "push" ]]; then
             # For push events, check if we're on one of the target branches

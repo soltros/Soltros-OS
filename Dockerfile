@@ -61,12 +61,8 @@ RUN dnf5 install -y distrobox
 # Install dnf5 plugins
 RUN dnf5 -y install dnf5-plugins
 
-
-# Add Terra repo separately with better error handling
-RUN for i in {1..3}; do \
-    curl --retry 3 --retry-delay 5 -Lo /etc/yum.repos.d/terra.repo https://terra.fyralabs.com/terra.repo && \
-    break || sleep 10; \
-    done
+# Add Terra repo 
+RUN dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
 
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE

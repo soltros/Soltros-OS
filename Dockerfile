@@ -81,9 +81,6 @@ RUN dnf5 -y remove --no-autoremove kernel kernel-core kernel-modules kernel-modu
     echo "Available kernel modules:" && \
     ls -la /usr/lib/modules/ || true
 
-# Add Terra repo 
-RUN dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \

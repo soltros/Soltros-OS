@@ -67,7 +67,7 @@ jobs:
             iso_suffix: "-hyprvibe-unstable"
     steps:
       - name: Checkout Repository (${{ matrix.branch }})
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ matrix.branch }}
       - name: Build Soltros ISO (${{ matrix.name }})

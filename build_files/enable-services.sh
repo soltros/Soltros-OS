@@ -29,6 +29,11 @@ if [ -d /etc/skel/waybar/scripts ]; then
     chmod +x /etc/skel/waybar/scripts/*.sh 2>/dev/null || true
 fi
 
+log "Setting permissions for Ashell binary"
+if [ -f /usr/bin/ashell ]; then
+    chmod +x /usr/bin/ashell
+fi
+
 log "Enable services for new users in /etc/skel"
 mkdir -p /etc/skel/.config/systemd/user/graphical-session.target.wants
 ln -sf /usr/lib/systemd/user/hyprpolkitagent.service \

@@ -34,6 +34,11 @@ LAYERED_PACKAGES=(
     nebula
     dbus-tools
     alsa-utils
+    libxkbcommon
+    pipewire-libs
+    pulseaudio-libs
+    dbus-libs
+    systemd-libs
     syslinux
     pipewire-alsa
     deja-dup

@@ -34,10 +34,27 @@ if [ -f /usr/bin/ashell ]; then
     chmod +x /usr/bin/ashell
 fi
 
+log "Setting permissions for Walker binary"
+if [ -f /usr/bin/walker ]; then
+    chmod +x /usr/bin/walker
+fi
+
+log "Setting permissions for Elephant binary"
+if [ -f /usr/bin/elephant ]; then
+    chmod +x /usr/bin/elephant
+fi
+
+log "Setting permissions for systemd user services"
+if [ -f /usr/lib/systemd/user/elephant.service ]; then
+    chmod 644 /usr/lib/systemd/user/elephant.service
+fi
+
 log "Enable services for new users in /etc/skel"
 mkdir -p /etc/skel/.config/systemd/user/graphical-session.target.wants
 ln -sf /usr/lib/systemd/user/hyprpolkitagent.service \
     /etc/skel/.config/systemd/user/graphical-session.target.wants/hyprpolkitagent.service
+ln -sf /usr/lib/systemd/user/elephant.service \
+    /etc/skel/.config/systemd/user/graphical-session.target.wants/elephant.service
 
 log "Enable user services for existing users (bootc switch compatibility)"
 # Apply systemd user presets to all existing home directories
@@ -47,9 +64,11 @@ for homedir in /home/* /var/home/*; do
         if id "$username" &>/dev/null; then
             # Create systemd user directory if it doesn't exist
             sudo -u "$username" mkdir -p "$homedir/.config/systemd/user/graphical-session.target.wants" 2>/dev/null || true
-            # Enable the service for this user
+            # Enable the services for this user
             sudo -u "$username" ln -sf /usr/lib/systemd/user/hyprpolkitagent.service \
                 "$homedir/.config/systemd/user/graphical-session.target.wants/hyprpolkitagent.service" 2>/dev/null || true
+            sudo -u "$username" ln -sf /usr/lib/systemd/user/elephant.service \
+                "$homedir/.config/systemd/user/graphical-session.target.wants/elephant.service" 2>/dev/null || true
         fi
     fi
 done

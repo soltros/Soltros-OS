@@ -222,9 +222,16 @@ LAYERED_PACKAGES=(
 
     # Security & utilities
     keepassxc
+    gnome-keyring
+    seahorse
 
     # Development
     neovim
+    gtk4-devel
+    gtk4-layer-shell-devel
+    protobuf-compiler
+    cairo-devel
+    poppler-glib-devel
 )
 
 dnf5 install --setopt=install_weak_deps=False --nogpgcheck --allowerasing --skip-broken -y "${LAYERED_PACKAGES[@]}"

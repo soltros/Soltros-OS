@@ -89,7 +89,7 @@ jobs:
           echo "SIGNATURE_REGISTRY=$(echo "${SIGNATURE_REGISTRY}" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
 
       - name: Checkout ${{ matrix.branch }}
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v4
         with:
           ref: ${{ matrix.branch }}
 

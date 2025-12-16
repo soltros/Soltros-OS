@@ -77,7 +77,7 @@ jobs:
         run: ls -l out
 
       - name: Upload ISO artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: soltros-os-lts-iso
           path: out/*.iso

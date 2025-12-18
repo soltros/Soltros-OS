@@ -36,6 +36,7 @@ LAYERED_PACKAGES=(
     alsa-utils
     libxkbcommon
     pipewire-libs
+    heroic-games-launcher
     pulseaudio-libs
     dbus-libs
     systemd-libs

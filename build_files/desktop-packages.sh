@@ -24,6 +24,8 @@ LAYERED_PACKAGES=(
     materia*
     kvantum
     qt5-qtgraphicaleffects
+    heroic-games-launcher
+    steam
     lm_sensors
     udisks2
     udiskie

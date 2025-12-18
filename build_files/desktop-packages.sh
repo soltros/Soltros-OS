@@ -28,6 +28,8 @@ LAYERED_PACKAGES=(
     udisks2
     udiskie
     gimp
+    heroic-games-launcher
+    steam
     pipewire
     pipewire-pulse
     wireplumber

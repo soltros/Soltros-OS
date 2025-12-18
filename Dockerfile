@@ -61,9 +61,6 @@ RUN dnf5 install -y distrobox
 # Install dnf5 plugins
 RUN dnf5 -y install dnf5-plugins
 
-# Add Terra repo 
-RUN dnf install --nogpgcheck --repofrompath 'terra,https://repos.fyralabs.com/terra$releasever' terra-release
-
 # Mount and run build script from ctx stage
 ARG BASE_IMAGE
 RUN --mount=type=bind,from=ctx,source=/ctx,target=/ctx \

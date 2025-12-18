@@ -27,6 +27,8 @@ LAYERED_PACKAGES=(
     lm_sensors
     udisks2
     udiskie
+    heroic-games-launcher
+    steam
     gimp
     pipewire
     pipewire-pulse

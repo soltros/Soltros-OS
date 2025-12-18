@@ -18,6 +18,7 @@ LAYERED_PACKAGES=(
     fish
     zsh
     tailscale
+    steam
     papirus-icon-theme
     papirus-icon-theme-dark
     papirus-icon-theme-light

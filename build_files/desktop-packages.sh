@@ -18,6 +18,8 @@ LAYERED_PACKAGES=(
     fish
     zsh
     tailscale
+    heroic-games-launcher
+    steam
     papirus-icon-theme
     papirus-icon-theme-dark
     papirus-icon-theme-light

@@ -32,6 +32,8 @@ LAYERED_PACKAGES=(
     pipewire-pulse
     wireplumber
     nebula
+    heroic-games-launcher
+    steam
     dbus-tools
     alsa-utils
     syslinux

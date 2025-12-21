@@ -10,7 +10,11 @@ A gaming-optimized, rolling immutable Linux distribution based on Fedora release
 ### Installation
 There are a few ways you can install SoltrosOS. The recomended way is to download the official ISO, flash it to a USB device, and install it to your computer.
 
-You can get the latest bleeding-edge edition ISO [here](https://bit.ly/soltros-os-unstable), and the stable edition ISO [here](https://bit.ly/soltros-os-stable). Once Soltros OS is installed, it rolls updates forever. No need to swap to new ISOs every 6 months. The bleeding-edge distribution is based upon the absolute newest packages available from Rawhide, and can be a bit rocky to use. The LTS version is pinned to the 6-month Fedora cycle.
+You can get the latest Plasma bleeding-edge edition ISO [here]([https://bit.ly/soltros-os-unstable](https://www.mediafire.com/file_premium/idmej3osl1mpoh8/soltros-os_unstable-latest.iso/file)), and the stable Plasma edition ISO [here](https://www.mediafire.com/file_premium/1tcrq3vzuu3hfdf/soltros-os-lts_latest.iso/file). Once Soltros OS is installed, it rolls updates forever. No need to swap to new ISOs every 6 months. 
+
+Note that if you do not want to use KDE Plasma, there's also Gnome Shell, Cosmic, Hyprland, and others coming soon.
+
+The bleeding-edge distribution is based upon the absolute newest packages available from Rawhide, and can be a bit rocky to use. The LTS version is pinned to the 6-month Fedora cycle.
 
 ![Soltros OS Screenshot](https://github.com/soltros/Soltros-OS/blob/main/screenshots/Screenshot%20From%202025-07-03%2004-33-37.png?raw=true)
 

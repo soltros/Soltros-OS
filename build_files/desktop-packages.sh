@@ -29,6 +29,7 @@ LAYERED_PACKAGES=(
     udiskie
     gimp
     pipewire
+    wine
     pipewire-pulse
     wireplumber
     nebula

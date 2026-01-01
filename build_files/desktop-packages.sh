@@ -28,6 +28,7 @@ LAYERED_PACKAGES=(
     qt5-qtgraphicaleffects
     lm_sensors
     udisks2
+    wine
     udiskie
     gimp
     pipewire

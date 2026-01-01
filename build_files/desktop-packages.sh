@@ -20,6 +20,7 @@ LAYERED_PACKAGES=(
     tailscale
     papirus-icon-theme
     papirus-icon-theme-dark
+    wine
     papirus-icon-theme-light
     materia*
     kvantum

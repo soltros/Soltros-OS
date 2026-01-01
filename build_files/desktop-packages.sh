@@ -33,6 +33,7 @@ LAYERED_PACKAGES=(
     wireplumber
     nebula
     heroic-games-launcher
+    wine
     steam
     dbus-tools
     alsa-utils

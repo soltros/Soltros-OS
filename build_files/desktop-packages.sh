@@ -20,6 +20,7 @@ LAYERED_PACKAGES=(
     tailscale
     heroic-games-launcher
     steam
+    wine
     papirus-icon-theme
     papirus-icon-theme-dark
     papirus-icon-theme-light

@@ -28,6 +28,7 @@ LAYERED_PACKAGES=(
     udisks2
     udiskie
     heroic-games-launcher
+    wine
     steam
     gimp
     pipewire

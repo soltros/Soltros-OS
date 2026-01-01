@@ -29,6 +29,7 @@ LAYERED_PACKAGES=(
     lm_sensors
     udisks2
     udiskie
+    wine
     gimp
     pipewire
     pipewire-pulse

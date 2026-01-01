@@ -29,6 +29,7 @@ LAYERED_PACKAGES=(
     udisks2
     udiskie
     gimp
+    wine
     pipewire
     pipewire-pulse
     wireplumber
